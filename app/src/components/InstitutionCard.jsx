@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone } from 'lucide-react';
+import { Phone, Clock, User, CheckCircle2, ShieldCheck, MapPin, Activity, GraduationCap } from 'lucide-react';
 import { getLocalized } from '../lib/i18n';
 
 function checkIsOpenNow(timings) {
@@ -17,51 +17,85 @@ export default function InstitutionCard({ institution, lang, t }) {
     const isOpen = checkIsOpenNow(institution.operating_hours);
 
     return (
-        <div className="civic-card">
-            <div>
+        <div className="civic-card institution-card">
+            <div className="card-top-content">
+                {/* Header: Icon + Type Badge + Verification */}
                 <div className="card-header-row">
-                    <span className="badge badge-civic">{institution.type}</span>
-                    <span className="badge badge-verified">Verified</span>
+                    <div className="institution-type-header">
+                        <div className={`card-type-icon ${isPhc ? 'icon-health' : 'icon-education'}`} aria-hidden="true">
+                            {isPhc ? <Activity size={18} /> : <GraduationCap size={18} />}
+                        </div>
+                        <span className="badge badge-civic">{institution.type}</span>
+                    </div>
+                    <span className="badge badge-verified">
+                        <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                    </span>
                 </div>
+
+                {/* Institution Name */}
                 <h3 className="card-item-title">{getLocalized(institution, 'name', lang)}</h3>
 
+                {/* Operating Status Pill (Operating-Hours Derived) */}
                 {isPhc && (
                     <div className="phc-status-container">
-                        <span className={`phc-status-pill ${isOpen ? 'phc-status-open' : 'phc-status-closed'}`}>
+                        <div className={`phc-status-pill ${isOpen ? 'phc-status-open' : 'phc-status-closed'}`}>
                             <span className={isOpen ? 'status-dot-pulse' : 'status-dot-closed'} aria-hidden="true"></span>
-                            {isOpen ? 'Open Now — based on listed operating hours' : 'Closed — based on listed operating hours'}
-                        </span>
+                            <span className="status-pill-text">
+                                {isOpen ? 'Open Now — based on listed operating hours' : 'Closed — based on listed operating hours'}
+                            </span>
+                        </div>
                     </div>
                 )}
 
-                <ul className="card-meta-list">
-                    <li className="meta-row">
-                        <span className="meta-label">{t.timings}</span>
-                        <span className="meta-val">{institution.operating_hours || 'Standard Hours'}</span>
-                    </li>
+                {/* Key Information Rows with Structured Icons */}
+                <div className="card-info-stack">
+                    <div className="info-stack-row">
+                        <Clock size={15} className="info-icon" aria-hidden="true" />
+                        <div className="info-stack-content">
+                            <span className="info-label">{t.timings}</span>
+                            <span className="info-value">{institution.operating_hours || 'Standard Working Hours'}</span>
+                        </div>
+                    </div>
+
                     {institution.doctor_in_charge && (
-                        <li className="meta-row">
-                            <span className="meta-label">In-Charge:</span>
-                            <span className="meta-val">{institution.doctor_in_charge}</span>
-                        </li>
+                        <div className="info-stack-row">
+                            <User size={15} className="info-icon" aria-hidden="true" />
+                            <div className="info-stack-content">
+                                <span className="info-label">{isPhc ? 'Medical Officer / In-Charge:' : 'Headmaster / Principal:'}</span>
+                                <span className="info-value">{institution.doctor_in_charge}</span>
+                            </div>
+                        </div>
                     )}
+
                     {institution.services && (
-                        <li className="meta-row">
-                            <span className="meta-label">{t.services}</span>
-                            <span className="meta-val">{getLocalized(institution, 'services', lang)}</span>
-                        </li>
+                        <div className="services-tag-group">
+                            <span className="info-label" style={{ display: 'block', marginBottom: '4px' }}>{t.services}</span>
+                            <div className="service-pills-list">
+                                {getLocalized(institution, 'services', lang).split(',').map((srv, idx) => (
+                                    <span key={idx} className="micro-service-pill">
+                                        <CheckCircle2 size={11} style={{ marginRight: '4px', color: 'var(--color-emerald-600)' }} aria-hidden="true" />
+                                        {srv.trim()}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
                     )}
-                </ul>
+                </div>
             </div>
-            <div>
-                {institution.phone && (
+
+            {/* Action & Verification Footer */}
+            <div className="card-action-footer">
+                {institution.phone ? (
                     <a 
                         href={`tel:${institution.phone}`} 
-                        className="btn btn-secondary"
-                        style={{ width: '100%', marginTop: '0.75rem' }}
+                        className="btn btn-secondary call-action-btn"
+                        title={`Call ${institution.name}`}
                     >
-                        <Phone size={15} style={{ marginRight: '6px' }} aria-hidden="true" /> {t.callNow} {institution.phone}
+                        <Phone size={15} style={{ marginRight: '8px' }} aria-hidden="true" /> 
+                        <span>{t.callNow} {institution.phone}</span>
                     </a>
+                ) : (
+                    <div className="no-direct-phone">Direct contact available via Gram Panchayat desk</div>
                 )}
                 <div className="card-verify-tag">
                     <span>{t.source} {institution.source}</span>
