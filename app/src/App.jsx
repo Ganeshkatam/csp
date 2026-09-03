@@ -76,8 +76,9 @@ export default function App() {
         return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
-    // Ensure initial URL is clean (stripping any accidental .html or trailing slashes)
+    // Ensure initial URL is clean and reset scroll position to top
     useEffect(() => {
+        window.scrollTo(0, 0);
         const currentPath = window.location.pathname;
         if (currentPath.includes('.html')) {
             const cleanPath = getPathFromView(getViewFromPath(currentPath));
