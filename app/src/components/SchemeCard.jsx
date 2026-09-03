@@ -4,7 +4,8 @@ import { getLocalized } from '../lib/i18n';
 
 export default function SchemeCard({ scheme, lang, t }) {
     // Parse required documents into clean chips
-    const docs = scheme.documents_required ? scheme.documents_required.split(',') : [];
+    const docStr = scheme.documents_required || scheme.documents || '';
+    const docs = docStr.split(',').map(d => d.trim()).filter(Boolean);
 
     return (
         <div className="civic-card scheme-card">

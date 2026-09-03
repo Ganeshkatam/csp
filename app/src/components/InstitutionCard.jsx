@@ -14,7 +14,8 @@ function checkIsOpenNow(timings) {
 
 export default function InstitutionCard({ institution, lang, t }) {
     const isPhc = institution.type === 'PHC' || institution.type === 'Healthcare';
-    const isOpen = checkIsOpenNow(institution.operating_hours);
+    const institutionTimings = institution.timings || institution.operating_hours;
+    const isOpen = checkIsOpenNow(institutionTimings);
 
     return (
         <div className="civic-card institution-card">
@@ -53,7 +54,7 @@ export default function InstitutionCard({ institution, lang, t }) {
                         <Clock size={15} className="info-icon" aria-hidden="true" />
                         <div className="info-stack-content">
                             <span className="info-label">{t.timings}</span>
-                            <span className="info-value">{institution.operating_hours || 'Standard Working Hours'}</span>
+                            <span className="info-value">{institutionTimings || 'Standard Working Hours'}</span>
                         </div>
                     </div>
 
