@@ -9,6 +9,7 @@ import InstitutionCard from '../components/InstitutionCard';
 import BusinessCard from '../components/BusinessCard';
 import AnnouncementCard from '../components/AnnouncementCard';
 import FeedbackForm from '../components/FeedbackForm';
+import { Smartphone, CheckCircle2, Copy, ExternalLink, ShieldCheck, HeartPulse, FileText, Phone, Store } from 'lucide-react';
 
 export default function PublicPortalView({ 
     lang, 
@@ -27,6 +28,7 @@ export default function PublicPortalView({
     const [contacts, setContacts] = useState([]);
     const [institutions, setInstitutions] = useState([]);
     const [businesses, setBusinesses] = useState([]);
+    const [copiedUrl, setCopiedUrl] = useState(false);
 
     useEffect(() => {
         loadCommunityData();
@@ -45,7 +47,7 @@ export default function PublicPortalView({
                 { id: 'sectionCitizenCorner', name: 'sectionCitizenCorner' }
             ];
 
-            const scrollPos = window.scrollY + 140;
+            const scrollPos = window.scrollY + 160;
             if (window.scrollY < 250) {
                 if (setActiveSection) setActiveSection('home');
                 return;
@@ -133,37 +135,86 @@ export default function PublicPortalView({
     );
 
     const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://csp-village-portal.web.app';
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(portalUrl)}`;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(portalUrl)}`;
+
+    const handleCopyUrl = () => {
+        navigator.clipboard.writeText(portalUrl);
+        setCopiedUrl(true);
+        setTimeout(() => setCopiedUrl(false), 3000);
+    };
 
     return (
         <main className="container" id="mainContent">
-            {/* Civic Hero Section */}
-            <section className="civic-hero" id="home">
-                <div className="hero-header-row">
-                    <div className="hero-project-badge">
-                        <span className="badge-dot" aria-hidden="true"></span>
-                        <span>{t.projectBadge}</span>
-                    </div>
-                </div>
-                <div className="hero-content">
-                    <h1 className="hero-title">
-                        {village?.name ? `${t.welcomeTo} ${village.name} ${t.portalTitleEn}` : t.portalTitleEn}
-                    </h1>
-                    <p className="hero-subtitle">
-                        {village?.gram_panchayat 
-                            ? `${village.gram_panchayat} Gram Panchayat | ${village.mandal} Mandal | ${village.district} District`
-                            : t.portalSubtitle
-                        }
-                    </p>
+            {/* Rich Civic Hero Banner */}
+            <section className="civic-hero modern-split-hero" id="home">
+                <div className="hero-grid-layout">
+                    {/* Left Hero Content */}
+                    <div className="hero-content-col">
+                        <div className="hero-project-badge">
+                            <span className="badge-dot" aria-hidden="true"></span>
+                            <span>{t.projectBadge}</span>
+                        </div>
 
-                    {/* Search Command Bar */}
-                    <SearchBar 
-                        searchQuery={searchQuery}
-                        setSearchQuery={setSearchQuery}
-                        currentFilter={currentFilter}
-                        setCurrentFilter={setCurrentFilter}
-                        t={t}
-                    />
+                        <h1 className="hero-title">
+                            {village?.name ? `${t.welcomeTo} ${village.name}` : 'Digital Village'}
+                            <span className="hero-title-suffix"> {t.portalTitleEn}</span>
+                        </h1>
+
+                        <div className="hero-regional-badge">
+                            <span>{t.portalTitleRegional}</span>
+                        </div>
+
+                        <p className="hero-subtitle">
+                            {village?.gram_panchayat 
+                                ? `${village.gram_panchayat} Gram Panchayat | ${village.mandal} Mandal | ${village.district} District`
+                                : t.portalSubtitle
+                            }
+                        </p>
+
+                        {/* Search Command Bar */}
+                        <SearchBar 
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            currentFilter={currentFilter}
+                            setCurrentFilter={setCurrentFilter}
+                            t={t}
+                        />
+
+                        {/* Quick Feature Metric Chips */}
+                        <div className="hero-feature-pills">
+                            <span className="hero-feat-chip">
+                                <HeartPulse size={14} className="feat-chip-icon text-emerald" aria-hidden="true" />
+                                <span>PHC &amp; Healthcare</span>
+                            </span>
+                            <span className="hero-feat-chip">
+                                <FileText size={14} className="feat-chip-icon text-blue" aria-hidden="true" />
+                                <span>Welfare Checklists</span>
+                            </span>
+                            <span className="hero-feat-chip">
+                                <Phone size={14} className="feat-chip-icon text-red" aria-hidden="true" />
+                                <span>24x7 Helplines</span>
+                            </span>
+                            <span className="hero-feat-chip">
+                                <Store size={14} className="feat-chip-icon text-amber" aria-hidden="true" />
+                                <span>Local Artisans</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right Hero Visual Illustration Banner */}
+                    <div className="hero-visual-col">
+                        <div className="hero-illustration-frame">
+                            <img 
+                                src="/images/rural_village_illustration.jpg" 
+                                alt="Digital Village Civic Community Landscape with Panchayat, Healthcare, and Education facilities"
+                                className="hero-illustration-img" 
+                            />
+                            <div className="hero-illustration-caption">
+                                <ShieldCheck size={16} className="caption-icon" aria-hidden="true" />
+                                <span>Empowering Rural Habitations Through Digital Information Access</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -175,13 +226,15 @@ export default function PublicPortalView({
             {/* Habitation Profile Card (Dynamically displayed when record exists in Supabase) */}
             {(currentFilter === 'ALL' && village?.name) && (
                 <section className="section-block" id="sectionVillageProfile">
-                    <div className="civic-card" style={{ borderLeft: '4px solid var(--color-slate-900)' }}>
+                    <div className="civic-card profile-spotlight-card">
                         <div className="card-header-row">
                             <span className="badge badge-civic">Community Habitation Profile</span>
-                            <span className="badge badge-verified">Verified</span>
+                            <span className="badge badge-verified">
+                                <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                            </span>
                         </div>
                         <h2 className="card-item-title">{village.name} Habitation Overview</h2>
-                        <p style={{ fontSize: '0.9375rem', color: 'var(--color-slate-600)', marginTop: '0.5rem', lineHeight: '1.6' }}>
+                        <p style={{ fontSize: '0.9375rem', color: 'var(--color-slate-700)', marginTop: '0.5rem', lineHeight: '1.65' }}>
                             {getLocalized(village, 'description', lang)}
                         </p>
                         <div className="card-verify-tag">
@@ -196,7 +249,10 @@ export default function PublicPortalView({
             {(currentFilter === 'ALL' || currentFilter === 'announcements') && (
                 <section className="section-block" id="sectionAnnouncements">
                     <div className="section-head">
-                        <h2 className="section-title">{t.filterAnnouncements}</h2>
+                        <div className="section-title-wrap">
+                            <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Public Notices</span>
+                            <h2 className="section-title">{t.filterAnnouncements}</h2>
+                        </div>
                         <p className="section-desc">Public notices, Grama Sabha schedules, and welfare application deadlines.</p>
                     </div>
                     <div className="card-grid">
@@ -215,7 +271,10 @@ export default function PublicPortalView({
             {(currentFilter === 'ALL' || currentFilter === 'schemes') && (
                 <section className="section-block" id="sectionSchemes">
                     <div className="section-head">
-                        <h2 className="section-title">{t.schemesTitle}</h2>
+                        <div className="section-title-wrap">
+                            <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Public Welfare Directory</span>
+                            <h2 className="section-title">{t.schemesTitle}</h2>
+                        </div>
                         <p className="section-desc">{t.schemesDesc}</p>
                     </div>
                     <div className="card-grid">
@@ -234,7 +293,10 @@ export default function PublicPortalView({
             {(currentFilter === 'ALL' || currentFilter === 'contacts') && (
                 <section className="section-block" id="sectionContacts">
                     <div className="section-head">
-                        <h2 className="section-title">{t.contactsTitle}</h2>
+                        <div className="section-title-wrap">
+                            <span className="badge badge-alert" style={{ marginBottom: '6px' }}>Emergency &amp; Administration</span>
+                            <h2 className="section-title">{t.contactsTitle}</h2>
+                        </div>
                         <p className="section-desc">{t.contactsDesc}</p>
                     </div>
                     <div className="card-grid">
@@ -253,7 +315,10 @@ export default function PublicPortalView({
             {(currentFilter === 'ALL' || currentFilter === 'institutions') && (
                 <section className="section-block" id="sectionInstitutions">
                     <div className="section-head">
-                        <h2 className="section-title">{t.institutionsTitle}</h2>
+                        <div className="section-title-wrap">
+                            <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Public Institutions</span>
+                            <h2 className="section-title">{t.institutionsTitle}</h2>
+                        </div>
                         <p className="section-desc">{t.institutionsDesc}</p>
                     </div>
                     <div className="card-grid">
@@ -272,7 +337,10 @@ export default function PublicPortalView({
             {(currentFilter === 'ALL' || currentFilter === 'businesses') && (
                 <section className="section-block" id="sectionBusinesses">
                     <div className="section-head">
-                        <h2 className="section-title">{t.businessesTitle}</h2>
+                        <div className="section-title-wrap">
+                            <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Local Economy &amp; Crafts</span>
+                            <h2 className="section-title">{t.businessesTitle}</h2>
+                        </div>
                         <p className="section-desc">{t.businessesDesc}</p>
                     </div>
                     <div className="card-grid">
@@ -290,26 +358,62 @@ export default function PublicPortalView({
             {/* Citizen Feedback & Correction Module */}
             <FeedbackForm villageId={village?.id} t={t} />
 
-            {/* Dynamic Smartphone Evaluation QR Code Section */}
+            {/* High-End Smartphone Access & Field Evaluation Hub */}
             <section className="section-block" id="sectionQrAccess">
-                <div className="civic-card" style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
-                    <h2 className="section-title" style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
-                        {t.qrHeading}
-                    </h2>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', marginBottom: '1.25rem' }}>
-                        {t.qrDesc}
-                    </p>
-                    <div style={{ display: 'inline-block', padding: '12px', background: '#ffffff', borderRadius: '12px', border: '1px solid var(--color-slate-200)', boxShadow: 'var(--shadow-subtle)' }}>
-                        <img 
-                            src={qrCodeUrl} 
-                            alt="Scan QR Code to open Digital Village Information Portal on Smartphone" 
-                            width="180" 
-                            height="180" 
-                            style={{ display: 'block' }}
-                        />
+                <div className="mobile-access-hub-card">
+                    <div className="mobile-access-content">
+                        <div className="mobile-badge">
+                            <Smartphone size={15} style={{ marginRight: '6px' }} aria-hidden="true" />
+                            <span>Mobile Optimization &amp; Field Evaluation</span>
+                        </div>
+                        <h2 className="mobile-hub-title">{t.qrHeading}</h2>
+                        <p className="mobile-hub-desc">{t.qrDesc}</p>
+
+                        <div className="mobile-steps-list">
+                            <div className="mobile-step-item">
+                                <span className="step-number-dot">1</span>
+                                <span>Open the Camera app on any smartphone.</span>
+                            </div>
+                            <div className="mobile-step-item">
+                                <span className="step-number-dot">2</span>
+                                <span>Focus on the QR code to open the instant mobile portal.</span>
+                            </div>
+                            <div className="mobile-step-item">
+                                <span className="step-number-dot">3</span>
+                                <span>Browse emergency contacts, scheme checklists, and PHC hours in the field.</span>
+                            </div>
+                        </div>
+
+                        <div className="mobile-action-row">
+                            <button 
+                                type="button" 
+                                className="btn btn-secondary"
+                                onClick={handleCopyUrl}
+                                style={{ minHeight: '42px', padding: '0.5rem 1rem' }}
+                            >
+                                <Copy size={14} style={{ marginRight: '6px' }} aria-hidden="true" />
+                                {copiedUrl ? 'Copied Portal URL!' : 'Copy Portal URL'}
+                            </button>
+                            <span className="mobile-url-tag">
+                                {portalUrl}
+                            </span>
+                        </div>
                     </div>
-                    <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-slate-400)' }}>
-                        Target URL: {portalUrl}
+
+                    <div className="mobile-qr-frame">
+                        <div className="qr-image-wrapper">
+                            <img 
+                                src={qrCodeUrl} 
+                                alt="Scan QR Code to open Digital Village Information Portal on Smartphone" 
+                                width="200" 
+                                height="200" 
+                                className="qr-code-img"
+                            />
+                        </div>
+                        <div className="qr-scan-badge">
+                            <CheckCircle2 size={13} style={{ marginRight: '4px', color: 'var(--color-emerald-600)' }} aria-hidden="true" />
+                            <span>Mobile Responsive | Instant Field Access</span>
+                        </div>
                     </div>
                 </div>
             </section>
