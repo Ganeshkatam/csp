@@ -1,0 +1,1149 @@
+/* ==============================================================================
+   Digital Village Information Portal — Master Civic Design System
+   Architecture: Pure CSS3 Design Tokens + GIGW & Digital India Standards
+   Zero Emojis | High Contrast | Responsive Mobile-First
+   ============================================================================== */
+
+:root {
+    /* Color Palette */
+    --color-saffron: #d97706;
+    --color-saffron-light: #fffbeb;
+    --color-white: #ffffff;
+    --color-green: #15803d;
+    --color-green-light: #ecfdf5;
+    --color-emergency: #b91c1c;
+    --color-emergency-light: #fef2f2;
+    --color-gov-navy: #0c2340;
+    --color-gov-blue: #1d4ed8;
+    --color-gov-blue-light: #eff6ff;
+
+    /* Neutrals */
+    --color-bg-body: #f8fafc;
+    --color-bg-card: #ffffff;
+    --color-border: #cbd5e1;
+    --color-border-light: #e2e8f0;
+    --color-text-main: #0f172a;
+    --color-text-muted: #64748b;
+    --color-text-light: #94a3b8;
+
+    /* Typography & Sizing */
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-telugu: 'Noto Sans Telugu', 'Inter', system-ui, sans-serif;
+    --base-font-size: 16px;
+
+    /* Shadows & Radii */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px -3px rgba(12, 35, 64, 0.08);
+}
+
+/* Base Resets */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--base-font-size);
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-body);
+    color: var(--color-text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+main.container {
+    flex: 1;
+}
+
+/* ------------------------------------------------------------------------------
+   1. National Tricolor Top Accent Stripe
+   ------------------------------------------------------------------------------ */
+.top-civic-stripe {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #ff9933 0%, #ff9933 33.33%, #ffffff 33.33%, #ffffff 66.66%, #138808 66.66%, #138808 100%);
+}
+
+/* ------------------------------------------------------------------------------
+   Clean Streamlined Civic Header (Zero Clutter, Zero Scrollbars)
+   ------------------------------------------------------------------------------ */
+.clean-site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 1. Micro Utility Bar */
+.clean-utility-bar {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding: 0.35rem 0;
+    font-size: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.utility-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.utility-govt {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.utility-flag-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-saffron);
+    display: inline-block;
+}
+
+.utility-govt-text {
+    font-weight: 500;
+    color: #cbd5e1;
+    letter-spacing: 0.01em;
+}
+
+.utility-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.utility-helplines {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.helpline-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-right: 0.2rem;
+}
+
+.helpline-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.helpline-red {
+    background: #450a0a;
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+}
+.helpline-red:hover {
+    background: #7f1d1d;
+    color: #ffffff;
+}
+
+.helpline-blue {
+    background: #082f49;
+    color: #7dd3fc;
+    border: 1px solid #075985;
+}
+.helpline-blue:hover {
+    background: #075985;
+    color: #ffffff;
+}
+
+.helpline-green {
+    background: #022c22;
+    color: #6ee7b7;
+    border: 1px solid #065f46;
+}
+.helpline-green:hover {
+    background: #065f46;
+    color: #ffffff;
+}
+
+.utility-divider {
+    color: #334155;
+}
+
+.utility-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.tool-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.tool-btn:hover,
+.tool-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.lang-toggle-btn {
+    background: #1d4ed8;
+    color: #ffffff;
+    border: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.lang-toggle-btn:hover {
+    background: #2563eb;
+}
+
+/* 2. Unified Brand + Navigation Bar (No horizontal scrollbars!) */
+.clean-main-nav {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.5rem 0;
+}
+
+.main-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.nav-emblem {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-emblem svg {
+    width: 22px;
+    height: 22px;
+}
+
+.nav-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-brand-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-gov-navy);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.nav-brand-sub {
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+}
+
+.menu-link {
+    background: transparent;
+    border: none;
+    color: #334155;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.menu-link:hover {
+    background: #f1f5f9;
+    color: var(--color-gov-navy);
+}
+
+.menu-link.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.menu-link.admin-btn {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    margin-left: 0.25rem;
+}
+
+.menu-link.admin-btn:hover,
+.menu-link.admin-btn.active {
+    background: var(--color-gov-navy);
+    border-color: var(--color-gov-navy);
+    color: #ffffff;
+}
+
+/* 3. Subtle Notice Strip */
+.clean-notice-strip {
+    background: #fffbeb;
+    border-bottom: 1px solid #fef3c7;
+    padding: 0.35rem 0;
+    font-size: 0.75rem;
+    color: #92400e;
+}
+
+.notice-strip-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.notice-badge {
+    background: #f59e0b;
+    color: #ffffff;
+    font-size: 0.625rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+.notice-text {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------------------------------------
+   7. Civic Hero Banner & Search (PM-Kisan & MyBharat Standard)
+   ------------------------------------------------------------------------------ */
+.civic-hero {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    background: #ffffff;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.hero-image-wrapper {
+    position: relative;
+    width: 100%;
+    background-color: #f1f5f9;
+}
+
+.hero-graphic {
+    width: 100%;
+    height: auto;
+    max-height: 380px;
+    object-fit: cover;
+    display: block;
+}
+
+.hero-ethical-caption {
+    background: rgba(12, 35, 64, 0.9);
+    color: #f8fafc;
+    font-size: 0.75rem;
+    padding: 0.45rem 1rem;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+.hero-content {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.hero-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-gov-navy);
+    margin: 0;
+    line-height: 1.25;
+}
+
+.hero-subtitle {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin: 0.5rem 0 1.5rem 0;
+    font-weight: 500;
+}
+
+/* Prominent Search Module */
+.search-module {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 2px solid var(--color-border);
+    border-radius: 30px;
+    padding: 0.35rem 0.5rem 0.35rem 1.25rem;
+    box-shadow: 0 4px 12px rgba(12, 35, 64, 0.08);
+    transition: all 0.2s ease;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--color-gov-blue);
+    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
+}
+
+.search-icon {
+    color: var(--color-text-light);
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: var(--color-text-main);
+    background: transparent;
+    padding: 0.5rem 0.25rem;
+    min-width: 0;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.btn-search-clear {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: var(--color-text-muted);
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-search-clear:hover {
+    background: #e2e8f0;
+    color: var(--color-text-main);
+}
+
+.filter-pills-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    color: #475569;
+    padding: 0.45rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-pill:hover {
+    border-color: var(--color-gov-blue);
+    color: var(--color-gov-blue);
+    background: #f8fafc;
+}
+
+.filter-pill.active {
+    background: var(--color-gov-navy);
+    border-color: var(--color-gov-navy);
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(12, 35, 64, 0.2);
+}
+
+/* ------------------------------------------------------------------------------
+   8. Citizen Services Corner (PM-Kisan Farmer Corner Pattern)
+   ------------------------------------------------------------------------------ */
+.section-block,
+[id^="section"] {
+    margin-top: 2.5rem;
+    scroll-margin-top: 100px;
+}
+
+.section-head {
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid var(--color-border-light);
+    padding-bottom: 0.5rem;
+}
+
+.section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-gov-navy);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title-sub {
+    font-family: var(--font-telugu);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-saffron);
+    margin-left: 0.5rem;
+}
+
+.section-desc {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+}
+
+.citizen-corner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+.service-hub-card {
+    background: #ffffff;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.service-hub-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-gov-blue);
+}
+
+.hub-icon-box {
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-gov-blue-light);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-gov-blue);
+}
+
+.hub-icon-emergency {
+    background-color: var(--color-emergency-light);
+    color: var(--color-emergency);
+}
+
+.hub-icon-health {
+    background-color: var(--color-green-light);
+    color: var(--color-green);
+}
+
+.hub-text {
+    flex: 1;
+}
+
+.hub-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-gov-navy);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.hub-desc {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0.35rem 0 0 0;
+    line-height: 1.4;
+}
+
+/* ------------------------------------------------------------------------------
+   9. Civic Card Layout & Content Rows
+   ------------------------------------------------------------------------------ */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.civic-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.civic-card:hover {
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-item-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--color-gov-navy);
+    margin: 0;
+    line-height: 1.35;
+}
+
+.card-meta-list {
+    list-style: none;
+    margin: 0.75rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.8125rem;
+}
+
+.meta-label {
+    font-weight: 700;
+    color: #475569;
+}
+
+.meta-val {
+    color: var(--color-text-main);
+    line-height: 1.4;
+}
+
+.card-verify-tag {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.5rem;
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.btn-call-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-green);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    margin-top: 0.75rem;
+    width: 100%;
+    transition: background 0.15s ease;
+}
+
+.btn-call-card:hover {
+    background: #166534;
+}
+
+/* ------------------------------------------------------------------------------
+   10. Badges & Lifecycle Status
+   ------------------------------------------------------------------------------ */
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.badge-civic {
+    background-color: var(--color-gov-blue-light);
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.badge-verified {
+    background-color: var(--color-green-light);
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-open {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.badge-closed {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+/* ------------------------------------------------------------------------------
+   11. Buttons & Form Elements
+   ------------------------------------------------------------------------------ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background-color: var(--color-gov-navy);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #1e3a8a;
+}
+
+.btn-secondary {
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: var(--color-text-main);
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-danger {
+    background-color: var(--color-emergency);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #991b1b;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.35rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    color: var(--color-text-main);
+    background: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--color-gov-blue);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ------------------------------------------------------------------------------
+   12. Survey Form Styles
+   ------------------------------------------------------------------------------ */
+.survey-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.survey-section {
+    border-top: 1px solid var(--color-border-light);
+    padding-top: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.section-header {
+    margin-bottom: 1rem;
+}
+
+.choice-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.choice-grid.columns-2 {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.choice-grid.columns-3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.custom-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    background-color: #f8fafc;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.625rem 0.875rem;
+    cursor: pointer;
+}
+
+.choice-label {
+    font-size: 0.875rem;
+    color: var(--color-text-main);
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.offline-banner {
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    border-radius: var(--radius-sm);
+}
+
+/* ------------------------------------------------------------------------------
+   13. Dashboard & Analytics Styles
+   ------------------------------------------------------------------------------ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid var(--color-border-light);
+    border-left: 4px solid var(--color-gov-blue);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:nth-child(2) {
+    border-left-color: var(--color-green);
+}
+
+.stat-card:nth-child(3) {
+    border-left-color: var(--color-saffron);
+}
+
+.stat-card:nth-child(4) {
+    border-left-color: var(--color-emergency);
+}
+
+.stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-gov-navy);
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+    margin-top: 0.35rem;
+}
+
+.stat-sub {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+}
+
+.info-card {
+    background-color: #ffffff;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.info-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.info-card-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--color-gov-navy);
+    line-height: 1.3;
+}
+
+.verification-tag {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.5rem;
+    margin-top: 0.75rem;
+    font-style: italic;
+}
+
+/* ------------------------------------------------------------------------------
+   14. Alerts & Notifications
+   ------------------------------------------------------------------------------ */
+.alert {
+    padding: 0.875rem 1.125rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
+}
+
+.alert-danger {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background-color: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.alert-info {
+    background-color: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+/* ------------------------------------------------------------------------------
+   15. QR Code Module
+   ------------------------------------------------------------------------------ */
+.qr-container {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ------------------------------------------------------------------------------
+   16. Civic Footer & Disclaimers
+   ------------------------------------------------------------------------------ */
+.site-footer {
+    background-color: #071426;
+    color: #94a3b8;
+    font-size: 0.8125rem;
+    padding: 2.5rem 0 2rem;
+    margin-top: 4rem;
+    border-top: 3px solid var(--color-saffron);
+}
+
+.footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footer-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1.25rem;
+}
+
+.footer-brand {
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 0.9375rem;
+}
+
+.footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+}
+
+/* ------------------------------------------------------------------------------
+   17. Responsive Breakpoints
+   ------------------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .utility-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .utility-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .main-nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .nav-menu {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .nav-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .citizen-corner-grid {
+        grid-template-columns: 1fr;
+    }
+}
