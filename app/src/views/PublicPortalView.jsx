@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    Search, X, FileText, Phone, Activity, GraduationCap, Building2, 
-    MessageSquare, ExternalLink, Clock, CheckCircle2, AlertCircle, QrCode
-} from 'lucide-react';
 import { I18N_DICT, getLocalized } from '../lib/i18n';
-import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import SearchBar from '../components/SearchBar';
+import ServiceGrid from '../components/ServiceGrid';
+import SchemeCard from '../components/SchemeCard';
+import ContactCard from '../components/ContactCard';
+import InstitutionCard from '../components/InstitutionCard';
+import BusinessCard from '../components/BusinessCard';
+import AnnouncementCard from '../components/AnnouncementCard';
+import FeedbackForm from '../components/FeedbackForm';
 
 export default function PublicPortalView({ 
     lang, 
-    navigate,
     currentFilter = 'ALL',
     setCurrentFilter,
     searchQuery = '',
@@ -19,25 +22,17 @@ export default function PublicPortalView({
     const t = I18N_DICT[lang];
 
     const [village, setVillage] = useState(null);
-
     const [announcements, setAnnouncements] = useState([]);
     const [schemes, setSchemes] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [institutions, setInstitutions] = useState([]);
     const [businesses, setBusinesses] = useState([]);
 
-    // Feedback state
-    const [fbName, setFbName] = useState('');
-    const [fbPhone, setFbPhone] = useState('');
-    const [fbType, setFbType] = useState('Correction');
-    const [fbMessage, setFbMessage] = useState('');
-    const [fbStatus, setFbStatus] = useState(null); // 'submitting' | 'success' | 'error'
-
     useEffect(() => {
-        loadPublishedData();
+        loadCommunityData();
     }, []);
 
-    // Keep active header button in sync with page scroll position
+    // Sync active header button with page scroll position (100px clearance)
     useEffect(() => {
         const handleScroll = () => {
             const sections = [
@@ -73,7 +68,7 @@ export default function PublicPortalView({
         return () => window.removeEventListener('scroll', handleScroll);
     }, [setActiveSection]);
 
-    async function loadPublishedData() {
+    async function loadCommunityData() {
         try {
             const [vRes, aRes, sRes, cRes, iRes, bRes] = await Promise.all([
                 supabase.from('villages').select('*').limit(1),
@@ -91,79 +86,63 @@ export default function PublicPortalView({
             if (iRes.data && iRes.data.length > 0) setInstitutions(iRes.data);
             if (bRes.data && bRes.data.length > 0) setBusinesses(bRes.data);
         } catch (err) {
-            console.warn('Supabase fetch failed, relying on baseline data:', err);
+            console.error('Data load error:', err);
         }
     }
 
-    // Operating hours check for PHC
-    function calculateOpenStatus(timings) {
-        if (!timings) return null;
-        const now = new Date();
-        const hour = now.getHours();
-        const day = now.getDay();
-        if (day === 0 && !timings.toLowerCase().includes('sun')) return false;
-        if (timings.includes('09:00') && (timings.includes('04:00') || timings.includes('03:30'))) {
-            return hour >= 9 && hour < 16;
-        }
-        if (timings.includes('10:00') && timings.includes('05:00')) {
-            return hour >= 10 && hour < 17;
-        }
-        return null;
-    }
+    // Client-side search filters
+    const query = searchQuery.toLowerCase().trim();
 
-    // Feedback Submission
-    async function handleFeedbackSubmit(e) {
-        e.preventDefault();
-        setFbStatus('submitting');
-        try {
-            const { error } = await supabase.from('citizen_feedback').insert({
-                village_id: village?.id || DEFAULT_VILLAGE_ID,
-                name: fbName.trim() || 'Anonymous Resident',
-                phone: fbPhone.trim() || null,
-                feedback_type: fbType,
-                message: fbMessage.trim(),
-                status: 'Pending'
-            });
-            if (error) throw error;
-            setFbStatus('success');
-            setFbName('');
-            setFbPhone('');
-            setFbMessage('');
-        } catch (err) {
-            console.error('Feedback error:', err);
-            setFbStatus('error');
-        }
-    }
+    const filteredAnnouncements = announcements.filter(a => 
+        !query || 
+        (a.title && a.title.toLowerCase().includes(query)) ||
+        (a.title_te && a.title_te.toLowerCase().includes(query)) ||
+        (a.description && a.description.toLowerCase().includes(query))
+    );
 
-    // Search filter helper
-    function matchesQuery(item) {
-        if (!searchQuery.trim()) return true;
-        const q = searchQuery.toLowerCase();
-        return Object.values(item).some(val => typeof val === 'string' && val.toLowerCase().includes(q));
-    }
+    const filteredSchemes = schemes.filter(s => 
+        !query || 
+        (s.name && s.name.toLowerCase().includes(query)) ||
+        (s.name_te && s.name_te.toLowerCase().includes(query)) ||
+        (s.category && s.category.toLowerCase().includes(query)) ||
+        (s.eligibility && s.eligibility.toLowerCase().includes(query))
+    );
 
-    const filteredAnnouncements = announcements.filter(matchesQuery);
-    const filteredSchemes = schemes.filter(matchesQuery);
-    const filteredContacts = contacts.filter(matchesQuery);
-    const filteredInstitutions = institutions.filter(matchesQuery);
-    const filteredBusinesses = businesses.filter(matchesQuery);
+    const filteredContacts = contacts.filter(c => 
+        !query || 
+        (c.name && c.name.toLowerCase().includes(query)) ||
+        (c.name_te && c.name_te.toLowerCase().includes(query)) ||
+        (c.designation && c.designation.toLowerCase().includes(query)) ||
+        (c.phone && c.phone.includes(query))
+    );
 
-    const currentUrl = typeof window !== 'undefined' 
-        ? (window.location.origin + window.location.pathname).replace(/\.html.*$/, '')
-        : 'https://village-portal.gov.in';
+    const filteredInstitutions = institutions.filter(i => 
+        !query || 
+        (i.name && i.name.toLowerCase().includes(query)) ||
+        (i.name_te && i.name_te.toLowerCase().includes(query)) ||
+        (i.type && i.type.toLowerCase().includes(query)) ||
+        (i.services && i.services.toLowerCase().includes(query))
+    );
+
+    const filteredBusinesses = businesses.filter(b => 
+        !query || 
+        (b.name && b.name.toLowerCase().includes(query)) ||
+        (b.name_te && b.name_te.toLowerCase().includes(query)) ||
+        (b.category && b.category.toLowerCase().includes(query)) ||
+        (b.services && b.services.toLowerCase().includes(query))
+    );
+
+    const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://csp-village-portal.web.app';
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(portalUrl)}`;
 
     return (
         <main className="container" id="mainContent">
-            {/* Civic Hero Banner & Search (Modeled after PM-Kisan & MyBharat) */}
-            <section className="civic-hero" aria-label="Village Portal Banner">
-                <div className="hero-image-wrapper">
-                    <img 
-                        src="/images/rural_village_illustration.jpg" 
-                        alt="Illustrative representation of a rural village landscape" 
-                        className="hero-graphic"
-                    />
-                    <div className="hero-ethical-caption">
-                        Illustrative representation of a rural village landscape. Verified under Academic CSP Protocol.
+            {/* Civic Hero Section */}
+            <section className="civic-hero" id="home">
+                <div className="hero-header-row">
+                    <div className="hero-project-badge">
+                        <span className="badge-dot" aria-hidden="true"></span>
+                        <span>{t.projectBadge}</span>
                     </div>
                 </div>
                 <div className="hero-content">
@@ -177,149 +156,43 @@ export default function PublicPortalView({
                         }
                     </p>
 
-                    {/* Prominent Citizen Search Bar */}
-                    <div className="search-module" role="search">
-                        <div className="search-input-wrapper">
-                            <Search className="search-icon" size={20} />
-                            <input 
-                                type="search"
-                                className="search-input"
-                                placeholder={t.searchPlaceholder}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                aria-label="Search village schemes, contacts, and services"
-                            />
-                            {searchQuery && (
-                                <button 
-                                    type="button" 
-                                    className="btn-search-clear" 
-                                    onClick={() => setSearchQuery('')}
-                                >
-                                    {t.clearBtn}
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Category Filter Pills */}
-                        <div className="filter-pills-bar" role="tablist">
-                            {[
-                                { key: 'ALL', label: t.filterAll },
-                                { key: 'announcements', label: t.filterAnnouncements },
-                                { key: 'schemes', label: t.filterSchemes },
-                                { key: 'contacts', label: t.filterContacts },
-                                { key: 'institutions', label: t.filterInstitutions },
-                                { key: 'businesses', label: t.filterBusinesses }
-                            ].map(pill => (
-                                <button
-                                    key={pill.key}
-                                    type="button"
-                                    className={`filter-pill ${currentFilter === pill.key ? 'active' : ''}`}
-                                    onClick={() => setCurrentFilter(pill.key)}
-                                >
-                                    {pill.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    {/* Search Command Bar */}
+                    <SearchBar 
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        currentFilter={currentFilter}
+                        setCurrentFilter={setCurrentFilter}
+                        t={t}
+                    />
                 </div>
             </section>
 
-            {/* Citizen Services Corner (Modeled after PM-Kisan Farmer Corner) */}
+            {/* Citizen Services Quick-Access Bento Hubs */}
             {(currentFilter === 'ALL') && (
-                <section className="section-block" id="sectionCitizenCorner">
-                    <div className="section-head">
-                        <h2 className="section-title">
-                            <span>{t.citizenCornerTitle}</span>
-                            <span className="section-title-sub">{t.citizenCornerSub}</span>
-                        </h2>
-                        <p className="section-desc">{t.citizenCornerDesc}</p>
-                    </div>
-
-                    <div className="citizen-corner-grid">
-                        <a href="#sectionSchemes" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionSchemes'); }} className="service-hub-card">
-                            <div className="hub-icon-box">
-                                <FileText size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubSchemesTitle}</h3>
-                                <p className="hub-desc">{t.hubSchemesDesc}</p>
-                            </div>
-                        </a>
-
-                        <a href="#sectionContacts" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionContacts'); }} className="service-hub-card">
-                            <div className="hub-icon-box hub-icon-emergency">
-                                <Phone size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubContactsTitle}</h3>
-                                <p className="hub-desc">{t.hubContactsDesc}</p>
-                            </div>
-                        </a>
-
-                        <a href="#sectionInstitutions" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionInstitutions'); }} className="service-hub-card">
-                            <div className="hub-icon-box hub-icon-health">
-                                <Activity size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubHealthTitle}</h3>
-                                <p className="hub-desc">{t.hubHealthDesc}</p>
-                            </div>
-                        </a>
-
-                        <a href="#sectionInstitutions" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionInstitutions'); }} className="service-hub-card">
-                            <div className="hub-icon-box">
-                                <GraduationCap size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubSchoolsTitle}</h3>
-                                <p className="hub-desc">{t.hubSchoolsDesc}</p>
-                            </div>
-                        </a>
-
-                        <a href="#sectionBusinesses" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionBusinesses'); }} className="service-hub-card">
-                            <div className="hub-icon-box">
-                                <Building2 size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubBizTitle}</h3>
-                                <p className="hub-desc">{t.hubBizDesc}</p>
-                            </div>
-                        </a>
-
-                        <a href="#sectionFeedback" onClick={(e) => { e.preventDefault(); if (scrollToSection) scrollToSection('sectionFeedback'); }} className="service-hub-card">
-                            <div className="hub-icon-box">
-                                <MessageSquare size={24} />
-                            </div>
-                            <div className="hub-text">
-                                <h3 className="hub-title">{t.hubFeedbackTitle}</h3>
-                                <p className="hub-desc">{t.hubFeedbackDesc}</p>
-                            </div>
-                        </a>
-                    </div>
-                </section>
+                <ServiceGrid t={t} scrollToSection={scrollToSection} />
             )}
 
-            {/* Habitation Profile (Rendered when configured in database) */}
+            {/* Habitation Profile Card (Dynamically displayed when record exists in Supabase) */}
             {(currentFilter === 'ALL' && village?.name) && (
                 <section className="section-block" id="sectionVillageProfile">
-                    <div className="civic-card" style={{ borderLeft: '4px solid var(--color-gov-navy)' }}>
+                    <div className="civic-card" style={{ borderLeft: '4px solid var(--color-slate-900)' }}>
                         <div className="card-header-row">
-                            <span className="badge badge-civic">Habitation Profile</span>
+                            <span className="badge badge-civic">Community Habitation Profile</span>
                             <span className="badge badge-verified">Verified</span>
                         </div>
-                        <h2 className="card-item-title">{village.name} Habitation Master Profile</h2>
-                        <p style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', marginTop: '0.5rem', lineHeight: '1.6' }}>
+                        <h2 className="card-item-title">{village.name} Habitation Overview</h2>
+                        <p style={{ fontSize: '0.9375rem', color: 'var(--color-slate-600)', marginTop: '0.5rem', lineHeight: '1.6' }}>
                             {getLocalized(village, 'description', lang)}
                         </p>
                         <div className="card-verify-tag">
                             <span>Source: {village.source || 'Local Records'}</span>
-                            <span>Verified: {village.verified_on || 'N/A'}</span>
+                            <span>Verified: {village.verified_on || 'Current'}</span>
                         </div>
                     </div>
                 </section>
             )}
 
-            {/* Announcements */}
+            {/* Public Announcements Section */}
             {(currentFilter === 'ALL' || currentFilter === 'announcements') && (
                 <section className="section-block" id="sectionAnnouncements">
                     <div className="section-head">
@@ -329,35 +202,16 @@ export default function PublicPortalView({
                     <div className="card-grid">
                         {filteredAnnouncements.length > 0 ? (
                             filteredAnnouncements.map(a => (
-                                <div key={a.id} className="civic-card">
-                                    <div>
-                                        <div className="card-header-row">
-                                            <span className="badge badge-civic">{a.category || 'Notice'}</span>
-                                            {a.event_date && (
-                                                <span className="badge" style={{ background: '#e2e8f0', color: '#334155' }}>
-                                                    Date: {a.event_date}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h3 className="card-item-title">{getLocalized(a, 'title', lang)}</h3>
-                                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: '0.5rem', lineHeight: '1.5' }}>
-                                            {getLocalized(a, 'description', lang)}
-                                        </p>
-                                    </div>
-                                    <div className="card-verify-tag">
-                                        <span>Source: {a.source}</span>
-                                        <span>Verified: {a.verified_on}</span>
-                                    </div>
-                                </div>
+                                <AnnouncementCard key={a.id} announcement={a} lang={lang} />
                             ))
                         ) : (
-                            <p style={{ color: 'var(--color-text-muted)', gridColumn: '1 / -1' }}>No notices published matching criteria.</p>
+                            <p style={{ color: 'var(--color-slate-500)', gridColumn: '1 / -1' }}>No notices found matching criteria.</p>
                         )}
                     </div>
                 </section>
             )}
 
-            {/* Welfare Schemes */}
+            {/* Welfare Schemes Directory */}
             {(currentFilter === 'ALL' || currentFilter === 'schemes') && (
                 <section className="section-block" id="sectionSchemes">
                     <div className="section-head">
@@ -367,54 +221,16 @@ export default function PublicPortalView({
                     <div className="card-grid">
                         {filteredSchemes.length > 0 ? (
                             filteredSchemes.map(s => (
-                                <div key={s.id} className="civic-card">
-                                    <div>
-                                        <div className="card-header-row">
-                                            <span className="badge badge-civic">{s.category}</span>
-                                            <span className="badge badge-verified">Verified</span>
-                                        </div>
-                                        <h3 className="card-item-title">{getLocalized(s, 'name', lang)}</h3>
-                                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-main)', marginTop: '0.5rem', lineHeight: '1.5' }}>
-                                            {getLocalized(s, 'description', lang)}
-                                        </p>
-                                        <ul className="card-meta-list">
-                                            <li className="meta-row">
-                                                <span className="meta-label">{t.eligibility}</span>
-                                                <span className="meta-val">{getLocalized(s, 'eligibility', lang)}</span>
-                                            </li>
-                                            <li className="meta-row">
-                                                <span className="meta-label">{t.requiredDocs}</span>
-                                                <span className="meta-val">{getLocalized(s, 'documents', lang)}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        {s.official_url && (
-                                            <a 
-                                                href={s.official_url} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer" 
-                                                className="btn btn-secondary" 
-                                                style={{ width: '100%', marginTop: '0.5rem' }}
-                                            >
-                                                {t.officialPortal} <ExternalLink size={14} style={{ marginLeft: '4px' }} />
-                                            </a>
-                                        )}
-                                        <div className="card-verify-tag">
-                                            <span>Source: {s.source}</span>
-                                            <span>Verified: {s.verified_on}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <SchemeCard key={s.id} scheme={s} lang={lang} t={t} />
                             ))
                         ) : (
-                            <p style={{ color: 'var(--color-text-muted)', gridColumn: '1 / -1' }}>No welfare schemes found matching criteria.</p>
+                            <p style={{ color: 'var(--color-slate-500)', gridColumn: '1 / -1' }}>No schemes found matching criteria.</p>
                         )}
                     </div>
                 </section>
             )}
 
-            {/* Emergency & Administration Contacts */}
+            {/* Important Contacts Directory */}
             {(currentFilter === 'ALL' || currentFilter === 'contacts') && (
                 <section className="section-block" id="sectionContacts">
                     <div className="section-head">
@@ -424,47 +240,16 @@ export default function PublicPortalView({
                     <div className="card-grid">
                         {filteredContacts.length > 0 ? (
                             filteredContacts.map(c => (
-                                <div key={c.id} className="civic-card">
-                                    <div>
-                                        <div className="card-header-row">
-                                            <span className={`badge ${c.category === 'Emergency' ? 'badge-closed' : 'badge-civic'}`}>
-                                                {c.category}
-                                            </span>
-                                        </div>
-                                        <h3 className="card-item-title">{getLocalized(c, 'name', lang)}</h3>
-                                        {c.designation && (
-                                            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
-                                                {getLocalized(c, 'designation', lang)}
-                                            </div>
-                                        )}
-                                        <ul className="card-meta-list">
-                                            {c.availability && (
-                                                <li className="meta-row">
-                                                    <span className="meta-label">{t.timings}</span>
-                                                    <span className="meta-val">{c.availability}</span>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <a href={`tel:${c.phone}`} className="btn btn-call-card" aria-label={`Call ${c.name}`}>
-                                            <Phone size={16} style={{ marginRight: '6px' }} /> {t.callNow} {c.phone}
-                                        </a>
-                                        <div className="card-verify-tag">
-                                            <span>Source: {c.source}</span>
-                                            <span>Verified: {c.verified_on}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ContactCard key={c.id} contact={c} lang={lang} t={t} />
                             ))
                         ) : (
-                            <p style={{ color: 'var(--color-text-muted)', gridColumn: '1 / -1' }}>No contacts found matching criteria.</p>
+                            <p style={{ color: 'var(--color-slate-500)', gridColumn: '1 / -1' }}>No contacts found matching criteria.</p>
                         )}
                     </div>
                 </section>
             )}
 
-            {/* Education & Healthcare Facilities */}
+            {/* Healthcare & Education Facilities */}
             {(currentFilter === 'ALL' || currentFilter === 'institutions') && (
                 <section className="section-block" id="sectionInstitutions">
                     <div className="section-head">
@@ -473,64 +258,17 @@ export default function PublicPortalView({
                     </div>
                     <div className="card-grid">
                         {filteredInstitutions.length > 0 ? (
-                            filteredInstitutions.map(inst => {
-                                const openStatus = calculateOpenStatus(inst.timings);
-                                return (
-                                    <div key={inst.id} className="civic-card">
-                                        <div>
-                                            <div className="card-header-row">
-                                                <span className="badge badge-civic">{inst.type}</span>
-                                                {openStatus !== null && (
-                                                    <span 
-                                                        className={`badge ${openStatus ? 'badge-open' : 'badge-closed'}`}
-                                                        title={t.hoursDisclaimer}
-                                                    >
-                                                        {openStatus ? t.openNow : t.closedNow}*
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <h3 className="card-item-title">{getLocalized(inst, 'name', lang)}</h3>
-                                            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                                                {inst.address}
-                                            </div>
-                                            <ul className="card-meta-list">
-                                                <li className="meta-row">
-                                                    <span className="meta-label">{t.timings}</span>
-                                                    <span className="meta-val">{inst.timings}</span>
-                                                    {openStatus !== null && (
-                                                        <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
-                                                            *{t.hoursDisclaimer}
-                                                        </span>
-                                                    )}
-                                                </li>
-                                                <li className="meta-row">
-                                                    <span className="meta-label">{t.services}</span>
-                                                    <span className="meta-val">{getLocalized(inst, 'services', lang)}</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            {inst.phone && (
-                                                <a href={`tel:${inst.phone}`} className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                                                    <Phone size={14} style={{ marginRight: '6px' }} /> {t.callNow} {inst.phone}
-                                                </a>
-                                            )}
-                                            <div className="card-verify-tag">
-                                                <span>Source: {inst.source}</span>
-                                                <span>Verified: {inst.verified_on}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })
+                            filteredInstitutions.map(i => (
+                                <InstitutionCard key={i.id} institution={i} lang={lang} t={t} />
+                            ))
                         ) : (
-                            <p style={{ color: 'var(--color-text-muted)', gridColumn: '1 / -1' }}>No institutions found matching criteria.</p>
+                            <p style={{ color: 'var(--color-slate-500)', gridColumn: '1 / -1' }}>No healthcare or educational institutions found.</p>
                         )}
                     </div>
                 </section>
             )}
 
-            {/* Local Businesses & SHGs */}
+            {/* Local Businesses & Artisans Directory */}
             {(currentFilter === 'ALL' || currentFilter === 'businesses') && (
                 <section className="section-block" id="sectionBusinesses">
                     <div className="section-head">
@@ -540,142 +278,38 @@ export default function PublicPortalView({
                     <div className="card-grid">
                         {filteredBusinesses.length > 0 ? (
                             filteredBusinesses.map(b => (
-                                <div key={b.id} className="civic-card">
-                                    <div>
-                                        <div className="card-header-row">
-                                            <span className="badge badge-civic">{b.category}</span>
-                                        </div>
-                                        <h3 className="card-item-title">{getLocalized(b, 'name', lang)}</h3>
-                                        {b.owner_name && (
-                                            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
-                                                {t.proprietor} {b.owner_name}
-                                            </div>
-                                        )}
-                                        <ul className="card-meta-list">
-                                            <li className="meta-row">
-                                                <span className="meta-label">{t.services}</span>
-                                                <span className="meta-val">{getLocalized(b, 'services', lang)}</span>
-                                            </li>
-                                            <li className="meta-row">
-                                                <span className="meta-label">Location:</span>
-                                                <span className="meta-val">{b.address}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        {b.phone && (
-                                            <a href={`tel:${b.phone}`} className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                                                <Phone size={14} style={{ marginRight: '6px' }} /> {t.callNow} {b.phone}
-                                            </a>
-                                        )}
-                                        <div className="card-verify-tag">
-                                            <span>Source: {b.source}</span>
-                                            <span>Verified: {b.verified_on}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <BusinessCard key={b.id} business={b} lang={lang} t={t} />
                             ))
                         ) : (
-                            <p style={{ color: 'var(--color-text-muted)', gridColumn: '1 / -1' }}>No businesses found matching criteria.</p>
+                            <p style={{ color: 'var(--color-slate-500)', gridColumn: '1 / -1' }}>No businesses found matching criteria.</p>
                         )}
                     </div>
                 </section>
             )}
 
-            {/* Citizen Feedback Desk */}
-            <section className="section-block" id="sectionFeedback">
-                <div className="section-head">
-                    <h2 className="section-title">{t.feedbackTitle}</h2>
-                    <p className="section-desc">{t.feedbackDesc}</p>
-                </div>
-                <div className="civic-card">
-                    {fbStatus === 'success' && (
-                        <div className="alert alert-success">
-                            {t.feedbackSuccess}
-                        </div>
-                    )}
-                    {fbStatus === 'error' && (
-                        <div className="alert alert-danger">
-                            {t.feedbackError}
-                        </div>
-                    )}
-                    <form onSubmit={handleFeedbackSubmit}>
-                        <div className="form-grid-2">
-                            <div className="form-group">
-                                <label className="form-label">{t.yourName}</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
-                                    value={fbName}
-                                    onChange={(e) => setFbName(e.target.value)}
-                                    placeholder="Resident Name" 
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label">{t.yourPhone}</label>
-                                <input 
-                                    type="tel" 
-                                    className="form-control" 
-                                    value={fbPhone}
-                                    onChange={(e) => setFbPhone(e.target.value)}
-                                    placeholder="+91 98765 43210" 
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">{t.feedbackCategory}</label>
-                            <select 
-                                className="form-control"
-                                value={fbType}
-                                onChange={(e) => setFbType(e.target.value)}
-                                required
-                            >
-                                <option value="Correction">Phone Number / Information Correction</option>
-                                <option value="New Listing Request">Request New Business / Artisan Listing</option>
-                                <option value="Scheme Inquiry">Scheme Information Inquiry</option>
-                                <option value="General">General Village Suggestion</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">{t.description}</label>
-                            <textarea 
-                                className="form-control" 
-                                rows="4" 
-                                value={fbMessage}
-                                onChange={(e) => setFbMessage(e.target.value)}
-                                placeholder="Please specify the business/institution name, correct contact number, or details..."
-                                required
-                            ></textarea>
-                        </div>
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary"
-                            disabled={fbStatus === 'submitting'}
-                            style={{ minHeight: '48px', padding: '0.75rem 1.5rem' }}
-                        >
-                            {fbStatus === 'submitting' ? 'Submitting to Supabase...' : t.submitBtn}
-                        </button>
-                    </form>
-                </div>
-            </section>
+            {/* Citizen Feedback & Correction Module */}
+            <FeedbackForm villageId={village?.id} t={t} />
 
-            {/* Dynamic Mobile QR Code Access */}
+            {/* Dynamic Smartphone Evaluation QR Code Section */}
             <section className="section-block" id="sectionQrAccess">
-                <div className="civic-card" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <h3 className="card-item-title">{t.qrHeading}</h3>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', maxWidth: '500px', margin: '0.5rem auto 1rem' }}>
+                <div className="civic-card" style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto' }}>
+                    <h2 className="section-title" style={{ justifyContent: 'center', marginBottom: '0.5rem' }}>
+                        {t.qrHeading}
+                    </h2>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', marginBottom: '1.25rem' }}>
                         {t.qrDesc}
                     </p>
-                    <div className="qr-container">
+                    <div style={{ display: 'inline-block', padding: '12px', background: '#ffffff', borderRadius: '12px', border: '1px solid var(--color-slate-200)', boxShadow: 'var(--shadow-subtle)' }}>
                         <img 
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}`} 
-                            alt="QR code to access this live portal" 
+                            src={qrCodeUrl} 
+                            alt="Scan QR Code to open Digital Village Information Portal on Smartphone" 
                             width="180" 
-                            height="180"
+                            height="180" 
+                            style={{ display: 'block' }}
                         />
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginTop: '0.5rem', wordBreak: 'break-all' }}>
-                            {currentUrl}
-                        </div>
+                    </div>
+                    <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-slate-400)' }}>
+                        Target URL: {portalUrl}
                     </div>
                 </div>
             </section>

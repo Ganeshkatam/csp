@@ -7,8 +7,9 @@ export default function SurveyFormView() {
     const [offlineCount, setOfflineCount] = useState(0);
     const [statusMsg, setStatusMsg] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
-    // Survey Form State
+    // Survey Form State (Complete 7-Module Questionnaire)
     const [formData, setFormData] = useState({
         respondentCode: 'HH-001',
         interviewerName: '',
@@ -31,7 +32,7 @@ export default function SurveyFormView() {
         CON1_Lineman: 'No',
         CON2: 'Ask-Neighbors',
         HLTH1: 'Visited-PHC-No-Doctor',
-        EDU1: 'Lack-Digital-Infrastructure',
+        EDU1: 'Standard-Enrollment',
         BIZ1: 'Local-Trade-Artisan',
         BIZ2: 'Physical-Store-Only',
         PRIO1: 'Emergency-Contacts-Health'
@@ -39,14 +40,23 @@ export default function SurveyFormView() {
 
     const [startTime] = useState(new Date().toISOString());
 
+    const surveyModules = [
+        { id: 1, name: 'Demographics' },
+        { id: 2, name: 'Digital Connectivity' },
+        { id: 3, name: 'Welfare Schemes' },
+        { id: 4, name: 'Emergency Contacts' },
+        { id: 5, name: 'Healthcare & Education' },
+        { id: 6, name: 'Business Visibility' },
+        { id: 7, name: 'Information Priorities' }
+    ];
+
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 
-        const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-        setOfflineCount(cached.length);
+        updateOfflineCount();
 
         return () => {
             window.removeEventListener('online', handleOnline);
@@ -54,12 +64,29 @@ export default function SurveyFormView() {
         };
     }, []);
 
+    const updateOfflineCount = () => {
+        try {
+            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
+            setOfflineCount(cached.length);
+        } catch (e) {
+            setOfflineCount(0);
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    // Idempotent client-side UUID generator
+    const generateClientUuid = () => {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        return 'survey_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     };
 
     const handleSubmit = async (e) => {
@@ -73,7 +100,10 @@ export default function SurveyFormView() {
         setStatusMsg(null);
 
         const completedTime = new Date().toISOString();
+        const clientUuid = generateClientUuid();
+
         const payload = {
+            survey_client_uuid: clientUuid,
             village_id: DEFAULT_VILLAGE_ID,
             respondent_code: formData.respondentCode.trim(),
             interviewer_name: formData.interviewerName.trim(),
@@ -106,155 +136,206 @@ export default function SurveyFormView() {
             ]
         };
 
-        if (!isOnline) {
-            saveOffline(payload);
+        // If offline: save into local idempotent queue
+        if (!navigator.onLine) {
+            saveToOfflineQueue(payload);
             setIsSubmitting(false);
             return;
         }
 
+        // If online: upload to Supabase
         try {
-            const { data: resp, error: respErr } = await supabase
-                .from('survey_responses')
-                .insert({
-                    village_id: payload.village_id,
-                    respondent_code: payload.respondent_code,
-                    interviewer_name: payload.interviewer_name,
-                    consent_obtained: payload.consentObtained,
-                    locality_ward: payload.locality_ward,
-                    started_at: payload.started_at,
-                    completed_at: payload.completed_at
-                })
-                .select()
-                .single();
-
-            if (respErr) throw respErr;
-
-            const answersToInsert = payload.answers.map(a => ({
-                response_id: resp.id,
-                question_code: a.question_code,
-                answer_value: a.answer_value
-            }));
-
-            const { error: ansErr } = await supabase.from('survey_answers').insert(answersToInsert);
-            if (ansErr) throw ansErr;
-
-            setStatusMsg({ type: 'success', text: `Survey response for ${formData.respondentCode} successfully submitted to Supabase.` });
-            incrementRespondentCode();
+            await uploadSingleSurvey(payload);
+            setStatusMsg({ 
+                type: 'success', 
+                text: `Household Survey (${payload.respondent_code}) successfully synchronized to database.` 
+            });
+            resetForm();
         } catch (err) {
-            console.warn('Direct upload failed, storing offline:', err);
-            saveOffline(payload);
+            console.warn('Online insert failed. Queuing locally:', err);
+            saveToOfflineQueue(payload);
+            setStatusMsg({ 
+                type: 'warning', 
+                text: 'Connection disrupted. Survey securely cached locally in pending synchronization queue.' 
+            });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    function saveOffline(payload) {
-        const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-        cached.push(payload);
-        localStorage.setItem('csp_offline_surveys', JSON.stringify(cached));
-        setOfflineCount(cached.length);
-        setStatusMsg({ type: 'warning', text: `Saved locally. Stored offline records: ${cached.length}.` });
-        incrementRespondentCode();
-    }
-
-    function incrementRespondentCode() {
-        const match = formData.respondentCode.match(/(\d+)$/);
-        if (match) {
-            const nextNum = String(parseInt(match[1], 10) + 1).padStart(3, '0');
-            setFormData(prev => ({ ...prev, respondentCode: `HH-${nextNum}` }));
-        }
-    }
-
-    async function syncOfflineSurveys() {
-        const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-        if (cached.length === 0) return;
-
-        setStatusMsg({ type: 'info', text: `Syncing ${cached.length} offline records with Supabase...` });
-        let synced = 0;
-
-        for (const item of cached) {
-            try {
-                const { data: resp, error: respErr } = await supabase
-                    .from('survey_responses')
-                    .insert({
-                        village_id: item.village_id,
-                        respondent_code: item.respondent_code,
-                        interviewer_name: item.interviewer_name,
-                        consent_obtained: item.consent_obtained,
-                        locality_ward: item.locality_ward,
-                        started_at: item.started_at,
-                        completed_at: item.completed_at
-                    })
-                    .select()
-                    .single();
-
-                if (respErr) throw respErr;
-
-                const answers = item.answers.map(a => ({
-                    response_id: resp.id,
-                    question_code: a.question_code,
-                    answer_value: a.answer_value
-                }));
-
-                await supabase.from('survey_answers').insert(answers);
-                synced++;
-            } catch (err) {
-                console.error('Failed to sync item:', err);
+    const saveToOfflineQueue = (payload) => {
+        try {
+            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
+            // Deduplicate by survey_client_uuid
+            const exists = cached.some(item => item.survey_client_uuid === payload.survey_client_uuid);
+            if (!exists) {
+                cached.push(payload);
+                localStorage.setItem('csp_offline_surveys', JSON.stringify(cached));
             }
+            updateOfflineCount();
+            setStatusMsg({ 
+                type: 'warning', 
+                text: `Offline Mode: Survey cached locally (${payload.respondent_code}). Pending synchronization.` 
+            });
+            resetForm();
+        } catch (e) {
+            console.error('Storage error:', e);
+            setStatusMsg({ type: 'error', text: 'Local storage unavailable.' });
+        }
+    };
+
+    const uploadSingleSurvey = async (payload) => {
+        const { answers, ...responseHeader } = payload;
+        
+        // 1. Insert header
+        const { data: headerData, error: headerErr } = await supabase
+            .from('survey_responses')
+            .insert(responseHeader)
+            .select('id')
+            .single();
+
+        if (headerErr) throw headerErr;
+
+        // 2. Insert normalized answers linked to header id
+        const answerRows = answers.map(a => ({
+            response_id: headerData.id,
+            question_code: a.question_code,
+            answer_value: a.answer_value
+        }));
+
+        const { error: answersErr } = await supabase
+            .from('survey_answers')
+            .insert(answerRows);
+
+        if (answersErr) throw answersErr;
+    };
+
+    // Sync Offline Surveys (Acknowledgment-before-deletion protocol)
+    const syncOfflineSurveys = async () => {
+        if (!navigator.onLine) {
+            setStatusMsg({ type: 'warning', text: 'Cannot synchronize: device is still offline.' });
+            return;
         }
 
-        localStorage.removeItem('csp_offline_surveys');
-        setOfflineCount(0);
-        setStatusMsg({ type: 'success', text: `Successfully synced ${synced} surveys to Supabase.` });
-    }
+        setIsSyncing(true);
+        try {
+            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
+            if (cached.length === 0) {
+                setStatusMsg({ type: 'success', text: 'No pending records to synchronize.' });
+                setIsSyncing(false);
+                return;
+            }
+
+            const remaining = [];
+            let successCount = 0;
+
+            for (const item of cached) {
+                try {
+                    await uploadSingleSurvey(item);
+                    successCount++;
+                } catch (err) {
+                    console.error('Failed to sync item:', item.respondent_code, err);
+                    remaining.push(item); // Keep unacknowledged record in queue
+                }
+            }
+
+            // Only remove successfully acknowledged items from local storage
+            localStorage.setItem('csp_offline_surveys', JSON.stringify(remaining));
+            updateOfflineCount();
+
+            if (remaining.length === 0) {
+                setStatusMsg({ 
+                    type: 'success', 
+                    text: `All ${successCount} offline survey records verified and synchronized to database.` 
+                });
+            } else {
+                setStatusMsg({ 
+                    type: 'warning', 
+                    text: `${successCount} records synced; ${remaining.length} pending synchronization.` 
+                });
+            }
+        } catch (err) {
+            console.error('Sync error:', err);
+            setStatusMsg({ type: 'error', text: 'Synchronization process encountered an error.' });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
+    const resetForm = () => {
+        const nextId = parseInt(formData.respondentCode.replace('HH-', ''), 10) + 1;
+        setFormData(prev => ({
+            ...prev,
+            respondentCode: `HH-${String(nextId).padStart(3, '0')}`,
+            consentObtained: true
+        }));
+    };
 
     return (
-        <main className="container" style={{ paddingBottom: '3rem' }}>
-            {!isOnline && (
-                <div className="offline-banner" style={{ display: 'block', margin: '1rem 0' }}>
-                    <WifiOff size={16} style={{ display: 'inline', marginRight: '6px' }} />
-                    Working Offline: Responses will be stored on this device and synced when connectivity is restored.
-                </div>
-            )}
-
-            <div className="survey-card" style={{ marginTop: '1.5rem' }}>
-                {statusMsg && (
-                    <div className={`alert alert-${statusMsg.type}`}>
-                        {statusMsg.text}
-                    </div>
-                )}
-
-                <header className="section-header">
-                    <h1 className="brand-title" style={{ fontSize: '1.5rem' }}>
-                        Household Information-Needs Survey (Week 1)
-                    </h1>
-                    <p className="section-desc">
-                        Direct field entry for Doorstep Interviews. Strictly pseudonymous data collection without direct resident PII.
-                    </p>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                        <span className="badge">Stored Offline: {offlineCount}</span>
-                        {offlineCount > 0 && isOnline && (
-                            <button 
-                                type="button" 
-                                className="btn btn-secondary" 
-                                onClick={syncOfflineSurveys}
-                                style={{ minHeight: '36px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem' }}
-                            >
-                                <RefreshCw size={14} style={{ marginRight: '4px' }} /> Sync Offline Records
-                            </button>
-                        )}
+        <main className="container" id="surveyMain" style={{ paddingTop: '2rem' }}>
+            <div className="survey-card" style={{ maxWidth: '820px', margin: '0 auto' }}>
+                <header style={{ borderBottom: '1px solid var(--color-slate-200)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                        <div>
+                            <span className="badge badge-civic">Academic CSP Field Instrument</span>
+                            <h1 className="hero-title" style={{ fontSize: '1.5rem', marginTop: '0.35rem' }}>
+                                Household Information-Needs Survey
+                            </h1>
+                            <p className="section-desc">
+                                4-Week CSP Field Study Questionnaire (Strictly Pseudonymous; No PII Collected).
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span className={`badge ${isOnline ? 'badge-verified' : 'badge-alert'}`}>
+                                {isOnline ? <Wifi size={13} aria-hidden="true" /> : <WifiOff size={13} aria-hidden="true" />}
+                                {isOnline ? 'Online' : 'Offline'}
+                            </span>
+                            {offlineCount > 0 && (
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={syncOfflineSurveys}
+                                    disabled={isSyncing}
+                                    style={{ minHeight: '36px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem' }}
+                                >
+                                    <RefreshCw size={14} style={{ marginRight: '4px' }} aria-hidden="true" />
+                                    {isSyncing ? 'Syncing...' : `Pending Sync (${offlineCount})`}
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </header>
 
+                {/* Top 7-Module Progress Tracker */}
+                <div className="survey-progress-card">
+                    <div className="survey-progress-track">
+                        {surveyModules.map(m => (
+                            <div key={m.id} className="step-node active">
+                                <span className="step-badge">{m.id}</span>
+                                <span>{m.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {statusMsg && (
+                    <div className={`alert alert-${statusMsg.type}`} role="status">
+                        {statusMsg.type === 'success' && <CheckCircle2 size={18} aria-hidden="true" />}
+                        {statusMsg.type === 'warning' && <AlertCircle size={18} aria-hidden="true" />}
+                        {statusMsg.type === 'error' && <AlertCircle size={18} aria-hidden="true" />}
+                        <span>{statusMsg.text}</span>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
-                    {/* Section: Metadata */}
-                    <section className="survey-section">
-                        <div className="section-header">
-                            <h2 className="section-title">Interview Metadata</h2>
+                    {/* Metadata & Consent */}
+                    <section className="section-block" style={{ marginTop: '1.5rem' }}>
+                        <div className="section-head">
+                            <h2 className="section-title">Interview Metadata & Consent</h2>
                         </div>
                         <div className="choice-grid columns-2">
                             <div className="form-group">
-                                <label className="form-label">Respondent / Household ID *</label>
+                                <label className="form-label">Household ID Code *</label>
                                 <input 
                                     type="text" 
                                     name="respondentCode"
@@ -270,41 +351,32 @@ export default function SurveyFormView() {
                                     type="text" 
                                     name="interviewerName"
                                     className="form-control" 
-                                    placeholder="Your Full Name" 
                                     value={formData.interviewerName}
                                     onChange={handleChange}
+                                    placeholder="Your Name / Roll No"
                                     required 
                                 />
                             </div>
                         </div>
-                        <div className="form-group" style={{ marginTop: '0.75rem' }}>
-                            <label className="form-label">Locality / Ward</label>
-                            <input 
-                                type="text" 
-                                name="localityWard"
-                                className="form-control" 
-                                value={formData.localityWard}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="custom-choice" style={{ marginTop: '0.75rem' }}>
-                            <input 
-                                type="checkbox" 
-                                id="chkConsent"
-                                name="consentObtained"
-                                checked={formData.consentObtained}
-                                onChange={handleChange}
-                            />
-                            <label htmlFor="chkConsent" className="choice-label">
-                                Informed consent obtained verbally prior to interview commencement.
+                        <div className="form-group">
+                            <label className="choice-card">
+                                <input 
+                                    type="checkbox" 
+                                    name="consentObtained"
+                                    checked={formData.consentObtained}
+                                    onChange={handleChange}
+                                />
+                                <span style={{ fontSize: '0.875rem', color: 'var(--color-slate-800)' }}>
+                                    I confirm that informed verbal consent was obtained from the adult respondent.
+                                </span>
                             </label>
                         </div>
                     </section>
 
-                    {/* Section 1: Demographics */}
-                    <section className="survey-section">
-                        <div className="section-header">
-                            <h2 className="section-title">Section 1: Socio-Economic Profile</h2>
+                    {/* Module 1: Demographics */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 1: Demographics & Household Profile</h2>
                         </div>
                         <div className="form-group">
                             <label className="form-label">Q1. Primary Household Occupation [D1]</label>
@@ -316,7 +388,6 @@ export default function SurveyFormView() {
                                 <option value="Small-Business-Retail">Small Business / Kirana Shop</option>
                             </select>
                         </div>
-
                         <div className="form-group">
                             <label className="form-label">Q2. Household Size [D2]</label>
                             <select name="D2" className="form-control" value={formData.D2} onChange={handleChange}>
@@ -328,46 +399,44 @@ export default function SurveyFormView() {
                         </div>
                     </section>
 
-                    {/* Section 2: Digital Infrastructure */}
-                    <section className="survey-section">
-                        <div className="section-header">
-                            <h2 className="section-title">Section 2: Digital Infrastructure (TECH1 - TECH3)</h2>
+                    {/* Module 2: Digital Connectivity */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 2: Digital Connectivity (TECH1 - TECH3)</h2>
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Q6. Smartphone Availability [TECH1]</label>
+                            <label className="form-label">Q3. Smartphone Availability [TECH1]</label>
                             <select name="TECH1" className="form-control" value={formData.TECH1} onChange={handleChange}>
                                 <option value="Smartphone-Available">At least one member owns an active smartphone</option>
                                 <option value="Basic-Keypad-Only">Basic keypad phone only</option>
-                                <option value="No-Phone">No working phone</option>
+                                <option value="No-Phone">No working phone in household</option>
                             </select>
                         </div>
-
                         <div className="form-group">
-                            <label className="form-label">Q7. Internet Connectivity Mode [TECH2]</label>
+                            <label className="form-label">Q4. Internet Connectivity Mode [TECH2]</label>
                             <select name="TECH2" className="form-control" value={formData.TECH2} onChange={handleChange}>
-                                <option value="Mobile-4G-5G">Mobile Data (4G / 5G)</option>
+                                <option value="Mobile-4G-5G">Mobile Cellular Data (4G / 5G)</option>
                                 <option value="Home-Broadband">Home Broadband / Wi-Fi</option>
                                 <option value="No-Internet">No internet access</option>
                             </select>
                         </div>
-
                         <div className="form-group">
-                            <label className="form-label">Q8. Digital Literacy Comfort [TECH3]</label>
+                            <label className="form-label">Q5. Digital Literacy Comfort [TECH3]</label>
                             <select name="TECH3" className="form-control" value={formData.TECH3} onChange={handleChange}>
                                 <option value="Independent">Can open websites and read independently</option>
-                                <option value="Requires-Assistance">Can use with assistance from youth / family</option>
+                                <option value="Requires-Assistance">Can use with assistance from family / youth</option>
                                 <option value="Relies-on-Cafes">Relies entirely on intermediaries / CSC cafes</option>
                             </select>
                         </div>
                     </section>
 
-                    {/* Section 3: Welfare Schemes */}
-                    <section className="survey-section">
-                        <div className="section-header">
-                            <h2 className="section-title">Section 3: Welfare Schemes & Fraud Risk (SCH1 - SCH3)</h2>
+                    {/* Module 3: Welfare Schemes */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 3: Welfare Scheme Access & Documentation (SCH1 - SCH3)</h2>
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Q10. Biggest Challenge When Applying for Schemes [SCH2]</label>
+                            <label className="form-label">Q6. Biggest Challenge When Applying for Welfare Schemes [SCH2]</label>
                             <select name="SCH2" className="form-control" value={formData.SCH2} onChange={handleChange}>
                                 <option value="Unknown-Eligibility-Docs">Not knowing eligibility rules or required documents in advance</option>
                                 <option value="Repeated-Office-Visits">Visiting mandal office multiple times due to missing paperwork</option>
@@ -377,39 +446,90 @@ export default function SurveyFormView() {
                         </div>
                     </section>
 
-                    {/* Section 4: Emergency Contacts */}
-                    <section className="survey-section">
-                        <div className="section-header">
-                            <h2 className="section-title">Section 4: Emergency Contacts (CON1)</h2>
+                    {/* Module 4: Emergency Contacts */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 4: Emergency Contacts & Helplines (CON1 - CON2)</h2>
                         </div>
-                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
-                            Do you have the direct phone numbers of key responders saved or written down?
-                        </p>
                         <div className="choice-grid columns-2">
                             <div className="form-group">
-                                <label className="form-label">Primary Health Centre (PHC) / Ambulance</label>
+                                <label className="form-label">Primary Health Centre (PHC) / Ambulance [CON1]</label>
                                 <select name="CON1_PHC" className="form-control" value={formData.CON1_PHC} onChange={handleChange}>
-                                    <option value="Yes">Yes, Saved</option>
+                                    <option value="Yes">Yes, Saved on Phone / Paper</option>
                                     <option value="No">No, Do Not Have</option>
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Electricity Lineman / Water Supply</label>
+                                <label className="form-label">Electricity Lineman / Water Supply [CON1]</label>
                                 <select name="CON1_Lineman" className="form-control" value={formData.CON1_Lineman} onChange={handleChange}>
-                                    <option value="Yes">Yes, Saved</option>
+                                    <option value="Yes">Yes, Saved on Phone / Paper</option>
                                     <option value="No">No, Do Not Have</option>
                                 </select>
                             </div>
                         </div>
                     </section>
 
+                    {/* Module 5: Healthcare & Education */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 5: Healthcare & Education Access (HLTH1, EDU1)</h2>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Q7. PHC Facility Experience [HLTH1]</label>
+                            <select name="HLTH1" className="form-control" value={formData.HLTH1} onChange={handleChange}>
+                                <option value="Visited-PHC-No-Doctor">Visited PHC during urgent need but doctor was absent/closed</option>
+                                <option value="Unaware-OPD-Timings">Uncertain about OPD hours and maternal immunization dates</option>
+                                <option value="Regular-Satisfactory">Regularly utilizes PHC services with satisfactory experience</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Q8. Government School Awareness [EDU1]</label>
+                            <select name="EDU1" className="form-control" value={formData.EDU1} onChange={handleChange}>
+                                <option value="Standard-Enrollment">Enrolled in village Mandal Parishad / ZP school</option>
+                                <option value="Private-School">Sent to private school outside village due to information gap</option>
+                                <option value="No-School-Going-Children">No school-going children in household</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    {/* Module 6: Business Visibility */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 6: Local Business & Artisan Visibility (BIZ1, BIZ2)</h2>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Q9. Need for Local Tradespeople Directory [BIZ1]</label>
+                            <select name="BIZ1" className="form-control" value={formData.BIZ1} onChange={handleChange}>
+                                <option value="Local-Trade-Artisan">Frequently need contact for electrician, plumber, or repairer</option>
+                                <option value="Know-Everyone">Personally know all local tradespeople; directory optional</option>
+                                <option value="Rarely-Needed">Rarely require local repair or artisan services</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    {/* Module 7: Citizen Information Priorities */}
+                    <section className="section-block">
+                        <div className="section-head">
+                            <h2 className="section-title">Module 7: Citizen Information Priorities (PRIO1)</h2>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Q10. Single Most Important Information Priority [PRIO1]</label>
+                            <select name="PRIO1" className="form-control" value={formData.PRIO1} onChange={handleChange}>
+                                <option value="Emergency-Contacts-Health">24x7 Verified Emergency and Health Contacts</option>
+                                <option value="Welfare-Checklists">Welfare Scheme Eligibility & Document Checklists</option>
+                                <option value="School-Anganwadi">School Timings and Mid-Day Meal Information</option>
+                                <option value="Local-Business-Directory">Local Tradespeople and SHG Products Directory</option>
+                            </select>
+                        </div>
+                    </section>
+
                     <button 
                         type="submit" 
-                        className="btn btn-primary btn-block"
+                        className="btn btn-primary"
                         disabled={isSubmitting}
-                        style={{ minHeight: '48px', marginTop: '1.5rem', fontSize: '1rem' }}
+                        style={{ minHeight: '48px', width: '100%', marginTop: '2rem', fontSize: '1rem' }}
                     >
-                        {isSubmitting ? 'Recording to Supabase...' : 'Save & Record Household Survey'}
+                        {isSubmitting ? 'Recording Survey...' : 'Save & Record Household Survey'}
                     </button>
                 </form>
             </div>

@@ -1,0 +1,111 @@
+import React, { useState } from 'react';
+import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
+
+export default function FeedbackForm({ villageId, t }) {
+    const [fbName, setFbName] = useState('');
+    const [fbPhone, setFbPhone] = useState('');
+    const [fbType, setFbType] = useState('Correction');
+    const [fbMessage, setFbMessage] = useState('');
+    const [fbStatus, setFbStatus] = useState(null); // 'submitting' | 'success' | 'error'
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setFbStatus('submitting');
+        try {
+            const { error } = await supabase.from('citizen_feedback').insert({
+                village_id: villageId || DEFAULT_VILLAGE_ID,
+                name: fbName.trim() || 'Anonymous Resident',
+                phone: fbPhone.trim() || null,
+                feedback_type: fbType,
+                message: fbMessage.trim(),
+                status: 'Pending'
+            });
+            if (error) throw error;
+            setFbStatus('success');
+            setFbName('');
+            setFbPhone('');
+            setFbMessage('');
+        } catch (err) {
+            console.error('Feedback submission error:', err);
+            setFbStatus('error');
+        }
+    }
+
+    return (
+        <section className="section-block" id="sectionFeedback">
+            <div className="section-head">
+                <h2 className="section-title">{t.feedbackTitle}</h2>
+                <p className="section-desc">{t.feedbackDesc}</p>
+            </div>
+            <div className="civic-card" style={{ maxWidth: '720px' }}>
+                {fbStatus === 'success' && (
+                    <div className="alert alert-success" role="status">
+                        {t.feedbackSuccess}
+                    </div>
+                )}
+                {fbStatus === 'error' && (
+                    <div className="alert alert-danger" role="alert">
+                        {t.feedbackError}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit}>
+                    <div className="choice-grid columns-2">
+                        <div className="form-group">
+                            <label className="form-label">{t.yourName}</label>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={fbName}
+                                onChange={(e) => setFbName(e.target.value)}
+                                placeholder="Resident Name" 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">{t.yourPhone}</label>
+                            <input 
+                                type="tel" 
+                                className="form-control" 
+                                value={fbPhone}
+                                onChange={(e) => setFbPhone(e.target.value)}
+                                placeholder="+91 98765 43210" 
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">{t.feedbackCategory}</label>
+                        <select 
+                            className="form-control"
+                            value={fbType}
+                            onChange={(e) => setFbType(e.target.value)}
+                            required
+                        >
+                            <option value="Correction">Phone Number / Information Correction</option>
+                            <option value="New Listing Request">Request New Business / Artisan Listing</option>
+                            <option value="Scheme Inquiry">Scheme Information Inquiry</option>
+                            <option value="General">General Village Suggestion</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">{t.description}</label>
+                        <textarea 
+                            className="form-control" 
+                            rows="4" 
+                            value={fbMessage}
+                            onChange={(e) => setFbMessage(e.target.value)}
+                            placeholder="Please specify the business/institution name, correct contact number, or details..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary"
+                        disabled={fbStatus === 'submitting'}
+                        style={{ minHeight: '48px', padding: '0.75rem 1.5rem' }}
+                    >
+                        {fbStatus === 'submitting' ? 'Submitting...' : t.submitBtn}
+                    </button>
+                </form>
+            </div>
+        </section>
+    );
+}
