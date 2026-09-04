@@ -1507,6 +1507,11 @@ main.container {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.feedback-category-group {
+    max-width: 480px;
+    width: 100%;
+}
+
 .choice-card {
     display: flex;
     align-items: center;

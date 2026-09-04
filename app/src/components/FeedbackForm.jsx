@@ -71,19 +71,21 @@ export default function FeedbackForm({ villageId, t }) {
                             />
                         </div>
                     </div>
-                    <div className="form-group">
-                        <label className="form-label">{t.feedbackCategory}</label>
-                        <select 
-                            className="form-control"
-                            value={fbType}
-                            onChange={(e) => setFbType(e.target.value)}
-                            required
-                        >
-                            <option value="Correction">Phone Number / Information Correction</option>
-                            <option value="New Listing Request">Request New Business / Artisan Listing</option>
-                            <option value="Scheme Inquiry">Scheme Information Inquiry</option>
-                            <option value="General">General Village Suggestion</option>
-                        </select>
+                    <div className="choice-grid columns-2">
+                        <div className="form-group feedback-category-group">
+                            <label className="form-label">{t.feedbackCategory}</label>
+                            <select 
+                                className="form-control"
+                                value={fbType}
+                                onChange={(e) => setFbType(e.target.value)}
+                                required
+                            >
+                                <option value="Correction">Phone Number / Information Correction</option>
+                                <option value="New Listing Request">Request New Business / Artisan Listing</option>
+                                <option value="Scheme Inquiry">Scheme Information Inquiry</option>
+                                <option value="General">General Village Suggestion</option>
+                            </select>
+                        </div>
                     </div>
                     <div className="form-group">
                         <label className="form-label">{t.description}</label>
