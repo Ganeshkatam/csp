@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Lock, LogOut, Plus, Trash2, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Lock, LogOut, Plus, Trash2, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, ChevronDown, ChevronUp, Check, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
 // Categories matching only the existing database records
@@ -173,6 +173,7 @@ const defaultAnnouncement = {
     event_date: "",
     source: "Grama Panchayat Notice Board",
     verified_on: new Date().toISOString().slice(0, 10),
+    image_url: "",
     status: "published"
 };
 
@@ -190,6 +191,7 @@ const defaultScheme = {
     official_url: "https://",
     source: "AP State Portal",
     verified_on: new Date().toISOString().slice(0, 10),
+    image_url: "",
     status: "published"
 };
 
@@ -221,6 +223,7 @@ const defaultInstitution = {
     services_te: "",
     source: "Department Circular",
     verified_on: new Date().toISOString().slice(0, 10),
+    image_url: "",
     status: "published"
 };
 
@@ -236,6 +239,7 @@ const defaultBusiness = {
     phone: "",
     source: "Local Market Survey",
     verified_on: new Date().toISOString().slice(0, 10),
+    image_url: "",
     status: "published"
 };
 
@@ -544,6 +548,30 @@ export default function AdminConsoleView() {
         }
     };
 
+    // Image Upload to Supabase Storage Helper
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const handleImageUpload = async (e, formSetter) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setUploadingImage(true);
+            const ext = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+            const { error: uploadError } = await supabase.storage.from('listings').upload(fileName, file, {
+                contentType: file.type,
+                upsert: true
+            });
+            if (uploadError) throw uploadError;
+            const { data: pubData } = supabase.storage.from('listings').getPublicUrl(fileName);
+            formSetter(prev => ({ ...prev, image_url: pubData.publicUrl }));
+            notify('Image uploaded successfully to database storage.');
+        } catch (err) {
+            notify('Upload failed: ' + err.message, 'danger');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
     // Save Handlers for the 5 Modules
     const handleSaveAnnouncement = async (e) => {
         e.preventDefault();
@@ -557,6 +585,7 @@ export default function AdminConsoleView() {
             event_date: announcementForm.event_date || null,
             source: announcementForm.source.trim(),
             verified_on: announcementForm.verified_on,
+            image_url: announcementForm.image_url ? announcementForm.image_url.trim() : null,
             status: announcementForm.status
         };
         if (announcementForm.id) payload.id = announcementForm.id;
@@ -587,6 +616,7 @@ export default function AdminConsoleView() {
             official_url: schemeForm.official_url.trim(),
             source: schemeForm.source.trim(),
             verified_on: schemeForm.verified_on,
+            image_url: schemeForm.image_url ? schemeForm.image_url.trim() : null,
             status: schemeForm.status
         };
         if (schemeForm.id) payload.id = schemeForm.id;
@@ -644,6 +674,7 @@ export default function AdminConsoleView() {
             services_te: institutionForm.services_te ? institutionForm.services_te.trim() : null,
             source: institutionForm.source.trim(),
             verified_on: institutionForm.verified_on,
+            image_url: institutionForm.image_url ? institutionForm.image_url.trim() : null,
             status: institutionForm.status
         };
         if (institutionForm.id) payload.id = institutionForm.id;
@@ -672,6 +703,7 @@ export default function AdminConsoleView() {
             phone: businessForm.phone ? businessForm.phone.trim() : null,
             source: businessForm.source.trim(),
             verified_on: businessForm.verified_on,
+            image_url: businessForm.image_url ? businessForm.image_url.trim() : null,
             status: businessForm.status
         };
         if (businessForm.id) payload.id = businessForm.id;
@@ -1102,6 +1134,50 @@ export default function AdminConsoleView() {
                                     </div>
                                 </div>
 
+                                <div className="form-group">
+                                    <label className="form-label">Photograph / Banner Image</label>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <input
+                                            type="url"
+                                            className="form-control"
+                                            value={announcementForm.image_url || ''}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, image_url: e.target.value })}
+                                            placeholder="https://... or upload photo"
+                                            style={{ flex: 1, minWidth: '220px' }}
+                                        />
+                                        <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                            <Upload size={14} /> Upload Photo
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => handleImageUpload(e, setAnnouncementForm)}
+                                                disabled={uploadingImage}
+                                            />
+                                        </label>
+                                        {announcementForm.image_url && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary btn-sm"
+                                                onClick={() => setAnnouncementForm({ ...announcementForm, image_url: '' })}
+                                                style={{ color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                            >
+                                                <X size={14} /> Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    {announcementForm.image_url && (
+                                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <img
+                                                src={announcementForm.image_url}
+                                                alt="Preview"
+                                                style={{ width: '80px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--color-slate-300)' }}
+                                            />
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Stored in Supabase database storage</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
                                     {announcementForm.id ? 'Save Changes' : 'Publish Announcement'}
                                 </button>
@@ -1127,9 +1203,20 @@ export default function AdminConsoleView() {
                                     announcements.map(a => (
                                         <tr key={a.id}>
                                             <td>
-                                                <strong>{a.title}</strong>
-                                                {a.title_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{a.title_te}</div>}
-                                                <span className="badge" style={{ fontSize: '0.7rem', marginTop: '4px', background: '#f1f5f9', color: '#334155' }}>{a.category}</span>
+                                                <div className="listing-table-cell-with-thumb">
+                                                    {a.image_url ? (
+                                                        <img src={a.image_url} alt="" className="listing-table-thumb" />
+                                                    ) : (
+                                                        <div className="listing-table-thumb-placeholder">
+                                                            <ImageIcon size={18} />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <strong>{a.title}</strong>
+                                                        {a.title_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{a.title_te}</div>}
+                                                        <span className="badge" style={{ fontSize: '0.7rem', marginTop: '4px', background: '#f1f5f9', color: '#334155' }}>{a.category}</span>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td style={{ fontSize: '0.8125rem' }}>{a.event_date || 'Ongoing'}</td>
                                             <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{a.source}</td>
@@ -1345,6 +1432,50 @@ export default function AdminConsoleView() {
                                     </div>
                                 </div>
 
+                                <div className="form-group">
+                                    <label className="form-label">Photograph / Banner Image</label>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <input
+                                            type="url"
+                                            className="form-control"
+                                            value={schemeForm.image_url || ''}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, image_url: e.target.value })}
+                                            placeholder="https://... or upload photo"
+                                            style={{ flex: 1, minWidth: '220px' }}
+                                        />
+                                        <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                            <Upload size={14} /> Upload Photo
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => handleImageUpload(e, setSchemeForm)}
+                                                disabled={uploadingImage}
+                                            />
+                                        </label>
+                                        {schemeForm.image_url && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary btn-sm"
+                                                onClick={() => setSchemeForm({ ...schemeForm, image_url: '' })}
+                                                style={{ color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                            >
+                                                <X size={14} /> Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    {schemeForm.image_url && (
+                                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <img
+                                                src={schemeForm.image_url}
+                                                alt="Preview"
+                                                style={{ width: '80px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--color-slate-300)' }}
+                                            />
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Stored in Supabase database storage</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
                                     {schemeForm.id ? 'Save Changes' : 'Add Welfare Scheme'}
                                 </button>
@@ -1370,8 +1501,19 @@ export default function AdminConsoleView() {
                                     schemes.map(s => (
                                         <tr key={s.id}>
                                             <td>
-                                                <strong>{s.name}</strong>
-                                                {s.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{s.name_te}</div>}
+                                                <div className="listing-table-cell-with-thumb">
+                                                    {s.image_url ? (
+                                                        <img src={s.image_url} alt="" className="listing-table-thumb" />
+                                                    ) : (
+                                                        <div className="listing-table-thumb-placeholder">
+                                                            <ImageIcon size={18} />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <strong>{s.name}</strong>
+                                                        {s.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{s.name_te}</div>}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
                                                 <span className="badge" style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1' }}>{s.category}</span>
@@ -1833,6 +1975,50 @@ export default function AdminConsoleView() {
                                     </div>
                                 </div>
 
+                                <div className="form-group">
+                                    <label className="form-label">Photograph / Facility Image</label>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <input
+                                            type="url"
+                                            className="form-control"
+                                            value={institutionForm.image_url || ''}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, image_url: e.target.value })}
+                                            placeholder="https://... or upload photo"
+                                            style={{ flex: 1, minWidth: '220px' }}
+                                        />
+                                        <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                            <Upload size={14} /> Upload Photo
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => handleImageUpload(e, setInstitutionForm)}
+                                                disabled={uploadingImage}
+                                            />
+                                        </label>
+                                        {institutionForm.image_url && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary btn-sm"
+                                                onClick={() => setInstitutionForm({ ...institutionForm, image_url: '' })}
+                                                style={{ color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                            >
+                                                <X size={14} /> Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    {institutionForm.image_url && (
+                                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <img
+                                                src={institutionForm.image_url}
+                                                alt="Preview"
+                                                style={{ width: '80px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--color-slate-300)' }}
+                                            />
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Stored in Supabase database storage</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
                                     {institutionForm.id ? 'Save Changes' : 'Add Institution'}
                                 </button>
@@ -1858,9 +2044,20 @@ export default function AdminConsoleView() {
                                     institutions.map(inst => (
                                         <tr key={inst.id}>
                                             <td>
-                                                <strong>{inst.name}</strong>
-                                                {inst.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{inst.name_te}</div>}
-                                                <span className="badge" style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', marginTop: '3px' }}>{inst.type}</span>
+                                                <div className="listing-table-cell-with-thumb">
+                                                    {inst.image_url ? (
+                                                        <img src={inst.image_url} alt="" className="listing-table-thumb" />
+                                                    ) : (
+                                                        <div className="listing-table-thumb-placeholder">
+                                                            <ImageIcon size={18} />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <strong>{inst.name}</strong>
+                                                        {inst.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{inst.name_te}</div>}
+                                                        <span className="badge" style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', marginTop: '3px' }}>{inst.type}</span>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td style={{ fontSize: '0.8125rem' }}>{inst.address}</td>
                                             <td style={{ fontSize: '0.8125rem' }}>
@@ -2076,6 +2273,50 @@ export default function AdminConsoleView() {
                                     </div>
                                 </div>
 
+                                <div className="form-group">
+                                    <label className="form-label">Photograph / Storefront Image</label>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <input
+                                            type="url"
+                                            className="form-control"
+                                            value={businessForm.image_url || ''}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, image_url: e.target.value })}
+                                            placeholder="https://... or upload photo"
+                                            style={{ flex: 1, minWidth: '220px' }}
+                                        />
+                                        <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                            <Upload size={14} /> Upload Photo
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                                onChange={(e) => handleImageUpload(e, setBusinessForm)}
+                                                disabled={uploadingImage}
+                                            />
+                                        </label>
+                                        {businessForm.image_url && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-secondary btn-sm"
+                                                onClick={() => setBusinessForm({ ...businessForm, image_url: '' })}
+                                                style={{ color: '#dc2626', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                            >
+                                                <X size={14} /> Clear
+                                            </button>
+                                        )}
+                                    </div>
+                                    {businessForm.image_url && (
+                                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <img
+                                                src={businessForm.image_url}
+                                                alt="Preview"
+                                                style={{ width: '80px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--color-slate-300)' }}
+                                            />
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Stored in Supabase database storage</span>
+                                        </div>
+                                    )}
+                                </div>
+
                                 <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
                                     {businessForm.id ? 'Save Changes' : 'Add Business Record'}
                                 </button>
@@ -2101,9 +2342,20 @@ export default function AdminConsoleView() {
                                     businesses.map(b => (
                                         <tr key={b.id}>
                                             <td>
-                                                <strong>{b.name}</strong>
-                                                {b.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{b.name_te}</div>}
-                                                <span className="badge" style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#b45309', marginTop: '3px' }}>{b.category}</span>
+                                                <div className="listing-table-cell-with-thumb">
+                                                    {b.image_url ? (
+                                                        <img src={b.image_url} alt="" className="listing-table-thumb" />
+                                                    ) : (
+                                                        <div className="listing-table-thumb-placeholder">
+                                                            <ImageIcon size={18} />
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <strong>{b.name}</strong>
+                                                        {b.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{b.name_te}</div>}
+                                                        <span className="badge" style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#b45309', marginTop: '3px' }}>{b.category}</span>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td style={{ fontSize: '0.8125rem' }}>
                                                 <div>{b.owner_name || 'Proprietor'}</div>

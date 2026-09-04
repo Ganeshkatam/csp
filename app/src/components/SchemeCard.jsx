@@ -9,6 +9,21 @@ export default function SchemeCard({ scheme, lang, t }) {
 
     return (
         <div className="civic-card scheme-card">
+            {scheme.image_url && (
+                <div className="card-media-banner">
+                    <img 
+                        src={scheme.image_url} 
+                        alt={scheme.name} 
+                        className="card-media-img"
+                        loading="lazy"
+                    />
+                    <div className="card-media-badge-overlay">
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    </div>
+                </div>
+            )}
             <div className="card-top-content">
                 {/* Header: Category Badge + Verification */}
                 <div className="card-header-row">
@@ -16,9 +31,11 @@ export default function SchemeCard({ scheme, lang, t }) {
                         <Layers size={13} style={{ marginRight: '4px' }} aria-hidden="true" />
                         <span>{scheme.category}</span>
                     </div>
-                    <span className="badge badge-verified">
-                        <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
-                    </span>
+                    {!scheme.image_url && (
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    )}
                 </div>
 
                 {/* Scheme Title */}

@@ -19,6 +19,21 @@ export default function InstitutionCard({ institution, lang, t }) {
 
     return (
         <div className="civic-card institution-card">
+            {institution.image_url && (
+                <div className="card-media-banner">
+                    <img 
+                        src={institution.image_url} 
+                        alt={institution.name} 
+                        className="card-media-img"
+                        loading="lazy"
+                    />
+                    <div className="card-media-badge-overlay">
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    </div>
+                </div>
+            )}
             <div className="card-top-content">
                 {/* Header: Icon + Type Badge + Verification */}
                 <div className="card-header-row">
@@ -28,9 +43,11 @@ export default function InstitutionCard({ institution, lang, t }) {
                         </div>
                         <span className="badge badge-civic">{institution.type}</span>
                     </div>
-                    <span className="badge badge-verified">
-                        <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
-                    </span>
+                    {!institution.image_url && (
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    )}
                 </div>
 
                 {/* Institution Name */}

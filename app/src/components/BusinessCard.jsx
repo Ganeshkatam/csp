@@ -7,6 +7,21 @@ export default function BusinessCard({ business, lang, t }) {
 
     return (
         <div className="civic-card business-card">
+            {business.image_url && (
+                <div className="card-media-banner">
+                    <img 
+                        src={business.image_url} 
+                        alt={business.name} 
+                        className="card-media-img"
+                        loading="lazy"
+                    />
+                    <div className="card-media-badge-overlay">
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    </div>
+                </div>
+            )}
             <div className="card-top-content">
                 {/* Header: Category Badge + Verification */}
                 <div className="card-header-row">
@@ -16,9 +31,11 @@ export default function BusinessCard({ business, lang, t }) {
                         </div>
                         <span className="badge badge-civic">{business.category}</span>
                     </div>
-                    <span className="badge badge-verified">
-                        <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
-                    </span>
+                    {!business.image_url && (
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    )}
                 </div>
 
                 {/* Business Name */}

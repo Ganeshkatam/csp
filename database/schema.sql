@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS schemes (
     official_url TEXT NOT NULL,
     source TEXT NOT NULL,
     verified_on DATE NOT NULL,
+    image_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'verified', 'published')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -137,6 +138,7 @@ CREATE TABLE IF NOT EXISTS institutions (
     services TEXT NOT NULL,
     source TEXT NOT NULL,
     verified_on DATE NOT NULL,
+    image_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'verified', 'published')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -159,6 +161,7 @@ CREATE TABLE IF NOT EXISTS businesses (
     phone TEXT,
     source TEXT NOT NULL,
     verified_on DATE NOT NULL,
+    image_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'verified', 'published')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -181,6 +184,7 @@ CREATE TABLE IF NOT EXISTS announcements (
     category TEXT NOT NULL DEFAULT 'General', -- Grama Sabha, Health Camp, Scheme Deadline, General
     source TEXT NOT NULL,
     verified_on DATE NOT NULL,
+    image_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'verified', 'published')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
