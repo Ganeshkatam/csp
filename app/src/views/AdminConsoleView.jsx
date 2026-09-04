@@ -1,6 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key } from 'lucide-react';
+import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
+
+const defaultAnnouncement = {
+    id: null,
+    title: "",
+    title_te: "",
+    description: "",
+    description_te: "",
+    category: "Public Meeting",
+    event_date: "",
+    source: "Grama Panchayat Notice Board",
+    verified_on: new Date().toISOString().slice(0, 10),
+    status: "published"
+};
+
+const defaultScheme = {
+    id: null,
+    name: "",
+    name_te: "",
+    category: "Agriculture",
+    description: "",
+    description_te: "",
+    eligibility: "",
+    eligibility_te: "",
+    documents: "Aadhaar, Ration Card, Bank Passbook",
+    documents_te: "",
+    official_url: "https://",
+    source: "AP State Portal",
+    verified_on: new Date().toISOString().slice(0, 10),
+    status: "published"
+};
+
+const defaultContact = {
+    id: null,
+    name: "",
+    name_te: "",
+    category: "Emergency",
+    designation: "",
+    designation_te: "",
+    phone: "",
+    jurisdiction: "Andhra Pradesh",
+    address: "",
+    availability: "24x7 Toll-Free",
+    source: "District Administration Directory",
+    verified_on: new Date().toISOString().slice(0, 10),
+    status: "published"
+};
+
+const defaultInstitution = {
+    id: null,
+    name: "",
+    name_te: "",
+    type: "Primary Health Centre",
+    address: "",
+    phone: "",
+    timings: "9:00 AM - 4:00 PM",
+    services: "",
+    services_te: "",
+    source: "Department Circular",
+    verified_on: new Date().toISOString().slice(0, 10),
+    status: "published"
+};
+
+const defaultBusiness = {
+    id: null,
+    name: "",
+    name_te: "",
+    owner_name: "",
+    category: "Agriculture & Tools",
+    services: "",
+    services_te: "",
+    address: "",
+    phone: "",
+    source: "Local Market Survey",
+    verified_on: new Date().toISOString().slice(0, 10),
+    status: "published"
+};
 
 export default function AdminConsoleView() {
     const [user, setUser] = useState(null);
@@ -49,6 +125,13 @@ export default function AdminConsoleView() {
     const [institutions, setInstitutions] = useState([]);
     const [businesses, setBusinesses] = useState([]);
     const [feedback, setFeedback] = useState([]);
+
+    // Form States for CRUD
+    const [announcementForm, setAnnouncementForm] = useState(defaultAnnouncement);
+    const [schemeForm, setSchemeForm] = useState(defaultScheme);
+    const [contactForm, setContactForm] = useState(defaultContact);
+    const [institutionForm, setInstitutionForm] = useState(defaultInstitution);
+    const [businessForm, setBusinessForm] = useState(defaultBusiness);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -260,6 +343,176 @@ export default function AdminConsoleView() {
         }
     };
 
+    // Reload Helpers for CRUD
+    async function reloadAnnouncements() {
+        const { data } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
+        if (data) setAnnouncements(data);
+    }
+    async function reloadSchemes() {
+        const { data } = await supabase.from('schemes').select('*').order('created_at', { ascending: false });
+        if (data) setSchemes(data);
+    }
+    async function reloadContacts() {
+        const { data } = await supabase.from('contacts').select('*').order('created_at', { ascending: false });
+        if (data) setContacts(data);
+    }
+    async function reloadInstitutions() {
+        const { data } = await supabase.from('institutions').select('*').order('created_at', { ascending: false });
+        if (data) setInstitutions(data);
+    }
+    async function reloadBusinesses() {
+        const { data } = await supabase.from('businesses').select('*').order('created_at', { ascending: false });
+        if (data) setBusinesses(data);
+    }
+
+    // Toggle Status Helper
+    const handleToggleStatus = async (table, item, reloadFn) => {
+        const nextStatus = item.status === 'published' ? 'draft' : 'published';
+        const { error } = await supabase.from(table).update({ status: nextStatus }).eq('id', item.id);
+        if (error) notify('Status update failed: ' + error.message, 'danger');
+        else {
+            notify(`Status updated to ${nextStatus}.`);
+            reloadFn();
+        }
+    };
+
+    // Save Handlers for the 5 Modules
+    const handleSaveAnnouncement = async (e) => {
+        e.preventDefault();
+        const payload = {
+            village_id: village.id || DEFAULT_VILLAGE_ID,
+            title: announcementForm.title.trim(),
+            title_te: announcementForm.title_te ? announcementForm.title_te.trim() : null,
+            description: announcementForm.description.trim(),
+            description_te: announcementForm.description_te ? announcementForm.description_te.trim() : null,
+            category: announcementForm.category,
+            event_date: announcementForm.event_date || null,
+            source: announcementForm.source.trim(),
+            verified_on: announcementForm.verified_on,
+            status: announcementForm.status
+        };
+        if (announcementForm.id) payload.id = announcementForm.id;
+
+        const { error } = await supabase.from('announcements').upsert(payload);
+        if (error) notify('Error: ' + error.message, 'danger');
+        else {
+            notify(announcementForm.id ? 'Announcement updated.' : 'Announcement added.');
+            setAnnouncementForm(defaultAnnouncement);
+            reloadAnnouncements();
+        }
+    };
+
+    const handleSaveScheme = async (e) => {
+        e.preventDefault();
+        const payload = {
+            village_id: village.id || DEFAULT_VILLAGE_ID,
+            name: schemeForm.name.trim(),
+            name_te: schemeForm.name_te ? schemeForm.name_te.trim() : null,
+            category: schemeForm.category,
+            description: schemeForm.description.trim(),
+            description_te: schemeForm.description_te ? schemeForm.description_te.trim() : null,
+            eligibility: schemeForm.eligibility.trim(),
+            eligibility_te: schemeForm.eligibility_te ? schemeForm.eligibility_te.trim() : null,
+            documents: schemeForm.documents.trim(),
+            documents_te: schemeForm.documents_te ? schemeForm.documents_te.trim() : null,
+            official_url: schemeForm.official_url.trim(),
+            source: schemeForm.source.trim(),
+            verified_on: schemeForm.verified_on,
+            status: schemeForm.status
+        };
+        if (schemeForm.id) payload.id = schemeForm.id;
+
+        const { error } = await supabase.from('schemes').upsert(payload);
+        if (error) notify('Error: ' + error.message, 'danger');
+        else {
+            notify(schemeForm.id ? 'Scheme updated.' : 'Scheme added.');
+            setSchemeForm(defaultScheme);
+            reloadSchemes();
+        }
+    };
+
+    const handleSaveContact = async (e) => {
+        e.preventDefault();
+        const payload = {
+            village_id: village.id || DEFAULT_VILLAGE_ID,
+            name: contactForm.name.trim(),
+            name_te: contactForm.name_te ? contactForm.name_te.trim() : null,
+            category: contactForm.category,
+            designation: contactForm.designation ? contactForm.designation.trim() : null,
+            designation_te: contactForm.designation_te ? contactForm.designation_te.trim() : null,
+            phone: contactForm.phone.trim(),
+            jurisdiction: contactForm.jurisdiction ? contactForm.jurisdiction.trim() : null,
+            address: contactForm.address ? contactForm.address.trim() : null,
+            availability: contactForm.availability ? contactForm.availability.trim() : null,
+            source: contactForm.source.trim(),
+            verified_on: contactForm.verified_on,
+            status: contactForm.status
+        };
+        if (contactForm.id) payload.id = contactForm.id;
+
+        const { error } = await supabase.from('contacts').upsert(payload);
+        if (error) notify('Error: ' + error.message, 'danger');
+        else {
+            notify(contactForm.id ? 'Contact updated.' : 'Contact added.');
+            setContactForm(defaultContact);
+            reloadContacts();
+        }
+    };
+
+    const handleSaveInstitution = async (e) => {
+        e.preventDefault();
+        const payload = {
+            village_id: village.id || DEFAULT_VILLAGE_ID,
+            name: institutionForm.name.trim(),
+            name_te: institutionForm.name_te ? institutionForm.name_te.trim() : null,
+            type: institutionForm.type,
+            address: institutionForm.address.trim(),
+            phone: institutionForm.phone ? institutionForm.phone.trim() : null,
+            timings: institutionForm.timings ? institutionForm.timings.trim() : null,
+            services: institutionForm.services ? institutionForm.services.trim() : null,
+            services_te: institutionForm.services_te ? institutionForm.services_te.trim() : null,
+            source: institutionForm.source.trim(),
+            verified_on: institutionForm.verified_on,
+            status: institutionForm.status
+        };
+        if (institutionForm.id) payload.id = institutionForm.id;
+
+        const { error } = await supabase.from('institutions').upsert(payload);
+        if (error) notify('Error: ' + error.message, 'danger');
+        else {
+            notify(institutionForm.id ? 'Institution updated.' : 'Institution added.');
+            setInstitutionForm(defaultInstitution);
+            reloadInstitutions();
+        }
+    };
+
+    const handleSaveBusiness = async (e) => {
+        e.preventDefault();
+        const payload = {
+            village_id: village.id || DEFAULT_VILLAGE_ID,
+            name: businessForm.name.trim(),
+            name_te: businessForm.name_te ? businessForm.name_te.trim() : null,
+            owner_name: businessForm.owner_name ? businessForm.owner_name.trim() : null,
+            category: businessForm.category,
+            services: businessForm.services.trim(),
+            services_te: businessForm.services_te ? businessForm.services_te.trim() : null,
+            address: businessForm.address.trim(),
+            phone: businessForm.phone ? businessForm.phone.trim() : null,
+            source: businessForm.source.trim(),
+            verified_on: businessForm.verified_on,
+            status: businessForm.status
+        };
+        if (businessForm.id) payload.id = businessForm.id;
+
+        const { error } = await supabase.from('businesses').upsert(payload);
+        if (error) notify('Error: ' + error.message, 'danger');
+        else {
+            notify(businessForm.id ? 'Business updated.' : 'Business added.');
+            setBusinessForm(defaultBusiness);
+            reloadBusinesses();
+        }
+    };
+
     const mustChangePassword = !!user?.user_metadata?.must_change_password;
 
     if (!user) {
@@ -410,11 +663,11 @@ export default function AdminConsoleView() {
             <div className="admin-tabs-bar" style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--color-border)', marginBottom: '1.5rem' }}>
                 {[
                     { key: 'profile', label: 'Village Profile' },
-                    { key: 'announcements', label: 'Announcements' },
-                    { key: 'schemes', label: 'Welfare Schemes' },
-                    { key: 'contacts', label: 'Contacts' },
-                    { key: 'institutions', label: 'Health & Schools' },
-                    { key: 'businesses', label: 'Local Businesses' },
+                    { key: 'announcements', label: `Announcements (${announcements.length})` },
+                    { key: 'schemes', label: `Welfare Schemes (${schemes.length})` },
+                    { key: 'contacts', label: `Contacts (${contacts.length})` },
+                    { key: 'institutions', label: `Health & Schools (${institutions.length})` },
+                    { key: 'businesses', label: `Local Businesses (${businesses.length})` },
                     { key: 'feedback', label: `Citizen Feedback (${feedback.length})` },
                     { key: 'accounts', label: `Admin Accounts (${adminUsers.length})` }
                 ].map(tab => (
@@ -528,6 +781,1124 @@ export default function AdminConsoleView() {
                             Update Village Profile
                         </button>
                     </form>
+                </div>
+            )}
+
+            {/* Tab: Announcements */}
+            {activeTab === 'announcements' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Announcements & Ticker Notices</h2>
+                    <p className="section-desc">Manage announcements displayed across the live ticker and the citizen community notice board.</p>
+
+                    {/* Announcement Form Card */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                {announcementForm.id ? 'Edit Announcement' : 'Add New Announcement'}
+                            </h3>
+                            {announcementForm.id && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => setAnnouncementForm(defaultAnnouncement)}
+                                >
+                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                </button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSaveAnnouncement}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Announcement Title (English) *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={announcementForm.title}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })}
+                                        placeholder="e.g. Free Health Screening Camp"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Announcement Title (Telugu)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={announcementForm.title_te}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, title_te: e.target.value })}
+                                        placeholder="ఉచిత ఆరోగ్య పరీక్షా శిబిరం"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Category *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={announcementForm.category}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, category: e.target.value })}
+                                    >
+                                        <option value="Public Meeting">Public Meeting</option>
+                                        <option value="Health Camp">Health Camp</option>
+                                        <option value="Welfare Drive">Welfare Drive</option>
+                                        <option value="Emergency Alert">Emergency Alert</option>
+                                        <option value="General Notice">General Notice</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Event Date</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={announcementForm.event_date || ""}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, event_date: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Description (English) *</label>
+                                <textarea 
+                                    className="form-control" 
+                                    rows="2"
+                                    value={announcementForm.description}
+                                    onChange={(e) => setAnnouncementForm({ ...announcementForm, description: e.target.value })}
+                                    placeholder="Detailed overview of the announcement..."
+                                    required 
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Description (Telugu)</label>
+                                <textarea 
+                                    className="form-control" 
+                                    rows="2"
+                                    value={announcementForm.description_te}
+                                    onChange={(e) => setAnnouncementForm({ ...announcementForm, description_te: e.target.value })}
+                                    placeholder="ప్రకటన వివరాలు..."
+                                />
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Verification Source *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={announcementForm.source}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, source: e.target.value })}
+                                        placeholder="Grama Panchayat Notice Board"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Verified Date *</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={announcementForm.verified_on}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, verified_on: e.target.value })}
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Status *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={announcementForm.status}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, status: e.target.value })}
+                                    >
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft (Hidden)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                {announcementForm.id ? 'Save Changes' : 'Publish Announcement'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Announcements Ledger */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Published & Draft Announcements</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '650px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Title & Category</th>
+                                    <th>Event Date</th>
+                                    <th>Source</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {announcements.length > 0 ? (
+                                    announcements.map(a => (
+                                        <tr key={a.id}>
+                                            <td>
+                                                <strong>{a.title}</strong>
+                                                {a.title_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{a.title_te}</div>}
+                                                <span className="badge" style={{ fontSize: '0.7rem', marginTop: '4px', background: '#f1f5f9', color: '#334155' }}>{a.category}</span>
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>{a.event_date || 'Ongoing'}</td>
+                                            <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{a.source}</td>
+                                            <td>
+                                                <span className={a.status === 'published' ? 'badge-green' : 'badge-amber'} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                    {a.status === 'published' ? 'Published' : 'Draft'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title={a.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
+                                                    onClick={() => handleToggleStatus('announcements', a, reloadAnnouncements)}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    {a.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Edit Record"
+                                                    onClick={() => { setAnnouncementForm(a); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    <Edit size={13} />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Delete Record"
+                                                    onClick={() => deleteItem('announcements', a.id, reloadAnnouncements)}
+                                                    style={{ color: '#dc2626' }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No announcements created yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Welfare Schemes */}
+            {activeTab === 'schemes' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Government Welfare Schemes</h2>
+                    <p className="section-desc">Manage welfare programs, eligibility rules, document checklists, and application links.</p>
+
+                    {/* Scheme Form Card */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                {schemeForm.id ? 'Edit Scheme' : 'Add New Welfare Scheme'}
+                            </h3>
+                            {schemeForm.id && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => setSchemeForm(defaultScheme)}
+                                >
+                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                </button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSaveScheme}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Scheme Name (English) *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={schemeForm.name}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, name: e.target.value })}
+                                        placeholder="e.g. PM-KISAN Samman Nidhi"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Scheme Name (Telugu)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={schemeForm.name_te}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, name_te: e.target.value })}
+                                        placeholder="పీఎం కిసాన్ సంక్షేమ పథకం"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Category *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={schemeForm.category}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, category: e.target.value })}
+                                    >
+                                        <option value="Agriculture">Agriculture</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Housing">Housing</option>
+                                        <option value="Social Security">Social Security</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Women & Child">Women & Child</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Official Portal URL *</label>
+                                    <input 
+                                        type="url" 
+                                        className="form-control" 
+                                        value={schemeForm.official_url}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, official_url: e.target.value })}
+                                        placeholder="https://pmkisan.gov.in"
+                                        required 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Benefits Description *</label>
+                                <textarea 
+                                    className="form-control" 
+                                    rows="2"
+                                    value={schemeForm.description}
+                                    onChange={(e) => setSchemeForm({ ...schemeForm, description: e.target.value })}
+                                    placeholder="e.g. Financial benefit of Rs. 6,000 per year in three equal installments..."
+                                    required 
+                                />
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Eligibility Criteria *</label>
+                                    <textarea 
+                                        className="form-control" 
+                                        rows="2"
+                                        value={schemeForm.eligibility}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, eligibility: e.target.value })}
+                                        placeholder="Small and marginal landholder farmer families..."
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Required Documents *</label>
+                                    <textarea 
+                                        className="form-control" 
+                                        rows="2"
+                                        value={schemeForm.documents}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, documents: e.target.value })}
+                                        placeholder="Aadhaar Card, Land records passbook, Bank account..."
+                                        required 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Verification Source *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={schemeForm.source}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, source: e.target.value })}
+                                        placeholder="Agriculture Extension Officer"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Verified Date *</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={schemeForm.verified_on}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, verified_on: e.target.value })}
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Status *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={schemeForm.status}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, status: e.target.value })}
+                                    >
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft (Hidden)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                {schemeForm.id ? 'Save Changes' : 'Add Welfare Scheme'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Schemes Ledger */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Welfare Schemes</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '650px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Scheme Name</th>
+                                    <th>Category</th>
+                                    <th>Official Link</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {schemes.length > 0 ? (
+                                    schemes.map(s => (
+                                        <tr key={s.id}>
+                                            <td>
+                                                <strong>{s.name}</strong>
+                                                {s.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{s.name_te}</div>}
+                                            </td>
+                                            <td>
+                                                <span className="badge" style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1' }}>{s.category}</span>
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>
+                                                <a href={s.official_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue-700)', textDecoration: 'underline' }}>
+                                                    Portal Link
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span className={s.status === 'published' ? 'badge-green' : 'badge-amber'} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                    {s.status === 'published' ? 'Published' : 'Draft'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title={s.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
+                                                    onClick={() => handleToggleStatus('schemes', s, reloadSchemes)}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    {s.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Edit Record"
+                                                    onClick={() => { setSchemeForm(s); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    <Edit size={13} />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Delete Record"
+                                                    onClick={() => deleteItem('schemes', s.id, reloadSchemes)}
+                                                    style={{ color: '#dc2626' }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No schemes cataloged yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Emergency & Civic Contacts */}
+            {activeTab === 'contacts' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Emergency & Civic Contacts</h2>
+                    <p className="section-desc">Manage verified helpline numbers and administrative officers with one-tap dialing.</p>
+
+                    {/* Contact Form Card */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                {contactForm.id ? 'Edit Contact' : 'Add New Contact'}
+                            </h3>
+                            {contactForm.id && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => setContactForm(defaultContact)}
+                                >
+                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                </button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSaveContact}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Contact / Office Name (English) *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.name}
+                                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                                        placeholder="e.g. 108 Emergency Ambulance"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Contact / Office Name (Telugu)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.name_te}
+                                        onChange={(e) => setContactForm({ ...contactForm, name_te: e.target.value })}
+                                        placeholder="108 అత్యవసర అంబులెన్స్"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Category *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={contactForm.category}
+                                        onChange={(e) => setContactForm({ ...contactForm, category: e.target.value })}
+                                    >
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Police">Police</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Panchayat">Panchayat</option>
+                                        <option value="Revenue">Revenue</option>
+                                        <option value="Utilities">Utilities</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Phone Number *</label>
+                                    <input 
+                                        type="tel" 
+                                        className="form-control" 
+                                        value={contactForm.phone}
+                                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                                        placeholder="108 or 10-digit mobile"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Designation</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.designation}
+                                        onChange={(e) => setContactForm({ ...contactForm, designation: e.target.value })}
+                                        placeholder="e.g. Village Secretary"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Jurisdiction</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.jurisdiction}
+                                        onChange={(e) => setContactForm({ ...contactForm, jurisdiction: e.target.value })}
+                                        placeholder="Andhra Pradesh or Grama Panchayat"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Operating Availability</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.availability}
+                                        onChange={(e) => setContactForm({ ...contactForm, availability: e.target.value })}
+                                        placeholder="24x7 Toll-Free or 9 AM - 5 PM"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Verification Source *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={contactForm.source}
+                                        onChange={(e) => setContactForm({ ...contactForm, source: e.target.value })}
+                                        placeholder="District Administration Portal"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Verified Date *</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={contactForm.verified_on}
+                                        onChange={(e) => setContactForm({ ...contactForm, verified_on: e.target.value })}
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Status *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={contactForm.status}
+                                        onChange={(e) => setContactForm({ ...contactForm, status: e.target.value })}
+                                    >
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft (Hidden)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                {contactForm.id ? 'Save Changes' : 'Add Contact Record'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Contacts Ledger */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Verified Civic & Emergency Directory</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '650px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Name & Category</th>
+                                    <th>Phone</th>
+                                    <th>Jurisdiction & Availability</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {contacts.length > 0 ? (
+                                    contacts.map(c => (
+                                        <tr key={c.id}>
+                                            <td>
+                                                <strong>{c.name}</strong>
+                                                {c.designation && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{c.designation}</div>}
+                                                <span className="badge" style={{ fontSize: '0.7rem', background: '#fee2e2', color: '#991b1b', marginTop: '3px' }}>{c.category}</span>
+                                            </td>
+                                            <td style={{ fontWeight: 600 }}>
+                                                <a href={`tel:${c.phone}`} style={{ color: 'var(--color-blue-700)' }}>{c.phone}</a>
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>
+                                                <div>{c.jurisdiction || 'State'}</div>
+                                                <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{c.availability}</div>
+                                            </td>
+                                            <td>
+                                                <span className={c.status === 'published' ? 'badge-green' : 'badge-amber'} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                    {c.status === 'published' ? 'Published' : 'Draft'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title={c.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
+                                                    onClick={() => handleToggleStatus('contacts', c, reloadContacts)}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    {c.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Edit Record"
+                                                    onClick={() => { setContactForm(c); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    <Edit size={13} />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Delete Record"
+                                                    onClick={() => deleteItem('contacts', c.id, reloadContacts)}
+                                                    style={{ color: '#dc2626' }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No contacts listed yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Institutions (Health & Schools) */}
+            {activeTab === 'institutions' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Healthcare & Education Institutions</h2>
+                    <p className="section-desc">Manage public institutions including Primary Health Centre, Schools, and Anganwadis.</p>
+
+                    {/* Institution Form Card */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                {institutionForm.id ? 'Edit Institution' : 'Add New Public Institution'}
+                            </h3>
+                            {institutionForm.id && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => setInstitutionForm(defaultInstitution)}
+                                >
+                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                </button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSaveInstitution}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Institution Name (English) *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.name}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, name: e.target.value })}
+                                        placeholder="e.g. Primary Health Centre (PHC)"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Institution Name (Telugu)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.name_te}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, name_te: e.target.value })}
+                                        placeholder="ప్రాథమిక ఆరోగ్య కేంద్రం"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Facility Type *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={institutionForm.type}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, type: e.target.value })}
+                                    >
+                                        <option value="Primary Health Centre">Primary Health Centre</option>
+                                        <option value="Government School">Government School</option>
+                                        <option value="Anganwadi Centre">Anganwadi Centre</option>
+                                        <option value="Veterinary Clinic">Veterinary Clinic</option>
+                                        <option value="Panchayat Office">Panchayat Office</option>
+                                        <option value="Village Secretariat">Village Secretariat</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Phone Number</label>
+                                    <input 
+                                        type="tel" 
+                                        className="form-control" 
+                                        value={institutionForm.phone}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, phone: e.target.value })}
+                                        placeholder="Contact phone"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Timings / Working Hours</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.timings}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, timings: e.target.value })}
+                                        placeholder="9:00 AM - 4:00 PM"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Address / Location *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.address}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, address: e.target.value })}
+                                        placeholder="Main Road, Near Panchayat Office"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Services Provided</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.services}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, services: e.target.value })}
+                                        placeholder="OPD, Immunization, Diagnostic checks"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Verification Source *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={institutionForm.source}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, source: e.target.value })}
+                                        placeholder="Medical Officer Verification"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Verified Date *</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={institutionForm.verified_on}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, verified_on: e.target.value })}
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Status *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={institutionForm.status}
+                                        onChange={(e) => setInstitutionForm({ ...institutionForm, status: e.target.value })}
+                                    >
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft (Hidden)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                {institutionForm.id ? 'Save Changes' : 'Add Institution'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Institutions Ledger */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Public Facilities</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '650px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Institution & Type</th>
+                                    <th>Address</th>
+                                    <th>Timings & Phone</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {institutions.length > 0 ? (
+                                    institutions.map(inst => (
+                                        <tr key={inst.id}>
+                                            <td>
+                                                <strong>{inst.name}</strong>
+                                                {inst.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{inst.name_te}</div>}
+                                                <span className="badge" style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', marginTop: '3px' }}>{inst.type}</span>
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>{inst.address}</td>
+                                            <td style={{ fontSize: '0.8125rem' }}>
+                                                <div>{inst.timings || 'Regular Hours'}</div>
+                                                {inst.phone && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Ph: {inst.phone}</div>}
+                                            </td>
+                                            <td>
+                                                <span className={inst.status === 'published' ? 'badge-green' : 'badge-amber'} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                    {inst.status === 'published' ? 'Published' : 'Draft'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title={inst.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
+                                                    onClick={() => handleToggleStatus('institutions', inst, reloadInstitutions)}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    {inst.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Edit Record"
+                                                    onClick={() => { setInstitutionForm(inst); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    <Edit size={13} />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Delete Record"
+                                                    onClick={() => deleteItem('institutions', inst.id, reloadInstitutions)}
+                                                    style={{ color: '#dc2626' }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No institutions registered yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Local Businesses & SHGs */}
+            {activeTab === 'businesses' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Local Businesses & Self-Help Groups</h2>
+                    <p className="section-desc">Manage rural enterprises, agricultural tools, electricians, artisans, and women's self-help groups.</p>
+
+                    {/* Business Form Card */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                {businessForm.id ? 'Edit Business' : 'Add New Business / Enterprise'}
+                            </h3>
+                            {businessForm.id && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary btn-sm" 
+                                    onClick={() => setBusinessForm(defaultBusiness)}
+                                >
+                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                </button>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSaveBusiness}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Enterprise Name (English) *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.name}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, name: e.target.value })}
+                                        placeholder="e.g. Sri Lakshmi Motor Rewinding Works"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Enterprise Name (Telugu)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.name_te}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, name_te: e.target.value })}
+                                        placeholder="శ్రీ లక్ష్మి మోటార్ రివైండింగ్ వర్క్స్"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Category *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={businessForm.category}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, category: e.target.value })}
+                                    >
+                                        <option value="Agriculture & Tools">Agriculture & Tools</option>
+                                        <option value="Electrical & Motors">Electrical & Motors</option>
+                                        <option value="Artisans & Handicrafts">Artisans & Handicrafts</option>
+                                        <option value="Grocery & Daily Needs">Grocery & Daily Needs</option>
+                                        <option value="Self-Help Group (SHG)">Self-Help Group (SHG)</option>
+                                        <option value="Services & Transport">Services & Transport</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Proprietor / Contact Person</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.owner_name}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, owner_name: e.target.value })}
+                                        placeholder="Owner name"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Contact Phone</label>
+                                    <input 
+                                        type="tel" 
+                                        className="form-control" 
+                                        value={businessForm.phone}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, phone: e.target.value })}
+                                        placeholder="10-digit mobile number"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Services / Products Offered *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.services}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, services: e.target.value })}
+                                        placeholder="Submersible pump repair, agricultural motor rewinding..."
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Shop Address / Landmark *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.address}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
+                                        placeholder="Main Bazaar Road, Opp. Bus Stop"
+                                        required 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="choice-grid columns-3">
+                                <div className="form-group">
+                                    <label className="form-label">Verification Source *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={businessForm.source}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, source: e.target.value })}
+                                        placeholder="Field Survey Ground Verification"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Verified Date *</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-control" 
+                                        value={businessForm.verified_on}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, verified_on: e.target.value })}
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Status *</label>
+                                    <select 
+                                        className="form-control"
+                                        value={businessForm.status}
+                                        onChange={(e) => setBusinessForm({ ...businessForm, status: e.target.value })}
+                                    >
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft (Hidden)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                {businessForm.id ? 'Save Changes' : 'Add Business Record'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Businesses Ledger */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Local Enterprises</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '650px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Enterprise & Category</th>
+                                    <th>Owner & Phone</th>
+                                    <th>Services Offered</th>
+                                    <th>Status</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {businesses.length > 0 ? (
+                                    businesses.map(b => (
+                                        <tr key={b.id}>
+                                            <td>
+                                                <strong>{b.name}</strong>
+                                                {b.name_te && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{b.name_te}</div>}
+                                                <span className="badge" style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#b45309', marginTop: '3px' }}>{b.category}</span>
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>
+                                                <div>{b.owner_name || 'Proprietor'}</div>
+                                                {b.phone && <a href={`tel:${b.phone}`} style={{ color: 'var(--color-blue-700)' }}>{b.phone}</a>}
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>{b.services}</td>
+                                            <td>
+                                                <span className={b.status === 'published' ? 'badge-green' : 'badge-amber'} style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                    {b.status === 'published' ? 'Published' : 'Draft'}
+                                                </span>
+                                            </td>
+                                            <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title={b.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
+                                                    onClick={() => handleToggleStatus('businesses', b, reloadBusinesses)}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    {b.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Edit Record"
+                                                    onClick={() => { setBusinessForm(b); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    style={{ marginRight: '6px' }}
+                                                >
+                                                    <Edit size={13} />
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-secondary btn-sm"
+                                                    title="Delete Record"
+                                                    onClick={() => deleteItem('businesses', b.id, reloadBusinesses)}
+                                                    style={{ color: '#dc2626' }}
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No local businesses registered yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
