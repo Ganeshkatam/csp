@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Lock, LogOut, Plus, Trash2, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
 // Categories matching only the existing database records
@@ -56,7 +56,7 @@ function ModernSelect({ value, onChange, options, placeholder = "Select an optio
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const formattedOptions = options.map(opt => 
+    const formattedOptions = options.map(opt =>
         typeof opt === 'string' ? { value: opt, label: opt } : opt
     );
 
@@ -94,15 +94,15 @@ function ModernSelect({ value, onChange, options, placeholder = "Select an optio
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: currentOption ? 500 : 400 }}>
                     {displayLabel}
                 </span>
-                <ChevronDown 
-                    size={16} 
-                    style={{ 
-                        color: 'var(--color-slate-500, #64748b)', 
+                <ChevronDown
+                    size={16}
+                    style={{
+                        color: 'var(--color-slate-500, #64748b)',
                         transform: isOpen ? 'rotate(180deg)' : 'none',
                         transition: 'transform 0.2s ease',
                         flexShrink: 0,
                         marginLeft: '8px'
-                    }} 
+                    }}
                 />
             </button>
 
@@ -325,9 +325,9 @@ export default function AdminConsoleView() {
         setAuthLoading(true);
         setAuthError(null);
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ 
-                email: email.trim(), 
-                password: password 
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email.trim(),
+                password: password
             });
             if (error) throw error;
             setUser(data.user);
@@ -705,28 +705,28 @@ export default function AdminConsoleView() {
                     <form onSubmit={handleLogin}>
                         <div className="form-group">
                             <label className="form-label">Email Address</label>
-                            <input 
-                                type="email" 
-                                className="form-control" 
+                            <input
+                                type="email"
+                                className="form-control"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="name@domain.com"
-                                required 
+                                required
                             />
                         </div>
                         <div className="form-group">
                             <label className="form-label">Password</label>
-                            <input 
-                                type="password" 
-                                className="form-control" 
+                            <input
+                                type="password"
+                                className="form-control"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                required 
+                                required
                             />
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="btn btn-primary btn-block"
                             disabled={authLoading}
                             style={{ minHeight: '44px', marginTop: '1rem' }}
@@ -760,48 +760,48 @@ export default function AdminConsoleView() {
                     <form onSubmit={handleFirstTimePasswordChange}>
                         <div className="form-group">
                             <label className="form-label">Account Email</label>
-                            <input 
-                                type="text" 
-                                className="form-control" 
-                                value={user.email} 
-                                disabled 
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={user.email}
+                                disabled
                                 style={{ background: 'var(--color-slate-100)', color: 'var(--color-slate-600)' }}
                             />
                         </div>
                         <div className="form-group">
                             <label className="form-label">New Private Password *</label>
-                            <input 
-                                type="password" 
-                                className="form-control" 
+                            <input
+                                type="password"
+                                className="form-control"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 placeholder="At least 6 characters"
-                                required 
+                                required
                                 minLength={6}
                             />
                         </div>
                         <div className="form-group">
                             <label className="form-label">Confirm New Password *</label>
-                            <input 
-                                type="password" 
-                                className="form-control" 
+                            <input
+                                type="password"
+                                className="form-control"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="Re-enter new password"
-                                required 
+                                required
                                 minLength={6}
                             />
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="btn btn-primary btn-block"
                             disabled={changePasswordLoading}
                             style={{ minHeight: '44px', marginTop: '1rem' }}
                         >
                             {changePasswordLoading ? 'Saving New Password...' : 'Save New Password & Enter Console'}
                         </button>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="btn btn-secondary btn-block"
                             onClick={handleLogout}
                             style={{ minHeight: '40px', marginTop: '0.5rem' }}
@@ -864,22 +864,22 @@ export default function AdminConsoleView() {
                         <div className="choice-grid columns-2">
                             <div className="form-group">
                                 <label className="form-label">Village / Habitation Name *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.name}
                                     onChange={(e) => setVillage({ ...village, name: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Gram Panchayat *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.gram_panchayat}
                                     onChange={(e) => setVillage({ ...village, gram_panchayat: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                         </div>
@@ -887,40 +887,40 @@ export default function AdminConsoleView() {
                         <div className="choice-grid columns-3">
                             <div className="form-group">
                                 <label className="form-label">Mandal / Taluk *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.mandal}
                                     onChange={(e) => setVillage({ ...village, mandal: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">District *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.district}
                                     onChange={(e) => setVillage({ ...village, district: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">State *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.state}
                                     onChange={(e) => setVillage({ ...village, state: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                         </div>
 
                         <div className="form-group">
                             <label className="form-label">Habitation Overview & Description</label>
-                            <textarea 
-                                className="form-control" 
+                            <textarea
+                                className="form-control"
                                 rows="3"
                                 value={village.description}
                                 onChange={(e) => setVillage({ ...village, description: e.target.value })}
@@ -930,22 +930,22 @@ export default function AdminConsoleView() {
                         <div className="choice-grid columns-2">
                             <div className="form-group">
                                 <label className="form-label">Verification Source *</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     value={village.source}
                                     onChange={(e) => setVillage({ ...village, source: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Verified Date *</label>
-                                <input 
-                                    type="date" 
-                                    className="form-control" 
+                                <input
+                                    type="date"
+                                    className="form-control"
                                     value={village.verified_on}
                                     onChange={(e) => setVillage({ ...village, verified_on: e.target.value })}
-                                    required 
+                                    required
                                 />
                             </div>
                         </div>
@@ -965,8 +965,8 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Announcements & Ticker Notices</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage announcements displayed across the live ticker and the citizen community notice board.</p>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={showAnnouncementForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
                             onClick={() => {
                                 if (showAnnouncementForm && announcementForm.id) {
@@ -996,9 +996,9 @@ export default function AdminConsoleView() {
                                         {announcementForm.id ? `Editing ID #${announcementForm.id}` : 'New Entry'}
                                     </span>
                                 </div>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary btn-sm" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
                                     onClick={() => {
                                         setAnnouncementForm(defaultAnnouncement);
                                         setShowAnnouncementForm(false);
@@ -1009,111 +1009,111 @@ export default function AdminConsoleView() {
                                 </button>
                             </div>
 
-                        <form onSubmit={handleSaveAnnouncement}>
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Announcement Title (English) *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={announcementForm.title}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })}
-                                        placeholder="e.g. Free Health Screening Camp"
-                                        required 
-                                    />
+                            <form onSubmit={handleSaveAnnouncement}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Announcement Title (English) *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={announcementForm.title}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })}
+                                            placeholder="e.g. Free Health Screening Camp"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Announcement Title (Telugu)</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={announcementForm.title_te}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, title_te: e.target.value })}
+                                            placeholder="ఉచిత ఆరోగ్య పరీక్షా శిబిరం"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Announcement Title (Telugu)</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={announcementForm.title_te}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, title_te: e.target.value })}
-                                        placeholder="ఉచిత ఆరోగ్య పరీక్షా శిబిరం"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Category *</label>
-                                    <ModernSelect 
-                                        value={announcementForm.category}
-                                        onChange={(val) => setAnnouncementForm({ ...announcementForm, category: val })}
-                                        options={ANNOUNCEMENT_CATEGORIES}
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Category *</label>
+                                        <ModernSelect
+                                            value={announcementForm.category}
+                                            onChange={(val) => setAnnouncementForm({ ...announcementForm, category: val })}
+                                            options={ANNOUNCEMENT_CATEGORIES}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Event Date</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={announcementForm.event_date || ""}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, event_date: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Event Date</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={announcementForm.event_date || ""}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, event_date: e.target.value })}
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="form-group">
-                                <label className="form-label">Description (English) *</label>
-                                <textarea 
-                                    className="form-control" 
-                                    rows="2"
-                                    value={announcementForm.description}
-                                    onChange={(e) => setAnnouncementForm({ ...announcementForm, description: e.target.value })}
-                                    placeholder="Detailed overview of the announcement..."
-                                    required 
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">Description (Telugu)</label>
-                                <textarea 
-                                    className="form-control" 
-                                    rows="2"
-                                    value={announcementForm.description_te}
-                                    onChange={(e) => setAnnouncementForm({ ...announcementForm, description_te: e.target.value })}
-                                    placeholder="ప్రకటన వివరాలు..."
-                                />
-                            </div>
-
-                            <div className="choice-grid columns-3">
                                 <div className="form-group">
-                                    <label className="form-label">Verification Source *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={announcementForm.source}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, source: e.target.value })}
-                                        placeholder="Grama Panchayat Notice Board"
-                                        required 
+                                    <label className="form-label">Description (English) *</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="2"
+                                        value={announcementForm.description}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, description: e.target.value })}
+                                        placeholder="Detailed overview of the announcement..."
+                                        required
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Verified Date *</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={announcementForm.verified_on}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, verified_on: e.target.value })}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Status *</label>
-                                    <ModernSelect 
-                                        value={announcementForm.status}
-                                        onChange={(val) => setAnnouncementForm({ ...announcementForm, status: val })}
-                                        options={STATUS_OPTIONS}
-                                    />
-                                </div>
-                            </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-                                {announcementForm.id ? 'Save Changes' : 'Publish Announcement'}
-                            </button>
-                        </form>
-                    </div>
+                                <div className="form-group">
+                                    <label className="form-label">Description (Telugu)</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="2"
+                                        value={announcementForm.description_te}
+                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, description_te: e.target.value })}
+                                        placeholder="ప్రకటన వివరాలు..."
+                                    />
+                                </div>
+
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={announcementForm.source}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, source: e.target.value })}
+                                            placeholder="Grama Panchayat Notice Board"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={announcementForm.verified_on}
+                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Status *</label>
+                                        <ModernSelect
+                                            value={announcementForm.status}
+                                            onChange={(val) => setAnnouncementForm({ ...announcementForm, status: val })}
+                                            options={STATUS_OPTIONS}
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    {announcementForm.id ? 'Save Changes' : 'Publish Announcement'}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Announcements Ledger */}
@@ -1146,8 +1146,8 @@ export default function AdminConsoleView() {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title={a.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
                                                     onClick={() => handleToggleStatus('announcements', a, reloadAnnouncements)}
@@ -1155,21 +1155,21 @@ export default function AdminConsoleView() {
                                                 >
                                                     {a.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { 
-                                                        setAnnouncementForm(a); 
-                                                        setShowAnnouncementForm(true); 
-                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    onClick={() => {
+                                                        setAnnouncementForm(a);
+                                                        setShowAnnouncementForm(true);
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' });
                                                     }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Delete Record"
                                                     onClick={() => deleteItem('announcements', a.id, reloadAnnouncements)}
@@ -1199,8 +1199,8 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Government Welfare Schemes</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage welfare programs, eligibility rules, document checklists, and application links.</p>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={showSchemeForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
                             onClick={() => {
                                 if (showSchemeForm && schemeForm.id) {
@@ -1230,9 +1230,9 @@ export default function AdminConsoleView() {
                                         {schemeForm.id ? `Editing ID #${schemeForm.id}` : 'New Entry'}
                                     </span>
                                 </div>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary btn-sm" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
                                     onClick={() => {
                                         setSchemeForm(defaultScheme);
                                         setShowSchemeForm(false);
@@ -1243,127 +1243,127 @@ export default function AdminConsoleView() {
                                 </button>
                             </div>
 
-                        <form onSubmit={handleSaveScheme}>
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Scheme Name (English) *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={schemeForm.name}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, name: e.target.value })}
-                                        placeholder="e.g. PM-KISAN Samman Nidhi"
-                                        required 
-                                    />
+                            <form onSubmit={handleSaveScheme}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Scheme Name (English) *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={schemeForm.name}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, name: e.target.value })}
+                                            placeholder="e.g. PM-KISAN Samman Nidhi"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Scheme Name (Telugu)</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={schemeForm.name_te}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, name_te: e.target.value })}
+                                            placeholder="పీఎం కిసాన్ సంక్షేమ పథకం"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Scheme Name (Telugu)</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={schemeForm.name_te}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, name_te: e.target.value })}
-                                        placeholder="పీఎం కిసాన్ సంక్షేమ పథకం"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Category *</label>
-                                    <ModernSelect 
-                                        value={schemeForm.category}
-                                        onChange={(val) => setSchemeForm({ ...schemeForm, category: val })}
-                                        options={SCHEME_CATEGORIES}
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Category *</label>
+                                        <ModernSelect
+                                            value={schemeForm.category}
+                                            onChange={(val) => setSchemeForm({ ...schemeForm, category: val })}
+                                            options={SCHEME_CATEGORIES}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Official Portal URL *</label>
+                                        <input
+                                            type="url"
+                                            className="form-control"
+                                            value={schemeForm.official_url}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, official_url: e.target.value })}
+                                            placeholder="https://pmkisan.gov.in"
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Official Portal URL *</label>
-                                    <input 
-                                        type="url" 
-                                        className="form-control" 
-                                        value={schemeForm.official_url}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, official_url: e.target.value })}
-                                        placeholder="https://pmkisan.gov.in"
-                                        required 
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="form-group">
-                                <label className="form-label">Benefits Description *</label>
-                                <textarea 
-                                    className="form-control" 
-                                    rows="2"
-                                    value={schemeForm.description}
-                                    onChange={(e) => setSchemeForm({ ...schemeForm, description: e.target.value })}
-                                    placeholder="e.g. Financial benefit of Rs. 6,000 per year in three equal installments..."
-                                    required 
-                                />
-                            </div>
-
-                            <div className="choice-grid columns-2">
                                 <div className="form-group">
-                                    <label className="form-label">Eligibility Criteria *</label>
-                                    <textarea 
-                                        className="form-control" 
+                                    <label className="form-label">Benefits Description *</label>
+                                    <textarea
+                                        className="form-control"
                                         rows="2"
-                                        value={schemeForm.eligibility}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, eligibility: e.target.value })}
-                                        placeholder="Small and marginal landholder farmer families..."
-                                        required 
+                                        value={schemeForm.description}
+                                        onChange={(e) => setSchemeForm({ ...schemeForm, description: e.target.value })}
+                                        placeholder="e.g. Financial benefit of Rs. 6,000 per year in three equal installments..."
+                                        required
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Required Documents *</label>
-                                    <textarea 
-                                        className="form-control" 
-                                        rows="2"
-                                        value={schemeForm.documents}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, documents: e.target.value })}
-                                        placeholder="Aadhaar Card, Land records passbook, Bank account..."
-                                        required 
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Verification Source *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={schemeForm.source}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, source: e.target.value })}
-                                        placeholder="Agriculture Extension Officer"
-                                        required 
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Eligibility Criteria *</label>
+                                        <textarea
+                                            className="form-control"
+                                            rows="2"
+                                            value={schemeForm.eligibility}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, eligibility: e.target.value })}
+                                            placeholder="Small and marginal landholder farmer families..."
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Required Documents *</label>
+                                        <textarea
+                                            className="form-control"
+                                            rows="2"
+                                            value={schemeForm.documents}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, documents: e.target.value })}
+                                            placeholder="Aadhaar Card, Land records passbook, Bank account..."
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Verified Date *</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={schemeForm.verified_on}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, verified_on: e.target.value })}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Status *</label>
-                                    <ModernSelect 
-                                        value={schemeForm.status}
-                                        onChange={(val) => setSchemeForm({ ...schemeForm, status: val })}
-                                        options={STATUS_OPTIONS}
-                                    />
-                                </div>
-                            </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-                                {schemeForm.id ? 'Save Changes' : 'Add Welfare Scheme'}
-                            </button>
-                        </form>
-                    </div>
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={schemeForm.source}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, source: e.target.value })}
+                                            placeholder="Agriculture Extension Officer"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={schemeForm.verified_on}
+                                            onChange={(e) => setSchemeForm({ ...schemeForm, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Status *</label>
+                                        <ModernSelect
+                                            value={schemeForm.status}
+                                            onChange={(val) => setSchemeForm({ ...schemeForm, status: val })}
+                                            options={STATUS_OPTIONS}
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    {schemeForm.id ? 'Save Changes' : 'Add Welfare Scheme'}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Schemes Ledger */}
@@ -1401,8 +1401,8 @@ export default function AdminConsoleView() {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title={s.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
                                                     onClick={() => handleToggleStatus('schemes', s, reloadSchemes)}
@@ -1410,21 +1410,21 @@ export default function AdminConsoleView() {
                                                 >
                                                     {s.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { 
-                                                        setSchemeForm(s); 
-                                                        setShowSchemeForm(true); 
-                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    onClick={() => {
+                                                        setSchemeForm(s);
+                                                        setShowSchemeForm(true);
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' });
                                                     }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Delete Record"
                                                     onClick={() => deleteItem('schemes', s.id, reloadSchemes)}
@@ -1454,8 +1454,8 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Emergency & Civic Contacts</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage verified helpline numbers and administrative officers with one-tap dialing.</p>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={showContactForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
                             onClick={() => {
                                 if (showContactForm && contactForm.id) {
@@ -1485,9 +1485,9 @@ export default function AdminConsoleView() {
                                         {contactForm.id ? `Editing ID #${contactForm.id}` : 'New Entry'}
                                     </span>
                                 </div>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary btn-sm" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
                                     onClick={() => {
                                         setContactForm(defaultContact);
                                         setShowContactForm(false);
@@ -1498,123 +1498,123 @@ export default function AdminConsoleView() {
                                 </button>
                             </div>
 
-                        <form onSubmit={handleSaveContact}>
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Contact / Office Name (English) *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.name}
-                                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                                        placeholder="e.g. 108 Emergency Ambulance"
-                                        required 
-                                    />
+                            <form onSubmit={handleSaveContact}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Contact / Office Name (English) *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.name}
+                                            onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                                            placeholder="e.g. 108 Emergency Ambulance"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Contact / Office Name (Telugu)</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.name_te}
+                                            onChange={(e) => setContactForm({ ...contactForm, name_te: e.target.value })}
+                                            placeholder="108 అత్యవసర అంబులెన్స్"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Contact / Office Name (Telugu)</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.name_te}
-                                        onChange={(e) => setContactForm({ ...contactForm, name_te: e.target.value })}
-                                        placeholder="108 అత్యవసర అంబులెన్స్"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Category *</label>
-                                    <ModernSelect 
-                                        value={contactForm.category}
-                                        onChange={(val) => setContactForm({ ...contactForm, category: val })}
-                                        options={CONTACT_CATEGORIES}
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Category *</label>
+                                        <ModernSelect
+                                            value={contactForm.category}
+                                            onChange={(val) => setContactForm({ ...contactForm, category: val })}
+                                            options={CONTACT_CATEGORIES}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Phone Number *</label>
+                                        <input
+                                            type="tel"
+                                            className="form-control"
+                                            value={contactForm.phone}
+                                            onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                                            placeholder="108 or 10-digit mobile"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Designation</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.designation}
+                                            onChange={(e) => setContactForm({ ...contactForm, designation: e.target.value })}
+                                            placeholder="e.g. Village Secretary"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Phone Number *</label>
-                                    <input 
-                                        type="tel" 
-                                        className="form-control" 
-                                        value={contactForm.phone}
-                                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                                        placeholder="108 or 10-digit mobile"
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Designation</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.designation}
-                                        onChange={(e) => setContactForm({ ...contactForm, designation: e.target.value })}
-                                        placeholder="e.g. Village Secretary"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Jurisdiction</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.jurisdiction}
-                                        onChange={(e) => setContactForm({ ...contactForm, jurisdiction: e.target.value })}
-                                        placeholder="Andhra Pradesh or Grama Panchayat"
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Jurisdiction</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.jurisdiction}
+                                            onChange={(e) => setContactForm({ ...contactForm, jurisdiction: e.target.value })}
+                                            placeholder="Andhra Pradesh or Grama Panchayat"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Operating Availability</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.availability}
+                                            onChange={(e) => setContactForm({ ...contactForm, availability: e.target.value })}
+                                            placeholder="24x7 Toll-Free or 9 AM - 5 PM"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Operating Availability</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.availability}
-                                        onChange={(e) => setContactForm({ ...contactForm, availability: e.target.value })}
-                                        placeholder="24x7 Toll-Free or 9 AM - 5 PM"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Verification Source *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={contactForm.source}
-                                        onChange={(e) => setContactForm({ ...contactForm, source: e.target.value })}
-                                        placeholder="District Administration Portal"
-                                        required 
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactForm.source}
+                                            onChange={(e) => setContactForm({ ...contactForm, source: e.target.value })}
+                                            placeholder="District Administration Portal"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={contactForm.verified_on}
+                                            onChange={(e) => setContactForm({ ...contactForm, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Status *</label>
+                                        <ModernSelect
+                                            value={contactForm.status}
+                                            onChange={(val) => setContactForm({ ...contactForm, status: val })}
+                                            options={STATUS_OPTIONS}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Verified Date *</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={contactForm.verified_on}
-                                        onChange={(e) => setContactForm({ ...contactForm, verified_on: e.target.value })}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Status *</label>
-                                    <ModernSelect 
-                                        value={contactForm.status}
-                                        onChange={(val) => setContactForm({ ...contactForm, status: val })}
-                                        options={STATUS_OPTIONS}
-                                    />
-                                </div>
-                            </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-                                {contactForm.id ? 'Save Changes' : 'Add Contact Record'}
-                            </button>
-                        </form>
-                    </div>
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    {contactForm.id ? 'Save Changes' : 'Add Contact Record'}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Contacts Ledger */}
@@ -1652,8 +1652,8 @@ export default function AdminConsoleView() {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title={c.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
                                                     onClick={() => handleToggleStatus('contacts', c, reloadContacts)}
@@ -1661,21 +1661,21 @@ export default function AdminConsoleView() {
                                                 >
                                                     {c.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { 
-                                                        setContactForm(c); 
-                                                        setShowContactForm(true); 
-                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    onClick={() => {
+                                                        setContactForm(c);
+                                                        setShowContactForm(true);
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' });
                                                     }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Delete Record"
                                                     onClick={() => deleteItem('contacts', c.id, reloadContacts)}
@@ -1705,8 +1705,8 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Healthcare & Education Institutions</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage public institutions including Primary Health Centre, Schools, and Anganwadis.</p>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={showInstitutionForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
                             onClick={() => {
                                 if (showInstitutionForm && institutionForm.id) {
@@ -1736,9 +1736,9 @@ export default function AdminConsoleView() {
                                         {institutionForm.id ? `Editing ID #${institutionForm.id}` : 'New Entry'}
                                     </span>
                                 </div>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary btn-sm" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
                                     onClick={() => {
                                         setInstitutionForm(defaultInstitution);
                                         setShowInstitutionForm(false);
@@ -1749,123 +1749,123 @@ export default function AdminConsoleView() {
                                 </button>
                             </div>
 
-                        <form onSubmit={handleSaveInstitution}>
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Institution Name (English) *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.name}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, name: e.target.value })}
-                                        placeholder="e.g. Primary Health Centre (PHC)"
-                                        required 
-                                    />
+                            <form onSubmit={handleSaveInstitution}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Institution Name (English) *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.name}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, name: e.target.value })}
+                                            placeholder="e.g. Primary Health Centre (PHC)"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Institution Name (Telugu)</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.name_te}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, name_te: e.target.value })}
+                                            placeholder="ప్రాథమిక ఆరోగ్య కేంద్రం"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Institution Name (Telugu)</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.name_te}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, name_te: e.target.value })}
-                                        placeholder="ప్రాథమిక ఆరోగ్య కేంద్రం"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Facility Type *</label>
-                                    <ModernSelect 
-                                        value={institutionForm.type}
-                                        onChange={(val) => setInstitutionForm({ ...institutionForm, type: val })}
-                                        options={INSTITUTION_TYPES}
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Facility Type *</label>
+                                        <ModernSelect
+                                            value={institutionForm.type}
+                                            onChange={(val) => setInstitutionForm({ ...institutionForm, type: val })}
+                                            options={INSTITUTION_TYPES}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className="form-control"
+                                            value={institutionForm.phone}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, phone: e.target.value })}
+                                            placeholder="Contact phone"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Timings / Working Hours</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.timings}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, timings: e.target.value })}
+                                            placeholder="9:00 AM - 4:00 PM"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Phone Number</label>
-                                    <input 
-                                        type="tel" 
-                                        className="form-control" 
-                                        value={institutionForm.phone}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, phone: e.target.value })}
-                                        placeholder="Contact phone"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Timings / Working Hours</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.timings}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, timings: e.target.value })}
-                                        placeholder="9:00 AM - 4:00 PM"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Address / Location *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.address}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, address: e.target.value })}
-                                        placeholder="Main Road, Near Panchayat Office"
-                                        required 
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Address / Location *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.address}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, address: e.target.value })}
+                                            placeholder="Main Road, Near Panchayat Office"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Services Provided</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.services}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, services: e.target.value })}
+                                            placeholder="OPD, Immunization, Diagnostic checks"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Services Provided</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.services}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, services: e.target.value })}
-                                        placeholder="OPD, Immunization, Diagnostic checks"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Verification Source *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={institutionForm.source}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, source: e.target.value })}
-                                        placeholder="Medical Officer Verification"
-                                        required 
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={institutionForm.source}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, source: e.target.value })}
+                                            placeholder="Medical Officer Verification"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={institutionForm.verified_on}
+                                            onChange={(e) => setInstitutionForm({ ...institutionForm, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Status *</label>
+                                        <ModernSelect
+                                            value={institutionForm.status}
+                                            onChange={(val) => setInstitutionForm({ ...institutionForm, status: val })}
+                                            options={STATUS_OPTIONS}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Verified Date *</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={institutionForm.verified_on}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, verified_on: e.target.value })}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Status *</label>
-                                    <ModernSelect 
-                                        value={institutionForm.status}
-                                        onChange={(val) => setInstitutionForm({ ...institutionForm, status: val })}
-                                        options={STATUS_OPTIONS}
-                                    />
-                                </div>
-                            </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-                                {institutionForm.id ? 'Save Changes' : 'Add Institution'}
-                            </button>
-                        </form>
-                    </div>
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    {institutionForm.id ? 'Save Changes' : 'Add Institution'}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Institutions Ledger */}
@@ -1901,8 +1901,8 @@ export default function AdminConsoleView() {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title={inst.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
                                                     onClick={() => handleToggleStatus('institutions', inst, reloadInstitutions)}
@@ -1910,21 +1910,21 @@ export default function AdminConsoleView() {
                                                 >
                                                     {inst.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { 
-                                                        setInstitutionForm(inst); 
-                                                        setShowInstitutionForm(true); 
-                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    onClick={() => {
+                                                        setInstitutionForm(inst);
+                                                        setShowInstitutionForm(true);
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' });
                                                     }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Delete Record"
                                                     onClick={() => deleteItem('institutions', inst.id, reloadInstitutions)}
@@ -1954,8 +1954,8 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Local Businesses & Self-Help Groups</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage rural enterprises, agricultural tools, electricians, artisans, and women's self-help groups.</p>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={showBusinessForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
                             onClick={() => {
                                 if (showBusinessForm && businessForm.id) {
@@ -1985,9 +1985,9 @@ export default function AdminConsoleView() {
                                         {businessForm.id ? `Editing ID #${businessForm.id}` : 'New Entry'}
                                     </span>
                                 </div>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-secondary btn-sm" 
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
                                     onClick={() => {
                                         setBusinessForm(defaultBusiness);
                                         setShowBusinessForm(false);
@@ -1998,124 +1998,124 @@ export default function AdminConsoleView() {
                                 </button>
                             </div>
 
-                        <form onSubmit={handleSaveBusiness}>
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Enterprise Name (English) *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.name}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, name: e.target.value })}
-                                        placeholder="e.g. Sri Lakshmi Motor Rewinding Works"
-                                        required 
-                                    />
+                            <form onSubmit={handleSaveBusiness}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Enterprise Name (English) *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.name}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, name: e.target.value })}
+                                            placeholder="e.g. Sri Lakshmi Motor Rewinding Works"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Enterprise Name (Telugu)</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.name_te}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, name_te: e.target.value })}
+                                            placeholder="శ్రీ లక్ష్మి మోటార్ రివైండింగ్ వర్క్స్"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Enterprise Name (Telugu)</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.name_te}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, name_te: e.target.value })}
-                                        placeholder="శ్రీ లక్ష్మి మోటార్ రివైండింగ్ వర్క్స్"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Category *</label>
-                                    <ModernSelect 
-                                        value={businessForm.category}
-                                        onChange={(val) => setBusinessForm({ ...businessForm, category: val })}
-                                        options={BUSINESS_CATEGORIES}
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Category *</label>
+                                        <ModernSelect
+                                            value={businessForm.category}
+                                            onChange={(val) => setBusinessForm({ ...businessForm, category: val })}
+                                            options={BUSINESS_CATEGORIES}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Proprietor / Contact Person</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.owner_name}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, owner_name: e.target.value })}
+                                            placeholder="Owner name"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Contact Phone</label>
+                                        <input
+                                            type="tel"
+                                            className="form-control"
+                                            value={businessForm.phone}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, phone: e.target.value })}
+                                            placeholder="10-digit mobile number"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Proprietor / Contact Person</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.owner_name}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, owner_name: e.target.value })}
-                                        placeholder="Owner name"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Contact Phone</label>
-                                    <input 
-                                        type="tel" 
-                                        className="form-control" 
-                                        value={businessForm.phone}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, phone: e.target.value })}
-                                        placeholder="10-digit mobile number"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-2">
-                                <div className="form-group">
-                                    <label className="form-label">Services / Products Offered *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.services}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, services: e.target.value })}
-                                        placeholder="Submersible pump repair, agricultural motor rewinding..."
-                                        required 
-                                    />
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Services / Products Offered *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.services}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, services: e.target.value })}
+                                            placeholder="Submersible pump repair, agricultural motor rewinding..."
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Shop Address / Landmark *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.address}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
+                                            placeholder="Main Bazaar Road, Opp. Bus Stop"
+                                            required
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Shop Address / Landmark *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.address}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, address: e.target.value })}
-                                        placeholder="Main Bazaar Road, Opp. Bus Stop"
-                                        required 
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="choice-grid columns-3">
-                                <div className="form-group">
-                                    <label className="form-label">Verification Source *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        value={businessForm.source}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, source: e.target.value })}
-                                        placeholder="Field Survey Ground Verification"
-                                        required 
-                                    />
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={businessForm.source}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, source: e.target.value })}
+                                            placeholder="Field Survey Ground Verification"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={businessForm.verified_on}
+                                            onChange={(e) => setBusinessForm({ ...businessForm, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Status *</label>
+                                        <ModernSelect
+                                            value={businessForm.status}
+                                            onChange={(val) => setBusinessForm({ ...businessForm, status: val })}
+                                            options={STATUS_OPTIONS}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label className="form-label">Verified Date *</label>
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        value={businessForm.verified_on}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, verified_on: e.target.value })}
-                                        required 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label className="form-label">Status *</label>
-                                    <ModernSelect 
-                                        value={businessForm.status}
-                                        onChange={(val) => setBusinessForm({ ...businessForm, status: val })}
-                                        options={STATUS_OPTIONS}
-                                    />
-                                </div>
-                            </div>
 
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-                                {businessForm.id ? 'Save Changes' : 'Add Business Record'}
-                            </button>
-                        </form>
-                    </div>
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    {businessForm.id ? 'Save Changes' : 'Add Business Record'}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Businesses Ledger */}
@@ -2151,8 +2151,8 @@ export default function AdminConsoleView() {
                                                 </span>
                                             </td>
                                             <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title={b.status === 'published' ? 'Unpublish to Draft' : 'Publish'}
                                                     onClick={() => handleToggleStatus('businesses', b, reloadBusinesses)}
@@ -2160,21 +2160,21 @@ export default function AdminConsoleView() {
                                                 >
                                                     {b.status === 'published' ? <EyeOff size={13} /> : <Eye size={13} />}
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { 
-                                                        setBusinessForm(b); 
-                                                        setShowBusinessForm(true); 
-                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    onClick={() => {
+                                                        setBusinessForm(b);
+                                                        setShowBusinessForm(true);
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' });
                                                     }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
                                                 </button>
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="btn btn-secondary btn-sm"
                                                     title="Delete Record"
                                                     onClick={() => deleteItem('businesses', b.id, reloadBusinesses)}
@@ -2247,30 +2247,30 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-2">
                                 <div className="form-group">
                                     <label className="form-label">Email Address *</label>
-                                    <input 
-                                        type="email" 
-                                        className="form-control" 
+                                    <input
+                                        type="email"
+                                        className="form-control"
                                         value={newAccountEmail}
                                         onChange={(e) => setNewAccountEmail(e.target.value)}
                                         placeholder="user@example.com"
-                                        required 
+                                        required
                                     />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Temporary Initial Password *</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
+                                    <input
+                                        type="text"
+                                        className="form-control"
                                         value={newAccountTempPassword}
                                         onChange={(e) => setNewAccountTempPassword(e.target.value)}
                                         placeholder="e.g. TempPass2026!"
-                                        required 
+                                        required
                                         minLength={6}
                                     />
                                 </div>
                             </div>
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="btn btn-primary"
                                 disabled={createAccountLoading}
                                 style={{ marginTop: '0.5rem' }}
@@ -2345,31 +2345,31 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-2">
                                 <div className="form-group">
                                     <label className="form-label">New Password *</label>
-                                    <input 
-                                        type="password" 
-                                        className="form-control" 
+                                    <input
+                                        type="password"
+                                        className="form-control"
                                         value={selfNewPassword}
                                         onChange={(e) => setSelfNewPassword(e.target.value)}
                                         placeholder="At least 6 characters"
-                                        required 
+                                        required
                                         minLength={6}
                                     />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Confirm New Password *</label>
-                                    <input 
-                                        type="password" 
-                                        className="form-control" 
+                                    <input
+                                        type="password"
+                                        className="form-control"
                                         value={selfConfirmPassword}
                                         onChange={(e) => setSelfConfirmPassword(e.target.value)}
                                         placeholder="Re-enter new password"
-                                        required 
+                                        required
                                         minLength={6}
                                     />
                                 </div>
                             </div>
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="btn btn-secondary"
                                 disabled={selfPasswordLoading}
                                 style={{ marginTop: '0.5rem' }}
