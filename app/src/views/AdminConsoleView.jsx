@@ -31,8 +31,6 @@ export default function AdminConsoleView() {
     const [businesses, setBusinesses] = useState([]);
     const [feedback, setFeedback] = useState([]);
 
-    const [isSignUp, setIsSignUp] = useState(false);
-
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user || null);
@@ -52,40 +50,19 @@ export default function AdminConsoleView() {
         setTimeout(() => setNotification(null), 4000);
     };
 
-    const handleAuth = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         setAuthLoading(true);
         setAuthError(null);
         try {
-            if (isSignUp) {
-                const { data, error } = await supabase.auth.signUp({ 
-                    email: email.trim(), 
-                    password: password 
-                });
-                if (error) throw error;
-                
-                if (data?.session) {
-                    setUser(data.session.user);
-                    notify('Admin account registered and signed in.');
-                } else {
-                    const loginRes = await supabase.auth.signInWithPassword({
-                        email: email.trim(),
-                        password: password
-                    });
-                    if (loginRes.error) throw loginRes.error;
-                    setUser(loginRes.data.user);
-                    notify('Admin account registered and signed in.');
-                }
-            } else {
-                const { data, error } = await supabase.auth.signInWithPassword({ 
-                    email: email.trim(), 
-                    password: password 
-                });
-                if (error) throw error;
-                setUser(data.user);
-            }
+            const { data, error } = await supabase.auth.signInWithPassword({ 
+                email: email.trim(), 
+                password: password 
+            });
+            if (error) throw error;
+            setUser(data.user);
         } catch (err) {
-            setAuthError(err.message || (isSignUp ? 'Registration failed.' : 'Login failed.'));
+            setAuthError(err.message || 'Login failed. Please check your credentials.');
         } finally {
             setAuthLoading(false);
         }
@@ -159,50 +136,13 @@ export default function AdminConsoleView() {
                         <Lock size={36} style={{ color: 'var(--color-gov-navy)', margin: '0 auto 0.5rem' }} />
                         <h1 className="brand-title" style={{ fontSize: '1.5rem' }}>Student / Admin Console</h1>
                         <p className="section-desc">
-                            {isSignUp 
-                                ? 'Create an admin account to obtain write access for village records.' 
-                                : 'Sign in with your verified credentials to manage village information.'}
+                            Sign in with your verified administrator credentials to manage village information.
                         </p>
-                    </div>
-
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--color-slate-200)', marginBottom: '1.25rem' }}>
-                        <button
-                            type="button"
-                            onClick={() => { setIsSignUp(false); setAuthError(null); }}
-                            style={{
-                                flex: 1,
-                                padding: '0.6rem',
-                                border: 'none',
-                                background: 'none',
-                                borderBottom: !isSignUp ? '2px solid var(--color-blue-600)' : '2px solid transparent',
-                                fontWeight: !isSignUp ? 700 : 500,
-                                color: !isSignUp ? 'var(--color-blue-700)' : 'var(--color-slate-500)',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            Sign In
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => { setIsSignUp(true); setAuthError(null); }}
-                            style={{
-                                flex: 1,
-                                padding: '0.6rem',
-                                border: 'none',
-                                background: 'none',
-                                borderBottom: isSignUp ? '2px solid var(--color-blue-600)' : '2px solid transparent',
-                                fontWeight: isSignUp ? 700 : 500,
-                                color: isSignUp ? 'var(--color-blue-700)' : 'var(--color-slate-500)',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            Register Account
-                        </button>
                     </div>
 
                     {authError && <div className="alert alert-danger">{authError}</div>}
 
-                    <form onSubmit={handleAuth}>
+                    <form onSubmit={handleLogin}>
                         <div className="form-group">
                             <label className="form-label">Email Address</label>
                             <input 
@@ -223,7 +163,6 @@ export default function AdminConsoleView() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required 
-                                minLength={6}
                             />
                         </div>
                         <button 
@@ -232,15 +171,11 @@ export default function AdminConsoleView() {
                             disabled={authLoading}
                             style={{ minHeight: '44px', marginTop: '1rem' }}
                         >
-                            {authLoading 
-                                ? (isSignUp ? 'Creating Account...' : 'Authenticating...') 
-                                : (isSignUp ? 'Register Admin Account' : 'Sign In to Admin Console')}
+                            {authLoading ? 'Authenticating...' : 'Sign In to Admin Console'}
                         </button>
                     </form>
                     <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', textAlign: 'center', lineHeight: 1.4 }}>
-                        {isSignUp 
-                            ? 'New accounts are registered directly into Supabase Auth with immediate write permissions.' 
-                            : 'Forgot credentials? You can switch to Register Account to set up an authorized login.'}
+                        Administrator credentials are provisioned directly in the backend. Contact the project supervisor for access.
                     </div>
                 </div>
             </main>
