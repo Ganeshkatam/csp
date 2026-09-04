@@ -965,23 +965,16 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Announcements & Ticker Notices</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage announcements displayed across the live ticker and the citizen community notice board.</p>
                         </div>
-                        <button
-                            type="button"
-                            className={showAnnouncementForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
-                            onClick={() => {
-                                if (showAnnouncementForm && announcementForm.id) {
-                                    setAnnouncementForm(defaultAnnouncement);
-                                }
-                                setShowAnnouncementForm(!showAnnouncementForm);
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        >
-                            {showAnnouncementForm ? (
-                                <><ChevronUp size={15} /> Hide Form</>
-                            ) : (
-                                <><Plus size={15} /> Add New Announcement</>
-                            )}
-                        </button>
+                        {!showAnnouncementForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowAnnouncementForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Plus size={15} /> Add New Announcement
+                            </button>
+                        )}
                     </div>
 
                     {/* Announcement Form Card */}
@@ -1199,23 +1192,16 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Government Welfare Schemes</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage welfare programs, eligibility rules, document checklists, and application links.</p>
                         </div>
-                        <button
-                            type="button"
-                            className={showSchemeForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
-                            onClick={() => {
-                                if (showSchemeForm && schemeForm.id) {
-                                    setSchemeForm(defaultScheme);
-                                }
-                                setShowSchemeForm(!showSchemeForm);
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        >
-                            {showSchemeForm ? (
-                                <><ChevronUp size={15} /> Hide Form</>
-                            ) : (
-                                <><Plus size={15} /> Add New Welfare Scheme</>
-                            )}
-                        </button>
+                        {!showSchemeForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowSchemeForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Plus size={15} /> Add New Welfare Scheme
+                            </button>
+                        )}
                     </div>
 
                     {/* Scheme Form Card */}
@@ -1454,23 +1440,16 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Emergency & Civic Contacts</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage verified helpline numbers and administrative officers with one-tap dialing.</p>
                         </div>
-                        <button
-                            type="button"
-                            className={showContactForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
-                            onClick={() => {
-                                if (showContactForm && contactForm.id) {
-                                    setContactForm(defaultContact);
-                                }
-                                setShowContactForm(!showContactForm);
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        >
-                            {showContactForm ? (
-                                <><ChevronUp size={15} /> Hide Form</>
-                            ) : (
-                                <><Plus size={15} /> Add New Contact</>
-                            )}
-                        </button>
+                        {!showContactForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowContactForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Plus size={15} /> Add New Contact
+                            </button>
+                        )}
                     </div>
 
                     {/* Contact Form Card */}
@@ -1705,23 +1684,16 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Healthcare & Education Institutions</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage public institutions including Primary Health Centre, Schools, and Anganwadis.</p>
                         </div>
-                        <button
-                            type="button"
-                            className={showInstitutionForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
-                            onClick={() => {
-                                if (showInstitutionForm && institutionForm.id) {
-                                    setInstitutionForm(defaultInstitution);
-                                }
-                                setShowInstitutionForm(!showInstitutionForm);
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        >
-                            {showInstitutionForm ? (
-                                <><ChevronUp size={15} /> Hide Form</>
-                            ) : (
-                                <><Plus size={15} /> Add New Institution</>
-                            )}
-                        </button>
+                        {!showInstitutionForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowInstitutionForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Plus size={15} /> Add New Institution
+                            </button>
+                        )}
                     </div>
 
                     {/* Institution Form Card */}
@@ -1954,23 +1926,16 @@ export default function AdminConsoleView() {
                             <h2 className="section-title" style={{ margin: 0 }}>Local Businesses & Self-Help Groups</h2>
                             <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage rural enterprises, agricultural tools, electricians, artisans, and women's self-help groups.</p>
                         </div>
-                        <button
-                            type="button"
-                            className={showBusinessForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
-                            onClick={() => {
-                                if (showBusinessForm && businessForm.id) {
-                                    setBusinessForm(defaultBusiness);
-                                }
-                                setShowBusinessForm(!showBusinessForm);
-                            }}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        >
-                            {showBusinessForm ? (
-                                <><ChevronUp size={15} /> Hide Form</>
-                            ) : (
-                                <><Plus size={15} /> Add New Business</>
-                            )}
-                        </button>
+                        {!showBusinessForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowBusinessForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Plus size={15} /> Add New Business
+                            </button>
+                        )}
                     </div>
 
                     {/* Business Form Card */}
