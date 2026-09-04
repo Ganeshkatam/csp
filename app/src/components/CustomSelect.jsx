@@ -62,7 +62,7 @@ export default function CustomSelect({
         <div 
             className={`custom-select-container ${className} ${isOpen ? 'is-open' : ''}`}
             ref={containerRef}
-            style={{ minWidth }}
+            style={{ minWidth, width: minWidth === '100%' ? '100%' : 'auto', maxWidth: '100%' }}
         >
             <button
                 type="button"

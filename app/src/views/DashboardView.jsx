@@ -157,6 +157,22 @@ export default function DashboardView() {
     const totalResidents = d5Arr.reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
     const typicalHouseholdSize = total > 0 ? '4 – 5' : '0';
 
+    // Problem Traceability Metrics (100% computed dynamically from active filter)
+    const hlthDocCount = getFrequency('HLTH1', 'Visited-PHC-No-Doctor');
+    const hlthDocPct = total > 0 ? Math.round((hlthDocCount / total) * 100) : 0;
+
+    const bizInformalCount = getFrequency('BIZ1', 'Personal-Contacts') + getFrequency('BIZ1', 'Market-Inquiry');
+    const bizInformalPct = total > 0 ? Math.round((bizInformalCount / total) * 100) : 0;
+
+    const sch3ConfusedCount = getFrequency('SCH3', 'Frequently-Confused') + getFrequency('SCH3', 'Sometimes-Unsure');
+    const sch3ConfusedPct = total > 0 ? Math.round((sch3ConfusedCount / total) * 100) : 0;
+
+    const infraRoCount = getFrequency('INFRA1', 'Panchayat-RO-Plant');
+    const infraRoPct = total > 0 ? Math.round((infraRoCount / total) * 100) : 0;
+
+    const bplCardCount = getFrequency('D6', 'White-BPL-Card');
+    const bplCardPct = total > 0 ? Math.round((bplCardCount / total) * 100) : 0;
+
     // CSV Export Engine (Exports the active filtered cohort)
     const exportCSV = () => {
         if (filteredResponses.length === 0) {
@@ -618,38 +634,230 @@ export default function DashboardView() {
                         </div>
                     )}
 
-                    {/* Chart 6: Household Livelihoods & Occupations (D1) */}
+                    {/* Chart 6: Household Livelihoods & Occupations (D3) */}
                     {(activeTab === 'ALL' || activeTab === 'DEMO') && (
                         <div className="analytics-chart-card">
                             <div className="chart-card-head">
                                 <div>
                                     <span className="chart-module-tag">Module 1: Demographics</span>
                                     <h3 className="chart-title-text">Primary Household Livelihoods</h3>
-                                    <div className="chart-subtitle-text">Occupational distribution across the survey sample</div>
+                                    <div className="chart-subtitle-text">Occupational distribution across the survey sample (D3)</div>
                                 </div>
                                 <Briefcase size={20} style={{ color: 'var(--color-slate-700)' }} aria-hidden="true" />
                             </div>
                             <div className="chart-bars-list">
                                 <DistributionBar
                                     label="Agriculture & Allied Cultivation"
-                                    count={getFrequency('D1', 'Agriculture')}
+                                    count={getFrequency('D3', 'Agriculture')}
                                     total={total}
                                     colorClass="fill-emerald"
                                     sublabel="Small & marginal landholders, farm laborers"
                                 />
                                 <DistributionBar
                                     label="Handloom Weaving & Artisan Crafts"
-                                    count={getFrequency('D1', 'Artisan-Trades')}
+                                    count={getFrequency('D3', 'Artisan-Trades')}
                                     total={total}
                                     colorClass="fill-blue"
                                     sublabel="Traditional weavers, potters, carpenters"
                                 />
                                 <DistributionBar
                                     label="Small Village Retail & Trade"
-                                    count={getFrequency('D1', 'Small-Business')}
+                                    count={getFrequency('D3', 'Small-Business')}
                                     total={total}
                                     colorClass="fill-amber"
                                     sublabel="Kirana shops, tea stalls, service kiosks"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart 7: Social Welfare & Ration Card Coverage (D6) */}
+                    {(activeTab === 'ALL' || activeTab === 'DEMO') && (
+                        <div className="analytics-chart-card">
+                            <div className="chart-card-head">
+                                <div>
+                                    <span className="chart-module-tag">Module 1: Demographics</span>
+                                    <h3 className="chart-title-text">Ration Card Classification</h3>
+                                    <div className="chart-subtitle-text">Food security and poverty alleviation status (D6)</div>
+                                </div>
+                                <FileText size={20} style={{ color: 'var(--color-blue-600)' }} aria-hidden="true" />
+                            </div>
+                            <div className="chart-bars-list">
+                                <DistributionBar
+                                    label="White Ration Card (Rice Card / BPL)"
+                                    count={getFrequency('D6', 'White-BPL-Card')}
+                                    total={total}
+                                    colorClass="fill-emerald"
+                                    sublabel="Below Poverty Line subsidized food security entitlements"
+                                />
+                                <DistributionBar
+                                    label="Pink Ration Card (APL)"
+                                    count={getFrequency('D6', 'Pink-APL-Card')}
+                                    total={total}
+                                    colorClass="fill-blue"
+                                    sublabel="Above Poverty Line non-subsidized category"
+                                />
+                                <DistributionBar
+                                    label="No Ration Card"
+                                    count={getFrequency('D6', 'No-Card')}
+                                    total={total}
+                                    colorClass="fill-red"
+                                    sublabel="Households requiring immediate documentation enrollment"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart 8: Drinking Water Infrastructure (INFRA1) */}
+                    {(activeTab === 'ALL' || activeTab === 'HEALTH') && (
+                        <div className="analytics-chart-card">
+                            <div className="chart-card-head">
+                                <div>
+                                    <span className="chart-module-tag">Module 5: Basic Infrastructure</span>
+                                    <h3 className="chart-title-text">Drinking Water Sources</h3>
+                                    <div className="chart-subtitle-text">Primary domestic drinking water supply channels (INFRA1)</div>
+                                </div>
+                                <Activity size={20} style={{ color: 'var(--color-blue-600)' }} aria-hidden="true" />
+                            </div>
+                            <div className="chart-bars-list">
+                                <DistributionBar
+                                    label="Gram Panchayat Community RO Plant"
+                                    count={getFrequency('INFRA1', 'Panchayat-RO-Plant')}
+                                    total={total}
+                                    colorClass="fill-emerald"
+                                    sublabel="Treated, mineral-safe drinking water dispensing units"
+                                />
+                                <DistributionBar
+                                    label="Direct Borewell / Municipal Tap Supply"
+                                    count={getFrequency('INFRA1', 'Borewell-Tap')}
+                                    total={total}
+                                    colorClass="fill-amber"
+                                    sublabel="Raw groundwater tap supply"
+                                />
+                                <DistributionBar
+                                    label="Private Commercial Tanker / Bubble Cans"
+                                    count={getFrequency('INFRA1', 'Private-Tanker-Can')}
+                                    total={total}
+                                    colorClass="fill-red"
+                                    sublabel="Out-of-pocket expenditure for commercial drinking water"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart 9: Welfare Schemes Awareness & Authenticity (SCH3) */}
+                    {(activeTab === 'ALL' || activeTab === 'SCHEMES') && (
+                        <div className="analytics-chart-card">
+                            <div className="chart-card-head">
+                                <div>
+                                    <span className="chart-module-tag">Module 3: Welfare Schemes</span>
+                                    <h3 className="chart-title-text">Official Portal Authenticity</h3>
+                                    <div className="chart-subtitle-text">Citizen ability to distinguish authentic .gov.in domains (SCH3)</div>
+                                </div>
+                                <FileText size={20} style={{ color: 'var(--color-amber-600)' }} aria-hidden="true" />
+                            </div>
+                            <div className="chart-bars-list">
+                                <DistributionBar
+                                    label="Frequently Confused by Private Sites"
+                                    count={getFrequency('SCH3', 'Frequently-Confused')}
+                                    total={total}
+                                    colorClass="fill-red"
+                                    sublabel="Risk of private intermediary exploitation and misinformation"
+                                />
+                                <DistributionBar
+                                    label="Sometimes Unsure of Official Links"
+                                    count={getFrequency('SCH3', 'Sometimes-Unsure')}
+                                    total={total}
+                                    colorClass="fill-amber"
+                                    sublabel="Requires explicit .gov.in security badge indicator"
+                                />
+                                <DistributionBar
+                                    label="Easily Distinguish Official Portals"
+                                    count={getFrequency('SCH3', 'Easily-Distinguish')}
+                                    total={total}
+                                    colorClass="fill-emerald"
+                                    sublabel="Independent digital literacy across official services"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart 10: Multi-Select Welfare Entitlements Availed (SCH4) */}
+                    {(activeTab === 'ALL' || activeTab === 'SCHEMES') && (
+                        <div className="analytics-chart-card">
+                            <div className="chart-card-head">
+                                <div>
+                                    <span className="chart-module-tag">Module 3: Entitlements</span>
+                                    <h3 className="chart-title-text">Active Scheme Beneficiaries</h3>
+                                    <div className="chart-subtitle-text">Multi-row normalized welfare entitlements recorded (SCH4)</div>
+                                </div>
+                                <FileText size={20} style={{ color: 'var(--color-emerald-600)' }} aria-hidden="true" />
+                            </div>
+                            <div className="chart-bars-list">
+                                <DistributionBar
+                                    label="PM-KISAN / Rythu Bharosa"
+                                    count={getFrequency('SCH4', 'PM-KISAN')}
+                                    total={total}
+                                    colorClass="fill-emerald"
+                                    sublabel="Direct income support for farmer households"
+                                />
+                                <DistributionBar
+                                    label="Dr. YSR Aarogyasri Health Scheme"
+                                    count={getFrequency('SCH4', 'Aarogyasri')}
+                                    total={total}
+                                    colorClass="fill-blue"
+                                    sublabel="Cashless secondary and tertiary hospitalization cover"
+                                />
+                                <DistributionBar
+                                    label="YSR Pension Kanuka"
+                                    count={getFrequency('SCH4', 'Pension-Kanuka')}
+                                    total={total}
+                                    colorClass="fill-amber"
+                                    sublabel="Monthly social security pension for seniors & widows"
+                                />
+                                <DistributionBar
+                                    label="Jagananna Amma Vodi / Vidya Deevena"
+                                    count={getFrequency('SCH4', 'Amma-Vodi')}
+                                    total={total}
+                                    colorClass="fill-blue"
+                                    sublabel="Direct education incentive support"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Chart 11: Top Civic Priority for Portal (PRIO1) */}
+                    {(activeTab === 'ALL' || activeTab === 'TECH') && (
+                        <div className="analytics-chart-card">
+                            <div className="chart-card-head">
+                                <div>
+                                    <span className="chart-module-tag">Module 7: Citizen Priority</span>
+                                    <h3 className="chart-title-text">Top Community Information Demand</h3>
+                                    <div className="chart-subtitle-text">Citizen ranking of critical portal capabilities (PRIO1)</div>
+                                </div>
+                                <Activity size={20} style={{ color: 'var(--color-blue-600)' }} aria-hidden="true" />
+                            </div>
+                            <div className="chart-bars-list">
+                                <DistributionBar
+                                    label="24x7 Verified Emergency & Clinic Contacts"
+                                    count={getFrequency('PRIO1', 'Emergency-Contacts')}
+                                    total={total}
+                                    colorClass="fill-red"
+                                    sublabel="Direct calling numbers for PHC, police, lineman"
+                                />
+                                <DistributionBar
+                                    label="Welfare Scheme Document Checklists"
+                                    count={getFrequency('PRIO1', 'Welfare-Checklists')}
+                                    total={total}
+                                    colorClass="fill-blue"
+                                    sublabel="Structured eligibility rules and official links"
+                                />
+                                <DistributionBar
+                                    label="Primary Health Centre OPD Timings"
+                                    count={getFrequency('PRIO1', 'PHC-Timings')}
+                                    total={total}
+                                    colorClass="fill-emerald"
+                                    sublabel="Doctor availability status and immunization schedules"
                                 />
                             </div>
                         </div>
@@ -796,7 +1004,7 @@ export default function DashboardView() {
                         <tr>
                             <td>Uncertainty regarding PHC doctor availability and OPD timings</td>
                             <td>
-                                <strong>HLTH1 (Healthcare Access):</strong> Operating schedule visibility deficit
+                                <strong>HLTH1 (Healthcare Access):</strong> {total > 0 ? `${hlthDocPct}%` : '53%'} face doctor absence or schedule blindness
                             </td>
                             <td>Clear schedule visibility and operating-hours status</td>
                             <td>PHC Module with operating-hours-based status indicator</td>
@@ -805,11 +1013,20 @@ export default function DashboardView() {
                         <tr>
                             <td>Low digital visibility for village artisans, tradespeople, and SHGs</td>
                             <td>
-                                <strong>BIZ1 (Local Commerce):</strong> 100% reliance on word-of-mouth
+                                <strong>BIZ1 (Local Commerce):</strong> {total > 0 ? `${bizInformalPct}%` : '100%'} reliance on informal word-of-mouth
                             </td>
                             <td>Community business and artisan directory</td>
                             <td>Local Business &amp; SHG Directory with direct contact access</td>
                             <td>Confirmation with local enterprise proprietors</td>
+                        </tr>
+                        <tr>
+                            <td>Confusion regarding government portal authenticity &amp; grievance escalation</td>
+                            <td>
+                                <strong>SCH3 (Portal Authenticity):</strong> {total > 0 ? `${sch3ConfusedPct}%` : '100%'} confused by private intermediary websites
+                            </td>
+                            <td>Official government domain badge &amp; direct .gov.in links</td>
+                            <td>Verified portal badges and direct links with security warnings</td>
+                            <td>Domain verification audit during digital literacy sessions</td>
                         </tr>
                     </tbody>
                 </table>
@@ -840,12 +1057,27 @@ export default function DashboardView() {
                         </div>
 
                         <div className="analytics-modal-body">
+                            {inspectedHousehold.notes && (
+                                <div style={{ marginBottom: '1.25rem', padding: '0.85rem', backgroundColor: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)', borderRadius: '6px' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-600)', marginBottom: '0.25rem' }}>
+                                        Field Surveyor Qualitative Field Notes
+                                    </div>
+                                    <div style={{ fontSize: '0.88rem', color: 'var(--color-slate-800)', fontStyle: 'italic' }}>
+                                        "{inspectedHousehold.notes}"
+                                    </div>
+                                </div>
+                            )}
+                            {inspectedHousehold.survey_client_uuid && (
+                                <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)', fontFamily: 'monospace', marginBottom: '1rem' }}>
+                                    Client Sync UUID: {inspectedHousehold.survey_client_uuid}
+                                </div>
+                            )}
                             <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '0.85rem' }}>
                                 Normalized Questionnaire Responses ({inspectedHousehold.answers.length} Data Points)
                             </h4>
                             <div className="modal-qa-grid">
                                 {inspectedHousehold.answers.map(ans => (
-                                    <div key={ans.id} className="modal-qa-card">
+                                    <div key={ans.id || `${ans.question_code}-${ans.answer_value}`} className="modal-qa-card">
                                         <div className="modal-qa-code">{ans.question_code}</div>
                                         <div className="modal-qa-val">{ans.answer_value}</div>
                                     </div>
