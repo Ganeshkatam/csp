@@ -1784,25 +1784,30 @@ main.container {
 .footer-helpline-stack {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.5rem;
 }
 
 .footer-helpline-pill {
     display: inline-flex;
     align-items: center;
+    width: fit-content;
+    max-width: 100%;
     gap: 0.55rem;
-    padding: 0.45rem 0.75rem;
-    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
     font-size: 0.78rem;
     font-weight: 600;
     text-decoration: none;
     color: #ffffff;
     transition: var(--transition-fast);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .footer-helpline-pill:hover {
-    opacity: 0.9;
+    opacity: 0.92;
     transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
 .helpline-slate {
