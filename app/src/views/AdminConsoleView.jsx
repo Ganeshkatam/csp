@@ -2,6 +2,83 @@ import React, { useState, useEffect } from 'react';
 import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
+const ANNOUNCEMENT_CATEGORIES = [
+    "Public Meeting",
+    "Health Camp",
+    "Welfare Drive",
+    "Drinking Water & Sanitation",
+    "Agriculture & Farmers",
+    "Electricity & Power",
+    "Education & Schools",
+    "Weather & Cyclone Alert",
+    "Emergency Alert",
+    "Infrastructure & Road Works",
+    "Revenue & Land Records",
+    "Employment & Skill Camp",
+    "Panchayat Notice",
+    "General Notice"
+];
+
+const SCHEME_CATEGORIES = [
+    "Agriculture",
+    "Healthcare",
+    "Social Welfare",
+    "Social Security",
+    "Housing",
+    "Education",
+    "Women & Child",
+    "Rural Employment & MGNREGA",
+    "Youth & Skill Development",
+    "Disability & Senior Citizens",
+    "Fisheries & Animal Husbandry",
+    "Financial Inclusion & Loans"
+];
+
+const CONTACT_CATEGORIES = [
+    "Administration",
+    "Emergency",
+    "Police",
+    "Healthcare",
+    "Panchayat",
+    "Revenue",
+    "Utilities",
+    "Agriculture & Veterinary",
+    "Education & Anganwadi",
+    "Women & Child Helpline",
+    "Judiciary & Legal Aid"
+];
+
+const INSTITUTION_TYPES = [
+    "Primary Health Centre",
+    "PHC",
+    "Government School",
+    "Education",
+    "Anganwadi Centre",
+    "Village Secretariat",
+    "Panchayat Office",
+    "Veterinary Clinic",
+    "Rythu Bharosa Kendram (RBK)",
+    "Fair Price Shop",
+    "Post Office / Bank Point",
+    "Community Hall"
+];
+
+const BUSINESS_CATEGORIES = [
+    "Dairy & Agriculture",
+    "Electrical & Repair",
+    "Handloom & Textiles",
+    "Transport & Logistics",
+    "Agriculture & Tools",
+    "Electrical & Motors",
+    "Artisans & Handicrafts",
+    "Grocery & Daily Needs",
+    "Self-Help Group (SHG)",
+    "Services & Transport",
+    "Construction & Hardware",
+    "Tailoring & Garments",
+    "Mobile & Digital Services"
+];
+
 const defaultAnnouncement = {
     id: null,
     title: "",
@@ -879,13 +956,24 @@ export default function AdminConsoleView() {
                                     <select 
                                         className="form-control"
                                         value={announcementForm.category}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, category: e.target.value })}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__CUSTOM__') {
+                                                const custom = window.prompt('Enter custom announcement category:');
+                                                if (custom && custom.trim()) {
+                                                    setAnnouncementForm({ ...announcementForm, category: custom.trim() });
+                                                }
+                                            } else {
+                                                setAnnouncementForm({ ...announcementForm, category: e.target.value });
+                                            }
+                                        }}
                                     >
-                                        <option value="Public Meeting">Public Meeting</option>
-                                        <option value="Health Camp">Health Camp</option>
-                                        <option value="Welfare Drive">Welfare Drive</option>
-                                        <option value="Emergency Alert">Emergency Alert</option>
-                                        <option value="General Notice">General Notice</option>
+                                        {ANNOUNCEMENT_CATEGORIES.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                        {!ANNOUNCEMENT_CATEGORIES.includes(announcementForm.category) && announcementForm.category && (
+                                            <option value={announcementForm.category}>{announcementForm.category}</option>
+                                        )}
+                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -1122,14 +1210,24 @@ export default function AdminConsoleView() {
                                     <select 
                                         className="form-control"
                                         value={schemeForm.category}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, category: e.target.value })}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__CUSTOM__') {
+                                                const custom = window.prompt('Enter custom scheme category:');
+                                                if (custom && custom.trim()) {
+                                                    setSchemeForm({ ...schemeForm, category: custom.trim() });
+                                                }
+                                            } else {
+                                                setSchemeForm({ ...schemeForm, category: e.target.value });
+                                            }
+                                        }}
                                     >
-                                        <option value="Agriculture">Agriculture</option>
-                                        <option value="Healthcare">Healthcare</option>
-                                        <option value="Housing">Housing</option>
-                                        <option value="Social Security">Social Security</option>
-                                        <option value="Education">Education</option>
-                                        <option value="Women & Child">Women & Child</option>
+                                        {SCHEME_CATEGORIES.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                        {!SCHEME_CATEGORIES.includes(schemeForm.category) && schemeForm.category && (
+                                            <option value={schemeForm.category}>{schemeForm.category}</option>
+                                        )}
+                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -1387,14 +1485,24 @@ export default function AdminConsoleView() {
                                     <select 
                                         className="form-control"
                                         value={contactForm.category}
-                                        onChange={(e) => setContactForm({ ...contactForm, category: e.target.value })}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__CUSTOM__') {
+                                                const custom = window.prompt('Enter custom contact category:');
+                                                if (custom && custom.trim()) {
+                                                    setContactForm({ ...contactForm, category: custom.trim() });
+                                                }
+                                            } else {
+                                                setContactForm({ ...contactForm, category: e.target.value });
+                                            }
+                                        }}
                                     >
-                                        <option value="Emergency">Emergency</option>
-                                        <option value="Police">Police</option>
-                                        <option value="Healthcare">Healthcare</option>
-                                        <option value="Panchayat">Panchayat</option>
-                                        <option value="Revenue">Revenue</option>
-                                        <option value="Utilities">Utilities</option>
+                                        {CONTACT_CATEGORIES.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                        {!CONTACT_CATEGORIES.includes(contactForm.category) && contactForm.category && (
+                                            <option value={contactForm.category}>{contactForm.category}</option>
+                                        )}
+                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -1648,14 +1756,24 @@ export default function AdminConsoleView() {
                                     <select 
                                         className="form-control"
                                         value={institutionForm.type}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, type: e.target.value })}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__CUSTOM__') {
+                                                const custom = window.prompt('Enter custom institution facility type:');
+                                                if (custom && custom.trim()) {
+                                                    setInstitutionForm({ ...institutionForm, type: custom.trim() });
+                                                }
+                                            } else {
+                                                setInstitutionForm({ ...institutionForm, type: e.target.value });
+                                            }
+                                        }}
                                     >
-                                        <option value="Primary Health Centre">Primary Health Centre</option>
-                                        <option value="Government School">Government School</option>
-                                        <option value="Anganwadi Centre">Anganwadi Centre</option>
-                                        <option value="Veterinary Clinic">Veterinary Clinic</option>
-                                        <option value="Panchayat Office">Panchayat Office</option>
-                                        <option value="Village Secretariat">Village Secretariat</option>
+                                        {INSTITUTION_TYPES.map(t => (
+                                            <option key={t} value={t}>{t}</option>
+                                        ))}
+                                        {!INSTITUTION_TYPES.includes(institutionForm.type) && institutionForm.type && (
+                                            <option value={institutionForm.type}>{institutionForm.type}</option>
+                                        )}
+                                        <option value="__CUSTOM__">+ Enter Custom Facility Type...</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -1907,14 +2025,24 @@ export default function AdminConsoleView() {
                                     <select 
                                         className="form-control"
                                         value={businessForm.category}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, category: e.target.value })}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__CUSTOM__') {
+                                                const custom = window.prompt('Enter custom business category:');
+                                                if (custom && custom.trim()) {
+                                                    setBusinessForm({ ...businessForm, category: custom.trim() });
+                                                }
+                                            } else {
+                                                setBusinessForm({ ...businessForm, category: e.target.value });
+                                            }
+                                        }}
                                     >
-                                        <option value="Agriculture & Tools">Agriculture & Tools</option>
-                                        <option value="Electrical & Motors">Electrical & Motors</option>
-                                        <option value="Artisans & Handicrafts">Artisans & Handicrafts</option>
-                                        <option value="Grocery & Daily Needs">Grocery & Daily Needs</option>
-                                        <option value="Self-Help Group (SHG)">Self-Help Group (SHG)</option>
-                                        <option value="Services & Transport">Services & Transport</option>
+                                        {BUSINESS_CATEGORIES.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                        {!BUSINESS_CATEGORIES.includes(businessForm.category) && businessForm.category && (
+                                            <option value={businessForm.category}>{businessForm.category}</option>
+                                        )}
+                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
