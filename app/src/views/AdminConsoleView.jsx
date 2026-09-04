@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
 export default function AdminConsoleView() {
@@ -8,6 +8,25 @@ export default function AdminConsoleView() {
     const [password, setPassword] = useState('');
     const [authLoading, setAuthLoading] = useState(false);
     const [authError, setAuthError] = useState(null);
+
+    // Password Change on First Login
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+    const [changePasswordError, setChangePasswordError] = useState(null);
+
+    // Admin User Provisioning
+    const [adminUsers, setAdminUsers] = useState([]);
+    const [newAccountEmail, setNewAccountEmail] = useState('');
+    const [newAccountTempPassword, setNewAccountTempPassword] = useState('');
+    const [createAccountLoading, setCreateAccountLoading] = useState(false);
+    const [createAccountError, setCreateAccountError] = useState(null);
+
+    // Voluntary Password Update
+    const [selfNewPassword, setSelfNewPassword] = useState('');
+    const [selfConfirmPassword, setSelfConfirmPassword] = useState('');
+    const [selfPasswordLoading, setSelfPasswordLoading] = useState(false);
+    const [selfPasswordError, setSelfPasswordError] = useState(null);
 
     const [activeTab, setActiveTab] = useState('profile');
     const [notification, setNotification] = useState(null);
@@ -92,10 +111,123 @@ export default function AdminConsoleView() {
             if (iRes.data) setInstitutions(iRes.data);
             if (bRes.data) setBusinesses(bRes.data);
             if (fRes.data) setFeedback(fRes.data);
+
+            loadAdminUsers();
         } catch (err) {
             console.error('Failed to load admin data:', err);
         }
     }
+
+    async function loadAdminUsers() {
+        try {
+            const { data, error } = await supabase.rpc('get_admin_users');
+            if (!error && data) {
+                setAdminUsers(data);
+            }
+        } catch (err) {
+            console.error('Failed to load admin users:', err);
+        }
+    }
+
+    // First-Time Mandatory Password Change
+    const handleFirstTimePasswordChange = async (e) => {
+        e.preventDefault();
+        setChangePasswordError(null);
+
+        if (newPassword.length < 6) {
+            setChangePasswordError('New password must be at least 6 characters long.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setChangePasswordError('New password and confirmation do not match.');
+            return;
+        }
+
+        setChangePasswordLoading(true);
+        try {
+            const { data, error } = await supabase.auth.updateUser({
+                password: newPassword,
+                data: {
+                    must_change_password: false,
+                    password_changed_at: new Date().toISOString()
+                }
+            });
+            if (error) throw error;
+
+            setUser(data.user);
+            notify('Your personal password has been successfully established.');
+            setNewPassword('');
+            setConfirmPassword('');
+            loadAllData();
+        } catch (err) {
+            setChangePasswordError(err.message || 'Failed to update password. Please choose a different password.');
+        } finally {
+            setChangePasswordLoading(false);
+        }
+    };
+
+    // Admin Provisions a New User with Temporary Password
+    const handleCreateAdminUser = async (e) => {
+        e.preventDefault();
+        setCreateAccountLoading(true);
+        setCreateAccountError(null);
+        try {
+            if (newAccountTempPassword.length < 6) {
+                throw new Error('Temporary password must be at least 6 characters.');
+            }
+            const { data, error } = await supabase.rpc('create_admin_user', {
+                new_email: newAccountEmail.trim(),
+                temp_password: newAccountTempPassword
+            });
+            if (error) throw error;
+            notify(`Account created for ${newAccountEmail}. User must change this password on first login.`);
+            setNewAccountEmail('');
+            setNewAccountTempPassword('');
+            loadAdminUsers();
+        } catch (err) {
+            setCreateAccountError(err.message || 'Failed to create user account.');
+        } finally {
+            setCreateAccountLoading(false);
+        }
+    };
+
+    // Voluntary Password Update
+    const handleVoluntaryPasswordChange = async (e) => {
+        e.preventDefault();
+        setSelfPasswordError(null);
+
+        if (selfNewPassword.length < 6) {
+            setSelfPasswordError('Password must be at least 6 characters long.');
+            return;
+        }
+
+        if (selfNewPassword !== selfConfirmPassword) {
+            setSelfPasswordError('Passwords do not match.');
+            return;
+        }
+
+        setSelfPasswordLoading(true);
+        try {
+            const { data, error } = await supabase.auth.updateUser({
+                password: selfNewPassword,
+                data: {
+                    must_change_password: false,
+                    password_changed_at: new Date().toISOString()
+                }
+            });
+            if (error) throw error;
+
+            setUser(data.user);
+            notify('Your password has been updated successfully.');
+            setSelfNewPassword('');
+            setSelfConfirmPassword('');
+        } catch (err) {
+            setSelfPasswordError(err.message || 'Failed to update password.');
+        } finally {
+            setSelfPasswordLoading(false);
+        }
+    };
 
     // Save Village Profile
     const handleSaveVillage = async (e) => {
@@ -127,6 +259,8 @@ export default function AdminConsoleView() {
             callback();
         }
     };
+
+    const mustChangePassword = !!user?.user_metadata?.must_change_password;
 
     if (!user) {
         return (
@@ -182,6 +316,78 @@ export default function AdminConsoleView() {
         );
     }
 
+    // Force Password Change on First-Time Login
+    if (user && mustChangePassword) {
+        return (
+            <main className="container" style={{ padding: '3rem 1rem' }}>
+                <div className="survey-card" style={{ maxWidth: '460px', margin: '0 auto' }}>
+                    <div className="section-header" style={{ textAlign: 'center' }}>
+                        <ShieldCheck size={40} style={{ color: 'var(--color-amber-600)', margin: '0 auto 0.5rem' }} />
+                        <h1 className="brand-title" style={{ fontSize: '1.5rem' }}>First-Time Sign In: Set Password</h1>
+                        <p className="section-desc">
+                            Your account was provisioned with a temporary password. You must set a new private password before accessing the console.
+                        </p>
+                    </div>
+
+                    {changePasswordError && <div className="alert alert-danger">{changePasswordError}</div>}
+
+                    <form onSubmit={handleFirstTimePasswordChange}>
+                        <div className="form-group">
+                            <label className="form-label">Account Email</label>
+                            <input 
+                                type="text" 
+                                className="form-control" 
+                                value={user.email} 
+                                disabled 
+                                style={{ background: 'var(--color-slate-100)', color: 'var(--color-slate-600)' }}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">New Private Password *</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                placeholder="At least 6 characters"
+                                required 
+                                minLength={6}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Confirm New Password *</label>
+                            <input 
+                                type="password" 
+                                className="form-control" 
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Re-enter new password"
+                                required 
+                                minLength={6}
+                            />
+                        </div>
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary btn-block"
+                            disabled={changePasswordLoading}
+                            style={{ minHeight: '44px', marginTop: '1rem' }}
+                        >
+                            {changePasswordLoading ? 'Saving New Password...' : 'Save New Password & Enter Console'}
+                        </button>
+                        <button 
+                            type="button" 
+                            className="btn btn-secondary btn-block"
+                            onClick={handleLogout}
+                            style={{ minHeight: '40px', marginTop: '0.5rem' }}
+                        >
+                            Sign Out
+                        </button>
+                    </form>
+                </div>
+            </main>
+        );
+    }
+
     return (
         <main className="container" style={{ paddingBottom: '3rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', margin: '1.5rem 0' }}>
@@ -209,7 +415,8 @@ export default function AdminConsoleView() {
                     { key: 'contacts', label: 'Contacts' },
                     { key: 'institutions', label: 'Health & Schools' },
                     { key: 'businesses', label: 'Local Businesses' },
-                    { key: 'feedback', label: `Citizen Feedback (${feedback.length})` }
+                    { key: 'feedback', label: `Citizen Feedback (${feedback.length})` },
+                    { key: 'accounts', label: `Admin Accounts (${adminUsers.length})` }
                 ].map(tab => (
                     <button
                         key={tab.key}
@@ -348,6 +555,163 @@ export default function AdminConsoleView() {
                         ) : (
                             <p style={{ color: 'var(--color-text-muted)' }}>No feedback submissions recorded yet.</p>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Tab: Admin Accounts & Password Management */}
+            {activeTab === 'accounts' && (
+                <div className="survey-card">
+                    <h2 className="section-title">Administrator & Surveyor Accounts</h2>
+                    <p className="section-desc">
+                        Create authorized accounts with temporary passwords. Users must set their private password upon signing in for the first time.
+                    </p>
+
+                    {/* Provision New Account Form */}
+                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                        <h3 style={{ fontSize: '1.05rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <UserPlus size={18} /> Provision New Account
+                        </h3>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                            Assign a temporary initial password. The system will force the user to change it to their own private password before granting access.
+                        </p>
+
+                        {createAccountError && <div className="alert alert-danger">{createAccountError}</div>}
+
+                        <form onSubmit={handleCreateAdminUser}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">Email Address *</label>
+                                    <input 
+                                        type="email" 
+                                        className="form-control" 
+                                        value={newAccountEmail}
+                                        onChange={(e) => setNewAccountEmail(e.target.value)}
+                                        placeholder="user@example.com"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Temporary Initial Password *</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        value={newAccountTempPassword}
+                                        onChange={(e) => setNewAccountTempPassword(e.target.value)}
+                                        placeholder="e.g. TempPass2026!"
+                                        required 
+                                        minLength={6}
+                                    />
+                                </div>
+                            </div>
+                            <button 
+                                type="submit" 
+                                className="btn btn-primary"
+                                disabled={createAccountLoading}
+                                style={{ marginTop: '0.5rem' }}
+                            >
+                                {createAccountLoading ? 'Provisioning Account...' : 'Provision Account with Temporary Password'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Authorized Accounts List */}
+                    <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Authorized System Accounts</h3>
+                    <div className="table-responsive-wrapper" style={{ overflowX: 'auto', marginBottom: '2rem' }}>
+                        <table className="ledger-table" style={{ width: '100%', minWidth: '580px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Email Address</th>
+                                    <th>Password Status</th>
+                                    <th>Created Date</th>
+                                    <th>Last Sign In</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {adminUsers.length > 0 ? (
+                                    adminUsers.map(u => (
+                                        <tr key={u.id}>
+                                            <td>
+                                                <strong>{u.email}</strong>
+                                                {u.email === user.email && (
+                                                    <span style={{ marginLeft: '6px', fontSize: '0.72rem', color: 'var(--color-blue-700)', fontWeight: 600 }}>(You)</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                {u.must_change_password ? (
+                                                    <span className="badge-amber" style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                        Must Change Password on First Login
+                                                    </span>
+                                                ) : (
+                                                    <span className="badge-green" style={{ padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                                        Active (Password Changed)
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem' }}>
+                                                {new Date(u.created_at).toLocaleDateString()}
+                                            </td>
+                                            <td style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+                                                {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : 'Never signed in'}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={4} style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No accounts loaded.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Update Current User Password */}
+                    <div className="info-card" style={{ background: '#ffffff', border: '1px solid var(--color-border)' }}>
+                        <h3 style={{ fontSize: '1.05rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Key size={18} /> Change Your Personal Password
+                        </h3>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                            Update your password for signed-in account {user.email}.
+                        </p>
+
+                        {selfPasswordError && <div className="alert alert-danger">{selfPasswordError}</div>}
+
+                        <form onSubmit={handleVoluntaryPasswordChange}>
+                            <div className="choice-grid columns-2">
+                                <div className="form-group">
+                                    <label className="form-label">New Password *</label>
+                                    <input 
+                                        type="password" 
+                                        className="form-control" 
+                                        value={selfNewPassword}
+                                        onChange={(e) => setSelfNewPassword(e.target.value)}
+                                        placeholder="At least 6 characters"
+                                        required 
+                                        minLength={6}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Confirm New Password *</label>
+                                    <input 
+                                        type="password" 
+                                        className="form-control" 
+                                        value={selfConfirmPassword}
+                                        onChange={(e) => setSelfConfirmPassword(e.target.value)}
+                                        placeholder="Re-enter new password"
+                                        required 
+                                        minLength={6}
+                                    />
+                                </div>
+                            </div>
+                            <button 
+                                type="submit" 
+                                className="btn btn-secondary"
+                                disabled={selfPasswordLoading}
+                                style={{ marginTop: '0.5rem' }}
+                            >
+                                {selfPasswordLoading ? 'Updating Password...' : 'Update My Password'}
+                            </button>
+                        </form>
                     </div>
                 </div>
             )}
