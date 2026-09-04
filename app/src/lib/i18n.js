@@ -78,7 +78,7 @@ export const I18N_DICT = {
         // Cards & Common
         eligibility: "Eligibility:",
         requiredDocs: "Required Documents:",
-        officialPortal: "Direct Scheme Website (.gov.in)",
+        officialPortal: "Visit Official Portal",
         source: "Source:",
         verifiedOn: "Verified On:",
         timings: "Operating Hours:",
@@ -186,7 +186,7 @@ export const I18N_DICT = {
         // Cards & Common
         eligibility: "అర్హత:",
         requiredDocs: "అవసరమైన పత్రాలు:",
-        officialPortal: "పథకం వెబ్‌సైట్ (.gov.in)",
+        officialPortal: "అధికారిక పోర్టల్",
         source: "ఆధారం:",
         verifiedOn: "ధృవీకరించిన తేదీ:",
         timings: "పనివేళలు:",

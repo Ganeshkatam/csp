@@ -1226,8 +1226,7 @@ main.container {
 .call-action-btn,
 .scheme-action-btn {
     width: 100%;
-    min-height: 46px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    min-height: 48px;
 }
 
 .no-direct-phone {
@@ -1254,8 +1253,8 @@ main.container {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 46px;
-    padding: 0.65rem 1.25rem;
+    min-height: 48px;
+    padding: 0.7rem 1.25rem;
     border-radius: var(--radius-md);
     font-size: 0.875rem;
     font-weight: 600;
@@ -1272,41 +1271,128 @@ main.container {
 .btn-primary {
     background: var(--color-slate-900);
     color: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
 }
 
 .btn-primary:hover {
     background: var(--color-slate-800);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    transform: translateY(-1px);
 }
 
 .btn-secondary {
     background: #ffffff;
     border-color: var(--color-slate-300);
     color: var(--color-slate-800);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .btn-secondary:hover {
     background: var(--color-slate-50);
     border-color: var(--color-slate-400);
+    color: var(--color-slate-900);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
 }
 
 .btn-emergency {
     background: var(--color-red-600);
     color: #ffffff;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
 }
 
 .btn-emergency:hover {
     background: var(--color-red-700);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    transform: translateY(-1px);
+}
+
+/* Dedicated High-Contrast Welfare Scheme Action Button */
+.btn-scheme-portal {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    border: 1px solid #1e40af;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    min-height: 48px;
+    padding: 0.7rem 1.15rem;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(29, 78, 216, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-scheme-portal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+}
+
+.btn-scheme-portal:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #172554 100%);
+    border-color: #172554;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(29, 78, 216, 0.38);
+    transform: translateY(-2px);
+}
+
+.btn-scheme-portal:hover .scheme-btn-icon {
+    transform: translate(2px, -2px);
+}
+
+.btn-scheme-portal:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(29, 78, 216, 0.2);
+}
+
+.scheme-btn-label {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.scheme-gov-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    flex-shrink: 0;
+}
+
+.scheme-btn-icon {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
 }
 
 .btn-outline-blue {
-    background: var(--color-blue-50);
-    border-color: var(--color-blue-200);
+    background: #ffffff;
+    border-color: var(--color-blue-600);
     color: var(--color-blue-700);
 }
 
 .btn-outline-blue:hover {
-    background: var(--color-blue-100);
-    border-color: var(--color-blue-300);
+    background: var(--color-blue-50);
+    border-color: var(--color-blue-700);
+    color: var(--color-blue-800);
 }
 
 /* ==============================================================================

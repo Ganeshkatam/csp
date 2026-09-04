@@ -66,11 +66,14 @@ export default function SchemeCard({ scheme, lang, t }) {
                         href={scheme.official_url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="btn btn-outline-blue scheme-action-btn"
+                        className="btn btn-scheme-portal scheme-action-btn"
                         title={`Open official portal for ${scheme.name}`}
                     >
-                        <span>{t.officialPortal}</span>
-                        <ExternalLink size={14} style={{ marginLeft: '6px' }} aria-hidden="true" />
+                        <span className="scheme-btn-label">{t.officialPortal}</span>
+                        {scheme.official_url.includes('.gov.in') && (
+                            <span className="scheme-gov-pill">.gov.in</span>
+                        )}
+                        <ExternalLink size={15} className="scheme-btn-icon" aria-hidden="true" />
                     </a>
                 )}
                 
