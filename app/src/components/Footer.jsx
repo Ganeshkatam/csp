@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, ShieldCheck, Database, ExternalLink, HeartPulse, FileText, CheckCircle2 } from 'lucide-react';
+import { Phone, ShieldCheck } from 'lucide-react';
 import { I18N_DICT } from '../lib/i18n';
 
 export default function Footer({ lang }) {
@@ -83,54 +83,12 @@ export default function Footer({ lang }) {
                             </a>
                         </div>
                     </div>
-
-                    {/* Column 4: Data Security & Governance */}
-                    <div className="footer-col">
-                        <h4 className="footer-heading">Academic Governance</h4>
-                        <div className="footer-security-card">
-                            <div className="sec-item">
-                                <Database size={15} className="text-blue" aria-hidden="true" />
-                                <div>
-                                    <div className="sec-title">Supabase Cloud PostgreSQL</div>
-                                    <div className="sec-sub">Row Level Security (RLS) Protected</div>
-                                </div>
-                            </div>
-                            <div className="sec-item">
-                                <ShieldCheck size={15} className="text-emerald" aria-hidden="true" />
-                                <div>
-                                    <div className="sec-title">Privacy Assured</div>
-                                    <div className="sec-sub">Pseudonymous Data; Zero PII</div>
-                                </div>
-                            </div>
-                            <div className="sec-item">
-                                <CheckCircle2 size={15} className="text-amber" aria-hidden="true" />
-                                <div>
-                                    <div className="sec-title">Field Verified</div>
-                                    <div className="sec-sub">Doorstep Community Interviews</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Bottom Bar: Copyright, Open Source, and GitHub */}
+                {/* Bottom Bar: Copyright */}
                 <div className="footer-bottom-bar">
                     <div className="footer-copyright">
                         (c) 2026 Academic Community Service Project (CSP). Open Access for Rural Civic Empowerment.
-                    </div>
-                    <div className="footer-meta-links">
-                        <a 
-                            href="https://github.com/Ganeshkatam/csp" 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="footer-repo-link"
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                            <span>GitHub: Ganeshkatam/csp</span>
-                            <ExternalLink size={11} style={{ marginLeft: '4px' }} aria-hidden="true" />
-                        </a>
                     </div>
                 </div>
             </div>
