@@ -1,83 +1,167 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
+// Categories matching only the existing database records
 const ANNOUNCEMENT_CATEGORIES = [
-    "Public Meeting",
     "Health Camp",
     "Welfare Drive",
-    "Drinking Water & Sanitation",
-    "Agriculture & Farmers",
-    "Electricity & Power",
-    "Education & Schools",
-    "Weather & Cyclone Alert",
-    "Emergency Alert",
-    "Infrastructure & Road Works",
-    "Revenue & Land Records",
-    "Employment & Skill Camp",
-    "Panchayat Notice",
-    "General Notice"
+    "Public Meeting"
 ];
 
 const SCHEME_CATEGORIES = [
     "Agriculture",
     "Healthcare",
     "Social Welfare",
-    "Social Security",
-    "Housing",
-    "Education",
-    "Women & Child",
-    "Rural Employment & MGNREGA",
-    "Youth & Skill Development",
-    "Disability & Senior Citizens",
-    "Fisheries & Animal Husbandry",
-    "Financial Inclusion & Loans"
+    "Education"
 ];
 
 const CONTACT_CATEGORIES = [
     "Administration",
-    "Emergency",
-    "Police",
     "Healthcare",
-    "Panchayat",
-    "Revenue",
+    "Police",
     "Utilities",
-    "Agriculture & Veterinary",
-    "Education & Anganwadi",
-    "Women & Child Helpline",
-    "Judiciary & Legal Aid"
+    "Emergency"
 ];
 
 const INSTITUTION_TYPES = [
-    "Primary Health Centre",
     "PHC",
-    "Government School",
-    "Education",
-    "Anganwadi Centre",
-    "Village Secretariat",
-    "Panchayat Office",
-    "Veterinary Clinic",
-    "Rythu Bharosa Kendram (RBK)",
-    "Fair Price Shop",
-    "Post Office / Bank Point",
-    "Community Hall"
+    "Education"
 ];
 
 const BUSINESS_CATEGORIES = [
     "Dairy & Agriculture",
     "Electrical & Repair",
     "Handloom & Textiles",
-    "Transport & Logistics",
-    "Agriculture & Tools",
-    "Electrical & Motors",
-    "Artisans & Handicrafts",
-    "Grocery & Daily Needs",
-    "Self-Help Group (SHG)",
-    "Services & Transport",
-    "Construction & Hardware",
-    "Tailoring & Garments",
-    "Mobile & Digital Services"
+    "Transport & Logistics"
 ];
+
+const STATUS_OPTIONS = [
+    { value: "published", label: "Published" },
+    { value: "draft", label: "Draft (Hidden)" }
+];
+
+// Custom Modern Dropdown UI Component
+function ModernSelect({ value, onChange, options, placeholder = "Select an option" }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const formattedOptions = options.map(opt => 
+        typeof opt === 'string' ? { value: opt, label: opt } : opt
+    );
+
+    // Include existing database value if it is not in the predefined list
+    if (value && !formattedOptions.some(opt => opt.value === value)) {
+        formattedOptions.unshift({ value, label: value });
+    }
+
+    const currentOption = formattedOptions.find(opt => opt.value === value);
+    const displayLabel = currentOption ? currentOption.label : (value || placeholder);
+
+    return (
+        <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                style={{
+                    width: '100%',
+                    height: '42px',
+                    padding: '0 0.875rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    background: '#ffffff',
+                    border: isOpen ? '1.5px solid var(--color-blue-600, #2563eb)' : '1px solid var(--color-slate-300, #cbd5e1)',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    color: currentOption || value ? 'var(--color-slate-900, #0f172a)' : 'var(--color-slate-400, #94a3b8)',
+                    cursor: 'pointer',
+                    boxShadow: isOpen ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'left'
+                }}
+            >
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: currentOption ? 500 : 400 }}>
+                    {displayLabel}
+                </span>
+                <ChevronDown 
+                    size={16} 
+                    style={{ 
+                        color: 'var(--color-slate-500, #64748b)', 
+                        transform: isOpen ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s ease',
+                        flexShrink: 0,
+                        marginLeft: '8px'
+                    }} 
+                />
+            </button>
+
+            {isOpen && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 4px)',
+                        left: 0,
+                        right: 0,
+                        zIndex: 100,
+                        background: '#ffffff',
+                        border: '1px solid var(--color-slate-200, #e2e8f0)',
+                        borderRadius: '8px',
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08)',
+                        padding: '4px',
+                        maxHeight: '220px',
+                        overflowY: 'auto'
+                    }}
+                >
+                    {formattedOptions.map(opt => {
+                        const isSelected = opt.value === value;
+                        return (
+                            <div
+                                key={opt.value}
+                                onClick={() => {
+                                    onChange(opt.value);
+                                    setIsOpen(false);
+                                }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '9px 12px',
+                                    borderRadius: '6px',
+                                    fontSize: '0.875rem',
+                                    cursor: 'pointer',
+                                    background: isSelected ? '#eff6ff' : 'transparent',
+                                    color: isSelected ? '#1d4ed8' : '#334155',
+                                    fontWeight: isSelected ? 600 : 400,
+                                    transition: 'background 0.12s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isSelected) e.currentTarget.style.background = '#f8fafc';
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isSelected) e.currentTarget.style.background = 'transparent';
+                                }}
+                            >
+                                <span>{opt.label}</span>
+                                {isSelected && <Check size={15} style={{ color: '#2563eb' }} />}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
 
 const defaultAnnouncement = {
     id: null,
@@ -113,7 +197,7 @@ const defaultContact = {
     id: null,
     name: "",
     name_te: "",
-    category: "Emergency",
+    category: "Administration",
     designation: "",
     designation_te: "",
     phone: "",
@@ -129,7 +213,7 @@ const defaultInstitution = {
     id: null,
     name: "",
     name_te: "",
-    type: "Primary Health Centre",
+    type: "PHC",
     address: "",
     phone: "",
     timings: "9:00 AM - 4:00 PM",
@@ -145,7 +229,7 @@ const defaultBusiness = {
     name: "",
     name_te: "",
     owner_name: "",
-    category: "Agriculture & Tools",
+    category: "Dairy & Agriculture",
     services: "",
     services_te: "",
     address: "",
@@ -953,28 +1037,11 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-2">
                                 <div className="form-group">
                                     <label className="form-label">Category *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={announcementForm.category}
-                                        onChange={(e) => {
-                                            if (e.target.value === '__CUSTOM__') {
-                                                const custom = window.prompt('Enter custom announcement category:');
-                                                if (custom && custom.trim()) {
-                                                    setAnnouncementForm({ ...announcementForm, category: custom.trim() });
-                                                }
-                                            } else {
-                                                setAnnouncementForm({ ...announcementForm, category: e.target.value });
-                                            }
-                                        }}
-                                    >
-                                        {ANNOUNCEMENT_CATEGORIES.map(c => (
-                                            <option key={c} value={c}>{c}</option>
-                                        ))}
-                                        {!ANNOUNCEMENT_CATEGORIES.includes(announcementForm.category) && announcementForm.category && (
-                                            <option value={announcementForm.category}>{announcementForm.category}</option>
-                                        )}
-                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
-                                    </select>
+                                        onChange={(val) => setAnnouncementForm({ ...announcementForm, category: val })}
+                                        options={ANNOUNCEMENT_CATEGORIES}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Event Date</label>
@@ -1034,14 +1101,11 @@ export default function AdminConsoleView() {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Status *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={announcementForm.status}
-                                        onChange={(e) => setAnnouncementForm({ ...announcementForm, status: e.target.value })}
-                                    >
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft (Hidden)</option>
-                                    </select>
+                                        onChange={(val) => setAnnouncementForm({ ...announcementForm, status: val })}
+                                        options={STATUS_OPTIONS}
+                                    />
                                 </div>
                             </div>
 
@@ -1207,28 +1271,11 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-2">
                                 <div className="form-group">
                                     <label className="form-label">Category *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={schemeForm.category}
-                                        onChange={(e) => {
-                                            if (e.target.value === '__CUSTOM__') {
-                                                const custom = window.prompt('Enter custom scheme category:');
-                                                if (custom && custom.trim()) {
-                                                    setSchemeForm({ ...schemeForm, category: custom.trim() });
-                                                }
-                                            } else {
-                                                setSchemeForm({ ...schemeForm, category: e.target.value });
-                                            }
-                                        }}
-                                    >
-                                        {SCHEME_CATEGORIES.map(c => (
-                                            <option key={c} value={c}>{c}</option>
-                                        ))}
-                                        {!SCHEME_CATEGORIES.includes(schemeForm.category) && schemeForm.category && (
-                                            <option value={schemeForm.category}>{schemeForm.category}</option>
-                                        )}
-                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
-                                    </select>
+                                        onChange={(val) => setSchemeForm({ ...schemeForm, category: val })}
+                                        options={SCHEME_CATEGORIES}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Official Portal URL *</label>
@@ -1304,14 +1351,11 @@ export default function AdminConsoleView() {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Status *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={schemeForm.status}
-                                        onChange={(e) => setSchemeForm({ ...schemeForm, status: e.target.value })}
-                                    >
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft (Hidden)</option>
-                                    </select>
+                                        onChange={(val) => setSchemeForm({ ...schemeForm, status: val })}
+                                        options={STATUS_OPTIONS}
+                                    />
                                 </div>
                             </div>
 
@@ -1482,28 +1526,11 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-3">
                                 <div className="form-group">
                                     <label className="form-label">Category *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={contactForm.category}
-                                        onChange={(e) => {
-                                            if (e.target.value === '__CUSTOM__') {
-                                                const custom = window.prompt('Enter custom contact category:');
-                                                if (custom && custom.trim()) {
-                                                    setContactForm({ ...contactForm, category: custom.trim() });
-                                                }
-                                            } else {
-                                                setContactForm({ ...contactForm, category: e.target.value });
-                                            }
-                                        }}
-                                    >
-                                        {CONTACT_CATEGORIES.map(c => (
-                                            <option key={c} value={c}>{c}</option>
-                                        ))}
-                                        {!CONTACT_CATEGORIES.includes(contactForm.category) && contactForm.category && (
-                                            <option value={contactForm.category}>{contactForm.category}</option>
-                                        )}
-                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
-                                    </select>
+                                        onChange={(val) => setContactForm({ ...contactForm, category: val })}
+                                        options={CONTACT_CATEGORIES}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Phone Number *</label>
@@ -1575,14 +1602,11 @@ export default function AdminConsoleView() {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Status *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={contactForm.status}
-                                        onChange={(e) => setContactForm({ ...contactForm, status: e.target.value })}
-                                    >
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft (Hidden)</option>
-                                    </select>
+                                        onChange={(val) => setContactForm({ ...contactForm, status: val })}
+                                        options={STATUS_OPTIONS}
+                                    />
                                 </div>
                             </div>
 
@@ -1753,28 +1777,11 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-3">
                                 <div className="form-group">
                                     <label className="form-label">Facility Type *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={institutionForm.type}
-                                        onChange={(e) => {
-                                            if (e.target.value === '__CUSTOM__') {
-                                                const custom = window.prompt('Enter custom institution facility type:');
-                                                if (custom && custom.trim()) {
-                                                    setInstitutionForm({ ...institutionForm, type: custom.trim() });
-                                                }
-                                            } else {
-                                                setInstitutionForm({ ...institutionForm, type: e.target.value });
-                                            }
-                                        }}
-                                    >
-                                        {INSTITUTION_TYPES.map(t => (
-                                            <option key={t} value={t}>{t}</option>
-                                        ))}
-                                        {!INSTITUTION_TYPES.includes(institutionForm.type) && institutionForm.type && (
-                                            <option value={institutionForm.type}>{institutionForm.type}</option>
-                                        )}
-                                        <option value="__CUSTOM__">+ Enter Custom Facility Type...</option>
-                                    </select>
+                                        onChange={(val) => setInstitutionForm({ ...institutionForm, type: val })}
+                                        options={INSTITUTION_TYPES}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Phone Number</label>
@@ -1846,14 +1853,11 @@ export default function AdminConsoleView() {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Status *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={institutionForm.status}
-                                        onChange={(e) => setInstitutionForm({ ...institutionForm, status: e.target.value })}
-                                    >
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft (Hidden)</option>
-                                    </select>
+                                        onChange={(val) => setInstitutionForm({ ...institutionForm, status: val })}
+                                        options={STATUS_OPTIONS}
+                                    />
                                 </div>
                             </div>
 
@@ -2022,28 +2026,11 @@ export default function AdminConsoleView() {
                             <div className="choice-grid columns-3">
                                 <div className="form-group">
                                     <label className="form-label">Category *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={businessForm.category}
-                                        onChange={(e) => {
-                                            if (e.target.value === '__CUSTOM__') {
-                                                const custom = window.prompt('Enter custom business category:');
-                                                if (custom && custom.trim()) {
-                                                    setBusinessForm({ ...businessForm, category: custom.trim() });
-                                                }
-                                            } else {
-                                                setBusinessForm({ ...businessForm, category: e.target.value });
-                                            }
-                                        }}
-                                    >
-                                        {BUSINESS_CATEGORIES.map(c => (
-                                            <option key={c} value={c}>{c}</option>
-                                        ))}
-                                        {!BUSINESS_CATEGORIES.includes(businessForm.category) && businessForm.category && (
-                                            <option value={businessForm.category}>{businessForm.category}</option>
-                                        )}
-                                        <option value="__CUSTOM__">+ Enter Custom Category...</option>
-                                    </select>
+                                        onChange={(val) => setBusinessForm({ ...businessForm, category: val })}
+                                        options={BUSINESS_CATEGORIES}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Proprietor / Contact Person</label>
@@ -2116,14 +2103,11 @@ export default function AdminConsoleView() {
                                 </div>
                                 <div className="form-group">
                                     <label className="form-label">Status *</label>
-                                    <select 
-                                        className="form-control"
+                                    <ModernSelect 
                                         value={businessForm.status}
-                                        onChange={(e) => setBusinessForm({ ...businessForm, status: e.target.value })}
-                                    >
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft (Hidden)</option>
-                                    </select>
+                                        onChange={(val) => setBusinessForm({ ...businessForm, status: val })}
+                                        options={STATUS_OPTIONS}
+                                    />
                                 </div>
                             </div>
 
