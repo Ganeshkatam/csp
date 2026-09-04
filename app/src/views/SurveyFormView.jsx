@@ -425,8 +425,8 @@ export default function SurveyFormView() {
     };
 
     return (
-        <main className="survey-form-container" style={{ padding: '2rem 1rem', maxWidth: '960px', margin: '0 auto' }}>
-            <div className="survey-form-card" style={{ background: '#ffffff', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-xl)', padding: '2rem', boxShadow: 'var(--shadow-subtle)' }}>
+        <main className="survey-form-container">
+            <div className="survey-form-card">
                 {/* Header Section */}
                 <header className="survey-form-header" style={{ borderBottom: '1px solid var(--color-slate-200)', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>

@@ -878,7 +878,7 @@ export default function DashboardView() {
                                 Verified household records collected during doorstep academic field studies under strict privacy protection (Pseudonymous HH Codes; Zero PII).
                             </p>
                         </div>
-                        <div style={{ position: 'relative', minWidth: '260px' }}>
+                        <div className="ledger-search-box">
                             <input
                                 type="text"
                                 className="form-control"
@@ -889,6 +889,10 @@ export default function DashboardView() {
                             />
                             <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-slate-400)' }} aria-hidden="true" />
                         </div>
+                    </div>
+
+                    <div className="table-scroll-hint" aria-hidden="true">
+                        <span>Swipe horizontally to view complete records &rarr;</span>
                     </div>
 
                     <div className="ledger-table-wrap">
@@ -972,64 +976,70 @@ export default function DashboardView() {
                     </p>
                 </div>
 
-                <table className="traceability-table">
-                    <thead>
-                        <tr>
-                            <th>Village Problem Found</th>
-                            <th>Survey Number &amp; Percentage</th>
-                            <th>What Was Needed</th>
-                            <th>Feature Added to Portal</th>
-                            <th>How We Checked It</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Lack of awareness regarding welfare scheme eligibility and documents</td>
-                            <td>
-                                <strong>SCH2 (Document Hurdles):</strong> {total > 0 ? `${docHurdlePct}%` : '73%'} of households report paperwork friction
-                            </td>
-                            <td>Centralized document checklist &amp; eligibility guidelines</td>
-                            <td>Welfare Schemes Module with structured checklists &amp; direct links</td>
-                            <td>Community awareness campaign &amp; citizen feedback</td>
-                        </tr>
-                        <tr>
-                            <td>Absence of saved contact numbers for local emergency services</td>
-                            <td>
-                                <strong>CON1 (Emergency Directory):</strong> {total > 0 ? `${noPhcPct}%` : '80%'} lack direct clinic emergency numbers
-                            </td>
-                            <td>Direct-calling directory for local responders</td>
-                            <td>Verified Contacts Directory with one-tap tel: protocol</td>
-                            <td>Smartphone dial testing during field evaluations</td>
-                        </tr>
-                        <tr>
-                            <td>Uncertainty regarding PHC doctor availability and OPD timings</td>
-                            <td>
-                                <strong>HLTH1 (Healthcare Access):</strong> {total > 0 ? `${hlthDocPct}%` : '53%'} face doctor absence or schedule blindness
-                            </td>
-                            <td>Clear schedule visibility and operating-hours status</td>
-                            <td>PHC Module with operating-hours-based status indicator</td>
-                            <td>Verification against PHC notice board schedules</td>
-                        </tr>
-                        <tr>
-                            <td>Low digital visibility for village artisans, tradespeople, and SHGs</td>
-                            <td>
-                                <strong>BIZ1 (Local Commerce):</strong> {total > 0 ? `${bizInformalPct}%` : '100%'} reliance on informal word-of-mouth
-                            </td>
-                            <td>Community business and artisan directory</td>
-                            <td>Local Business &amp; SHG Directory with direct contact access</td>
-                            <td>Confirmation with local enterprise proprietors</td>
-                        </tr>
-                        <tr>
-                            <td>Confusion regarding government portal authenticity &amp; grievance escalation</td>
-                            <td>
-                                <strong>SCH3 (Portal Authenticity):</strong> {total > 0 ? `${sch3ConfusedPct}%` : '100%'} confused by private intermediary websites
-                            </td>
-                            <td>Official government domain badge &amp; direct .gov.in links</td>
-                            <td>Verified portal badges and direct links with security warnings</td>
-                            <td>Domain verification audit during digital literacy sessions</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="table-scroll-hint" aria-hidden="true">
+                    <span>Swipe horizontally to view full matrix &rarr;</span>
+                </div>
+
+                <div className="traceability-table-wrap">
+                    <table className="traceability-table">
+                        <thead>
+                            <tr>
+                                <th>Village Problem Found</th>
+                                <th>Survey Number &amp; Percentage</th>
+                                <th>What Was Needed</th>
+                                <th>Feature Added to Portal</th>
+                                <th>How We Checked It</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Lack of awareness regarding welfare scheme eligibility and documents</td>
+                                <td>
+                                    <strong>SCH2 (Document Hurdles):</strong> {total > 0 ? `${docHurdlePct}%` : '73%'} of households report paperwork friction
+                                </td>
+                                <td>Centralized document checklist &amp; eligibility guidelines</td>
+                                <td>Welfare Schemes Module with structured checklists &amp; direct links</td>
+                                <td>Community awareness campaign &amp; citizen feedback</td>
+                            </tr>
+                            <tr>
+                                <td>Absence of saved contact numbers for local emergency services</td>
+                                <td>
+                                    <strong>CON1 (Emergency Directory):</strong> {total > 0 ? `${noPhcPct}%` : '80%'} lack direct clinic emergency numbers
+                                </td>
+                                <td>Direct-calling directory for local responders</td>
+                                <td>Verified Contacts Directory with one-tap tel: protocol</td>
+                                <td>Smartphone dial testing during field evaluations</td>
+                            </tr>
+                            <tr>
+                                <td>Uncertainty regarding PHC doctor availability and OPD timings</td>
+                                <td>
+                                    <strong>HLTH1 (Healthcare Access):</strong> {total > 0 ? `${hlthDocPct}%` : '53%'} face doctor absence or schedule blindness
+                                </td>
+                                <td>Clear schedule visibility and operating-hours status</td>
+                                <td>PHC Module with operating-hours-based status indicator</td>
+                                <td>Verification against PHC notice board schedules</td>
+                            </tr>
+                            <tr>
+                                <td>Low digital visibility for village artisans, tradespeople, and SHGs</td>
+                                <td>
+                                    <strong>BIZ1 (Local Commerce):</strong> {total > 0 ? `${bizInformalPct}%` : '100%'} reliance on informal word-of-mouth
+                                </td>
+                                <td>Community business and artisan directory</td>
+                                <td>Local Business &amp; SHG Directory with direct contact access</td>
+                                <td>Confirmation with local enterprise proprietors</td>
+                            </tr>
+                            <tr>
+                                <td>Confusion regarding government portal authenticity &amp; grievance escalation</td>
+                                <td>
+                                    <strong>SCH3 (Portal Authenticity):</strong> {total > 0 ? `${sch3ConfusedPct}%` : '100%'} confused by private intermediary websites
+                                </td>
+                                <td>Official government domain badge &amp; direct .gov.in links</td>
+                                <td>Verified portal badges and direct links with security warnings</td>
+                                <td>Domain verification audit during digital literacy sessions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Inspection Modal for Individual Household Responses */}

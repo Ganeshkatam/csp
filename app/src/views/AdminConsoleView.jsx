@@ -195,7 +195,7 @@ export default function AdminConsoleView() {
             )}
 
             {/* Admin Tab Navigation */}
-            <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--color-border)', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            <div className="admin-tabs-bar" style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--color-border)', marginBottom: '1.5rem' }}>
                 {[
                     { key: 'profile', label: 'Village Profile' },
                     { key: 'announcements', label: 'Announcements' },

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import MobileBottomNav from './components/MobileBottomNav';
 import PublicPortalView from './views/PublicPortalView';
 import SurveyFormView from './views/SurveyFormView';
 import DashboardView from './views/DashboardView';
 import AdminConsoleView from './views/AdminConsoleView';
+import { supabase } from './lib/supabase';
 
 function getViewFromPath(pathname) {
     const clean = pathname.replace(/\/+$/, '').toLowerCase();
@@ -31,7 +33,36 @@ export default function App() {
     const [activeSection, setActiveSection] = useState('home');
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Clean SPA routing navigation (zero .html in URL)
+    // Mobile Navigation & Authentication State
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [user, setUser] = useState(null);
+    const [verifiedContacts, setVerifiedContacts] = useState([]);
+
+    // Monitor Auth State and Load Verified Contacts from Supabase
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user || null);
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user || null);
+        });
+
+        // Load authoritative contacts published in Supabase
+        supabase.from('contacts')
+            .select('*')
+            .eq('status', 'published')
+            .order('name')
+            .then(({ data, error }) => {
+                if (!error && data) {
+                    setVerifiedContacts(data);
+                }
+            });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Clean SPA routing navigation
     const navigate = (view) => {
         const targetPath = getPathFromView(view);
         if (window.location.pathname !== targetPath) {
@@ -51,7 +82,6 @@ export default function App() {
             setCurrentView('portal');
         }
 
-        // Reset filter and search to ensure target section is always visible in DOM
         setCurrentFilter('ALL');
         setActiveSection(sectionId);
 
@@ -110,6 +140,10 @@ export default function App() {
                 setLang={setLang}
                 textZoom={textZoom}
                 setTextZoom={setTextZoom}
+                user={user}
+                verifiedContacts={verifiedContacts}
+                mobileMenuOpen={mobileMenuOpen}
+                setMobileMenuOpen={setMobileMenuOpen}
             />
 
             {currentView === 'portal' && (
@@ -128,7 +162,19 @@ export default function App() {
             {currentView === 'dashboard' && <DashboardView />}
             {currentView === 'admin' && <AdminConsoleView />}
 
-            <Footer lang={lang} />
+            <Footer lang={lang} verifiedContacts={verifiedContacts} />
+
+            {/* Mobile Bottom Quick Action Bar */}
+            <MobileBottomNav 
+                currentView={currentView}
+                navigate={navigate}
+                activeSection={activeSection}
+                scrollToSection={scrollToSection}
+                user={user}
+                mobileMenuOpen={mobileMenuOpen}
+                setMobileMenuOpen={setMobileMenuOpen}
+                lang={lang}
+            />
         </div>
     );
 }

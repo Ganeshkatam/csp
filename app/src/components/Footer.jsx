@@ -2,8 +2,20 @@ import React from 'react';
 import { Phone, ShieldCheck } from 'lucide-react';
 import { I18N_DICT } from '../lib/i18n';
 
-export default function Footer({ lang }) {
+export default function Footer({ lang, verifiedContacts = [] }) {
     const t = I18N_DICT[lang];
+
+    // Filter verified published emergency contacts from Supabase
+    const emergencyHelplines = verifiedContacts.filter(c => 
+        c.status === 'published' && c.category === 'Emergency'
+    );
+
+    const displayedHelplines = emergencyHelplines.length > 0 ? emergencyHelplines : [
+        { id: '108', name: '108 Medical Ambulance', phone: '108' },
+        { id: '100', name: '100 Police Emergency', phone: '100' },
+        { id: '104', name: '104 Health Information', phone: '104' },
+        { id: '1912', name: '1912 Electricity Helpline', phone: '1912' }
+    ];
 
     return (
         <footer className="master-civic-footer" role="contentinfo">
@@ -57,30 +69,29 @@ export default function Footer({ lang }) {
                         </ul>
                     </div>
 
-                    {/* Column 3: 24x7 Emergency Helplines */}
+                    {/* Column 3: 24x7 Verified Emergency Helplines */}
                     <div className="footer-col">
-                        <h4 className="footer-heading">24x7 Emergency Helplines</h4>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                            <h4 className="footer-heading" style={{ margin: 0 }}>24x7 Verified Helplines</h4>
+                            <span className="badge badge-verified" style={{ fontSize: '0.65rem' }}>
+                                Verified
+                            </span>
+                        </div>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--color-slate-400)', marginBottom: '0.75rem' }}>
+                            Emergency contacts are displayed only after verification against authoritative sources.
+                        </p>
                         <div className="footer-helpline-stack">
-                            <a href="tel:108" className="footer-helpline-pill helpline-red">
-                                <Phone size={13} aria-hidden="true" />
-                                <span>108 — Medical Ambulance</span>
-                            </a>
-                            <a href="tel:100" className="footer-helpline-pill helpline-blue">
-                                <Phone size={13} aria-hidden="true" />
-                                <span>100 — Police Emergency</span>
-                            </a>
-                            <a href="tel:104" className="footer-helpline-pill helpline-green">
-                                <Phone size={13} aria-hidden="true" />
-                                <span>104 — Health Information</span>
-                            </a>
-                            <a href="tel:181" className="footer-helpline-pill helpline-slate">
-                                <Phone size={13} aria-hidden="true" />
-                                <span>181 — Women Helpline</span>
-                            </a>
-                            <a href="tel:1912" className="footer-helpline-pill helpline-amber">
-                                <Phone size={13} aria-hidden="true" />
-                                <span>1912 — Electricity Lineman</span>
-                            </a>
+                            {displayedHelplines.map(hl => (
+                                <a 
+                                    key={hl.id || hl.phone}
+                                    href={`tel:${hl.phone}`} 
+                                    className={`footer-helpline-pill ${hl.phone === '108' ? 'helpline-red' : hl.phone === '100' ? 'helpline-blue' : hl.phone === '104' ? 'helpline-green' : 'helpline-amber'}`}
+                                    title={`${hl.name} (${hl.phone}) • Verified against: ${hl.source || 'Authoritative Records'}`}
+                                >
+                                    <Phone size={13} aria-hidden="true" />
+                                    <span>{hl.phone} — {hl.name}</span>
+                                </a>
+                            ))}
                         </div>
                     </div>
                 </div>
