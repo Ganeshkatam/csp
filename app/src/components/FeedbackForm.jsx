@@ -37,7 +37,7 @@ export default function FeedbackForm({ villageId, t }) {
                 <h2 className="section-title">{t.feedbackTitle}</h2>
                 <p className="section-desc">{t.feedbackDesc}</p>
             </div>
-            <div className="civic-card" style={{ maxWidth: '720px' }}>
+            <div className="civic-card feedback-card">
                 {fbStatus === 'success' && (
                     <div className="alert alert-success" role="status">
                         {t.feedbackSuccess}

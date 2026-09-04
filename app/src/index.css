@@ -118,9 +118,9 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.25rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 clamp(1.25rem, 3vw, 3.5rem);
 }
 
 main.container {

@@ -273,7 +273,7 @@ export default function SurveyFormView() {
 
     return (
         <main className="container" id="surveyMain" style={{ paddingTop: '2rem' }}>
-            <div className="survey-card" style={{ maxWidth: '820px', margin: '0 auto' }}>
+            <div className="survey-card full-width-survey">
                 <header style={{ borderBottom: '1px solid var(--color-slate-200)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                         <div>
