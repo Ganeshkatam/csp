@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { SEED_RESPONSES, SEED_ANSWERS } from '../lib/surveySeedData';
+import CustomSelect from '../components/CustomSelect';
 
 // Helper component for animated horizontal distribution bars
 function DistributionBar({ label, count, total, colorClass = 'fill-blue', sublabel }) {
@@ -80,6 +81,22 @@ export default function DashboardView() {
         });
         return Array.from(set).sort();
     }, [responses]);
+
+    const wardOptions = useMemo(() => [
+        { value: 'ALL', label: `All Localities (${responses.length} Total)` },
+        ...availableWards.map(w => {
+            const count = responses.filter(r => r.locality_ward === w).length;
+            return { value: w, label: w, count: `${count}` };
+        })
+    ], [responses, availableWards]);
+
+    const surveyorOptions = useMemo(() => [
+        { value: 'ALL', label: 'All Surveyors' },
+        ...availableSurveyors.map(s => {
+            const count = responses.filter(r => r.interviewer_name === s).length;
+            return { value: s, label: s, count: `${count}` };
+        })
+    ], [responses, availableSurveyors]);
 
     // Apply Ward and Surveyor filters reactively
     const filteredResponses = useMemo(() => {
@@ -248,30 +265,24 @@ export default function DashboardView() {
                         <Filter size={14} aria-hidden="true" />
                         <span>Locality / Ward:</span>
                     </div>
-                    <select
-                        className="analytics-select"
+                    <CustomSelect
                         value={selectedWard}
-                        onChange={(e) => setSelectedWard(e.target.value)}
-                    >
-                        <option value="ALL">All Localities ({responses.length} Total)</option>
-                        {availableWards.map(w => (
-                            <option key={w} value={w}>{w}</option>
-                        ))}
-                    </select>
+                        onChange={setSelectedWard}
+                        options={wardOptions}
+                        minWidth="200px"
+                        ariaLabel="Filter by Locality or Ward"
+                    />
 
                     <div className="analytics-filter-label" style={{ marginLeft: '0.5rem' }}>
                         <span>Surveyor:</span>
                     </div>
-                    <select
-                        className="analytics-select"
+                    <CustomSelect
                         value={selectedSurveyor}
-                        onChange={(e) => setSelectedSurveyor(e.target.value)}
-                    >
-                        <option value="ALL">All Surveyors</option>
-                        {availableSurveyors.map(s => (
-                            <option key={s} value={s}>{s}</option>
-                        ))}
-                    </select>
+                        onChange={setSelectedSurveyor}
+                        options={surveyorOptions}
+                        minWidth="160px"
+                        ariaLabel="Filter by Field Surveyor"
+                    />
                 </div>
 
                 {/* Module View Filter Tabs */}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
+import CustomSelect from './CustomSelect';
 
 export default function FeedbackForm({ villageId, t }) {
     const [fbName, setFbName] = useState('');
@@ -74,17 +75,18 @@ export default function FeedbackForm({ villageId, t }) {
                     <div className="choice-grid columns-2">
                         <div className="form-group feedback-category-group">
                             <label className="form-label">{t.feedbackCategory}</label>
-                            <select 
-                                className="form-control"
+                            <CustomSelect 
                                 value={fbType}
-                                onChange={(e) => setFbType(e.target.value)}
-                                required
-                            >
-                                <option value="Correction">Phone Number / Information Correction</option>
-                                <option value="New Listing Request">Request New Business / Artisan Listing</option>
-                                <option value="Scheme Inquiry">Scheme Information Inquiry</option>
-                                <option value="General">General Village Suggestion</option>
-                            </select>
+                                onChange={setFbType}
+                                options={[
+                                    { value: 'Correction', label: 'Phone Number / Information Correction' },
+                                    { value: 'New Listing Request', label: 'Request New Business / Artisan Listing' },
+                                    { value: 'Scheme Inquiry', label: 'Scheme Information Inquiry' },
+                                    { value: 'General', label: 'General Village Suggestion' }
+                                ]}
+                                minWidth="100%"
+                                ariaLabel={t.feedbackCategory}
+                            />
                         </div>
                     </div>
                     <div className="form-group">
