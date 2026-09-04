@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X } from 'lucide-react';
+import { Lock, LogOut, Plus, Trash2, CheckCircle, AlertCircle, RefreshCw, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 
 const defaultAnnouncement = {
@@ -132,6 +132,13 @@ export default function AdminConsoleView() {
     const [contactForm, setContactForm] = useState(defaultContact);
     const [institutionForm, setInstitutionForm] = useState(defaultInstitution);
     const [businessForm, setBusinessForm] = useState(defaultBusiness);
+
+    // Collapsible Form Toggles (Collapsed by default so ledgers are visible immediately)
+    const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
+    const [showSchemeForm, setShowSchemeForm] = useState(false);
+    const [showContactForm, setShowContactForm] = useState(false);
+    const [showInstitutionForm, setShowInstitutionForm] = useState(false);
+    const [showBusinessForm, setShowBusinessForm] = useState(false);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -398,6 +405,7 @@ export default function AdminConsoleView() {
         else {
             notify(announcementForm.id ? 'Announcement updated.' : 'Announcement added.');
             setAnnouncementForm(defaultAnnouncement);
+            setShowAnnouncementForm(false);
             reloadAnnouncements();
         }
     };
@@ -427,6 +435,7 @@ export default function AdminConsoleView() {
         else {
             notify(schemeForm.id ? 'Scheme updated.' : 'Scheme added.');
             setSchemeForm(defaultScheme);
+            setShowSchemeForm(false);
             reloadSchemes();
         }
     };
@@ -455,6 +464,7 @@ export default function AdminConsoleView() {
         else {
             notify(contactForm.id ? 'Contact updated.' : 'Contact added.');
             setContactForm(defaultContact);
+            setShowContactForm(false);
             reloadContacts();
         }
     };
@@ -482,6 +492,7 @@ export default function AdminConsoleView() {
         else {
             notify(institutionForm.id ? 'Institution updated.' : 'Institution added.');
             setInstitutionForm(defaultInstitution);
+            setShowInstitutionForm(false);
             reloadInstitutions();
         }
     };
@@ -509,6 +520,7 @@ export default function AdminConsoleView() {
         else {
             notify(businessForm.id ? 'Business updated.' : 'Business added.');
             setBusinessForm(defaultBusiness);
+            setShowBusinessForm(false);
             reloadBusinesses();
         }
     };
@@ -787,25 +799,54 @@ export default function AdminConsoleView() {
             {/* Tab: Announcements */}
             {activeTab === 'announcements' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Announcements & Ticker Notices</h2>
-                    <p className="section-desc">Manage announcements displayed across the live ticker and the citizen community notice board.</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Announcements & Ticker Notices</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage announcements displayed across the live ticker and the citizen community notice board.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            className={showAnnouncementForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
+                            onClick={() => {
+                                if (showAnnouncementForm && announcementForm.id) {
+                                    setAnnouncementForm(defaultAnnouncement);
+                                }
+                                setShowAnnouncementForm(!showAnnouncementForm);
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                            {showAnnouncementForm ? (
+                                <><ChevronUp size={15} /> Hide Form</>
+                            ) : (
+                                <><Plus size={15} /> Add New Announcement</>
+                            )}
+                        </button>
+                    </div>
 
                     {/* Announcement Form Card */}
-                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
-                                {announcementForm.id ? 'Edit Announcement' : 'Add New Announcement'}
-                            </h3>
-                            {announcementForm.id && (
+                    {showAnnouncementForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                        {announcementForm.id ? 'Edit Announcement' : 'Add New Announcement'}
+                                    </h3>
+                                    <span className="badge" style={{ background: announcementForm.id ? '#e0f2fe' : '#f1f5f9', color: announcementForm.id ? '#0369a1' : '#475569', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {announcementForm.id ? `Editing ID #${announcementForm.id}` : 'New Entry'}
+                                    </span>
+                                </div>
                                 <button 
                                     type="button" 
                                     className="btn btn-secondary btn-sm" 
-                                    onClick={() => setAnnouncementForm(defaultAnnouncement)}
+                                    onClick={() => {
+                                        setAnnouncementForm(defaultAnnouncement);
+                                        setShowAnnouncementForm(false);
+                                    }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                    <ChevronUp size={14} /> Hide Form
                                 </button>
-                            )}
-                        </div>
+                            </div>
 
                         <form onSubmit={handleSaveAnnouncement}>
                             <div className="choice-grid columns-2">
@@ -921,6 +962,7 @@ export default function AdminConsoleView() {
                             </button>
                         </form>
                     </div>
+                    )}
 
                     {/* Announcements Ledger */}
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Published & Draft Announcements</h3>
@@ -965,7 +1007,11 @@ export default function AdminConsoleView() {
                                                     type="button" 
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { setAnnouncementForm(a); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    onClick={() => { 
+                                                        setAnnouncementForm(a); 
+                                                        setShowAnnouncementForm(true); 
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
@@ -996,25 +1042,54 @@ export default function AdminConsoleView() {
             {/* Tab: Welfare Schemes */}
             {activeTab === 'schemes' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Government Welfare Schemes</h2>
-                    <p className="section-desc">Manage welfare programs, eligibility rules, document checklists, and application links.</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Government Welfare Schemes</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage welfare programs, eligibility rules, document checklists, and application links.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            className={showSchemeForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
+                            onClick={() => {
+                                if (showSchemeForm && schemeForm.id) {
+                                    setSchemeForm(defaultScheme);
+                                }
+                                setShowSchemeForm(!showSchemeForm);
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                            {showSchemeForm ? (
+                                <><ChevronUp size={15} /> Hide Form</>
+                            ) : (
+                                <><Plus size={15} /> Add New Welfare Scheme</>
+                            )}
+                        </button>
+                    </div>
 
                     {/* Scheme Form Card */}
-                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
-                                {schemeForm.id ? 'Edit Scheme' : 'Add New Welfare Scheme'}
-                            </h3>
-                            {schemeForm.id && (
+                    {showSchemeForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                        {schemeForm.id ? 'Edit Scheme' : 'Add New Welfare Scheme'}
+                                    </h3>
+                                    <span className="badge" style={{ background: schemeForm.id ? '#e0f2fe' : '#f1f5f9', color: schemeForm.id ? '#0369a1' : '#475569', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {schemeForm.id ? `Editing ID #${schemeForm.id}` : 'New Entry'}
+                                    </span>
+                                </div>
                                 <button 
                                     type="button" 
                                     className="btn btn-secondary btn-sm" 
-                                    onClick={() => setSchemeForm(defaultScheme)}
+                                    onClick={() => {
+                                        setSchemeForm(defaultScheme);
+                                        setShowSchemeForm(false);
+                                    }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                    <ChevronUp size={14} /> Hide Form
                                 </button>
-                            )}
-                        </div>
+                            </div>
 
                         <form onSubmit={handleSaveScheme}>
                             <div className="choice-grid columns-2">
@@ -1147,6 +1222,7 @@ export default function AdminConsoleView() {
                             </button>
                         </form>
                     </div>
+                    )}
 
                     {/* Schemes Ledger */}
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Welfare Schemes</h3>
@@ -1196,7 +1272,11 @@ export default function AdminConsoleView() {
                                                     type="button" 
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { setSchemeForm(s); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    onClick={() => { 
+                                                        setSchemeForm(s); 
+                                                        setShowSchemeForm(true); 
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
@@ -1227,25 +1307,54 @@ export default function AdminConsoleView() {
             {/* Tab: Emergency & Civic Contacts */}
             {activeTab === 'contacts' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Emergency & Civic Contacts</h2>
-                    <p className="section-desc">Manage verified helpline numbers and administrative officers with one-tap dialing.</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Emergency & Civic Contacts</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage verified helpline numbers and administrative officers with one-tap dialing.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            className={showContactForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
+                            onClick={() => {
+                                if (showContactForm && contactForm.id) {
+                                    setContactForm(defaultContact);
+                                }
+                                setShowContactForm(!showContactForm);
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                            {showContactForm ? (
+                                <><ChevronUp size={15} /> Hide Form</>
+                            ) : (
+                                <><Plus size={15} /> Add New Contact</>
+                            )}
+                        </button>
+                    </div>
 
                     {/* Contact Form Card */}
-                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
-                                {contactForm.id ? 'Edit Contact' : 'Add New Contact'}
-                            </h3>
-                            {contactForm.id && (
+                    {showContactForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                        {contactForm.id ? 'Edit Contact' : 'Add New Contact'}
+                                    </h3>
+                                    <span className="badge" style={{ background: contactForm.id ? '#e0f2fe' : '#f1f5f9', color: contactForm.id ? '#0369a1' : '#475569', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {contactForm.id ? `Editing ID #${contactForm.id}` : 'New Entry'}
+                                    </span>
+                                </div>
                                 <button 
                                     type="button" 
                                     className="btn btn-secondary btn-sm" 
-                                    onClick={() => setContactForm(defaultContact)}
+                                    onClick={() => {
+                                        setContactForm(defaultContact);
+                                        setShowContactForm(false);
+                                    }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                    <ChevronUp size={14} /> Hide Form
                                 </button>
-                            )}
-                        </div>
+                            </div>
 
                         <form onSubmit={handleSaveContact}>
                             <div className="choice-grid columns-2">
@@ -1374,6 +1483,7 @@ export default function AdminConsoleView() {
                             </button>
                         </form>
                     </div>
+                    )}
 
                     {/* Contacts Ledger */}
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Verified Civic & Emergency Directory</h3>
@@ -1423,7 +1533,11 @@ export default function AdminConsoleView() {
                                                     type="button" 
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { setContactForm(c); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    onClick={() => { 
+                                                        setContactForm(c); 
+                                                        setShowContactForm(true); 
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
@@ -1454,25 +1568,54 @@ export default function AdminConsoleView() {
             {/* Tab: Institutions (Health & Schools) */}
             {activeTab === 'institutions' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Healthcare & Education Institutions</h2>
-                    <p className="section-desc">Manage public institutions including Primary Health Centre, Schools, and Anganwadis.</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Healthcare & Education Institutions</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage public institutions including Primary Health Centre, Schools, and Anganwadis.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            className={showInstitutionForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
+                            onClick={() => {
+                                if (showInstitutionForm && institutionForm.id) {
+                                    setInstitutionForm(defaultInstitution);
+                                }
+                                setShowInstitutionForm(!showInstitutionForm);
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                            {showInstitutionForm ? (
+                                <><ChevronUp size={15} /> Hide Form</>
+                            ) : (
+                                <><Plus size={15} /> Add New Institution</>
+                            )}
+                        </button>
+                    </div>
 
                     {/* Institution Form Card */}
-                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
-                                {institutionForm.id ? 'Edit Institution' : 'Add New Public Institution'}
-                            </h3>
-                            {institutionForm.id && (
+                    {showInstitutionForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                        {institutionForm.id ? 'Edit Institution' : 'Add New Public Institution'}
+                                    </h3>
+                                    <span className="badge" style={{ background: institutionForm.id ? '#e0f2fe' : '#f1f5f9', color: institutionForm.id ? '#0369a1' : '#475569', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {institutionForm.id ? `Editing ID #${institutionForm.id}` : 'New Entry'}
+                                    </span>
+                                </div>
                                 <button 
                                     type="button" 
                                     className="btn btn-secondary btn-sm" 
-                                    onClick={() => setInstitutionForm(defaultInstitution)}
+                                    onClick={() => {
+                                        setInstitutionForm(defaultInstitution);
+                                        setShowInstitutionForm(false);
+                                    }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                    <ChevronUp size={14} /> Hide Form
                                 </button>
-                            )}
-                        </div>
+                            </div>
 
                         <form onSubmit={handleSaveInstitution}>
                             <div className="choice-grid columns-2">
@@ -1601,6 +1744,7 @@ export default function AdminConsoleView() {
                             </button>
                         </form>
                     </div>
+                    )}
 
                     {/* Institutions Ledger */}
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Public Facilities</h3>
@@ -1648,7 +1792,11 @@ export default function AdminConsoleView() {
                                                     type="button" 
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { setInstitutionForm(inst); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    onClick={() => { 
+                                                        setInstitutionForm(inst); 
+                                                        setShowInstitutionForm(true); 
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
@@ -1679,25 +1827,54 @@ export default function AdminConsoleView() {
             {/* Tab: Local Businesses & SHGs */}
             {activeTab === 'businesses' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Local Businesses & Self-Help Groups</h2>
-                    <p className="section-desc">Manage rural enterprises, agricultural tools, electricians, artisans, and women's self-help groups.</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Local Businesses & Self-Help Groups</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Manage rural enterprises, agricultural tools, electricians, artisans, and women's self-help groups.</p>
+                        </div>
+                        <button 
+                            type="button" 
+                            className={showBusinessForm ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm"}
+                            onClick={() => {
+                                if (showBusinessForm && businessForm.id) {
+                                    setBusinessForm(defaultBusiness);
+                                }
+                                setShowBusinessForm(!showBusinessForm);
+                            }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                            {showBusinessForm ? (
+                                <><ChevronUp size={15} /> Hide Form</>
+                            ) : (
+                                <><Plus size={15} /> Add New Business</>
+                            )}
+                        </button>
+                    </div>
 
                     {/* Business Form Card */}
-                    <div className="info-card" style={{ marginTop: '1.25rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
-                                {businessForm.id ? 'Edit Business' : 'Add New Business / Enterprise'}
-                            </h3>
-                            {businessForm.id && (
+                    {showBusinessForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', marginBottom: '1.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>
+                                        {businessForm.id ? 'Edit Business' : 'Add New Business / Enterprise'}
+                                    </h3>
+                                    <span className="badge" style={{ background: businessForm.id ? '#e0f2fe' : '#f1f5f9', color: businessForm.id ? '#0369a1' : '#475569', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {businessForm.id ? `Editing ID #${businessForm.id}` : 'New Entry'}
+                                    </span>
+                                </div>
                                 <button 
                                     type="button" 
                                     className="btn btn-secondary btn-sm" 
-                                    onClick={() => setBusinessForm(defaultBusiness)}
+                                    onClick={() => {
+                                        setBusinessForm(defaultBusiness);
+                                        setShowBusinessForm(false);
+                                    }}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                                 >
-                                    <X size={14} style={{ marginRight: '4px' }} /> Cancel Edit
+                                    <ChevronUp size={14} /> Hide Form
                                 </button>
-                            )}
-                        </div>
+                            </div>
 
                         <form onSubmit={handleSaveBusiness}>
                             <div className="choice-grid columns-2">
@@ -1827,6 +2004,7 @@ export default function AdminConsoleView() {
                             </button>
                         </form>
                     </div>
+                    )}
 
                     {/* Businesses Ledger */}
                     <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem' }}>Cataloged Local Enterprises</h3>
@@ -1874,7 +2052,11 @@ export default function AdminConsoleView() {
                                                     type="button" 
                                                     className="btn btn-secondary btn-sm"
                                                     title="Edit Record"
-                                                    onClick={() => { setBusinessForm(b); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                                                    onClick={() => { 
+                                                        setBusinessForm(b); 
+                                                        setShowBusinessForm(true); 
+                                                        window.scrollTo({ top: 280, behavior: 'smooth' }); 
+                                                    }}
                                                     style={{ marginRight: '6px' }}
                                                 >
                                                     <Edit size={13} />
