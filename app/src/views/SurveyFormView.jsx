@@ -560,11 +560,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 1</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Demographics & Household Profile</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Household Details &amp; Demographics</h2>
                         </div>
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Q1. Respondent Age Group [D1]</label>
+                                <label className="form-label">Q1. Age Group [D1]</label>
                                 <CustomSelect 
                                     value={formData.D1}
                                     onChange={(val) => handleFieldChange('D1', val)}
@@ -573,7 +573,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q2. Respondent Gender [D2]</label>
+                                <label className="form-label">Q2. Gender [D2]</label>
                                 <CustomSelect 
                                     value={formData.D2}
                                     onChange={(val) => handleFieldChange('D2', val)}
@@ -582,7 +582,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q3. Primary Occupation of Household Head [D3]</label>
+                                <label className="form-label">Q3. Main Family Occupation / Work [D3]</label>
                                 <CustomSelect 
                                     value={formData.D3}
                                     onChange={(val) => handleFieldChange('D3', val)}
@@ -591,7 +591,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q4. Highest Education Level in Household [D4]</label>
+                                <label className="form-label">Q4. Highest Education Level in Family [D4]</label>
                                 <CustomSelect 
                                     value={formData.D4}
                                     onChange={(val) => handleFieldChange('D4', val)}
@@ -600,7 +600,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q5. Total Household Members [D5] (Whole Persons)</label>
+                                <label className="form-label">Q5. Total Members Living in House [D5]</label>
                                 <input 
                                     type="number"
                                     min="1"
@@ -612,11 +612,11 @@ export default function SurveyFormView() {
                                     required
                                 />
                                 <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)', marginTop: '0.35rem' }}>
-                                    Living in same residential unit. Integer only.
+                                    Total number of people living in the home.
                                 </div>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q6. Food Security / Ration Card Status [D6]</label>
+                                <label className="form-label">Q6. Ration Card Type [D6]</label>
                                 <CustomSelect 
                                     value={formData.D6}
                                     onChange={(val) => handleFieldChange('D6', val)}
@@ -631,11 +631,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 2</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Digital Infrastructure & Connectivity</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Phones &amp; Internet Access</h2>
                         </div>
                         <div className="choice-grid columns-3" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Q7. Smartphone Availability [TECH1]</label>
+                                <label className="form-label">Q7. Smartphone in Household [TECH1]</label>
                                 <CustomSelect 
                                     value={formData.TECH1}
                                     onChange={(val) => handleFieldChange('TECH1', val)}
@@ -644,7 +644,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q8. Internet Connectivity Mode [TECH2]</label>
+                                <label className="form-label">Q8. How do you connect to internet? [TECH2]</label>
                                 <CustomSelect 
                                     value={formData.TECH2}
                                     onChange={(val) => handleFieldChange('TECH2', val)}
@@ -653,7 +653,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q9. Digital Literacy Independence [TECH3]</label>
+                                <label className="form-label">Q9. Using websites and reading online [TECH3]</label>
                                 <CustomSelect 
                                     value={formData.TECH3}
                                     onChange={(val) => handleFieldChange('TECH3', val)}
@@ -668,11 +668,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 3</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Welfare Scheme Access & Documentation</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Government Welfare Schemes</h2>
                         </div>
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem', marginBottom: '1.25rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Q10. Scheme Discovery Channel [SCH1]</label>
+                                <label className="form-label">Q10. How do you learn about schemes? [SCH1]</label>
                                 <CustomSelect 
                                     value={formData.SCH1}
                                     onChange={(val) => handleFieldChange('SCH1', val)}
@@ -681,7 +681,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q11. Main Application Barrier [SCH2]</label>
+                                <label className="form-label">Q11. Main difficulty when applying [SCH2]</label>
                                 <CustomSelect 
                                     value={formData.SCH2}
                                     onChange={(val) => handleFieldChange('SCH2', val)}
@@ -691,7 +691,7 @@ export default function SurveyFormView() {
                             </div>
                         </div>
                         <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                            <label className="form-label">Q12. Official Portal Authenticity Perception [SCH3]</label>
+                            <label className="form-label">Q12. Telling genuine government websites from fake ones [SCH3]</label>
                             <CustomSelect 
                                 value={formData.SCH3}
                                 onChange={(val) => handleFieldChange('SCH3', val)}
@@ -703,7 +703,7 @@ export default function SurveyFormView() {
                         {/* Q13: Multi-Select SCH4 */}
                         <div className="form-group" style={{ background: 'var(--color-slate-50)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-slate-200)' }}>
                             <label className="form-label" style={{ marginBottom: '0.5rem' }}>
-                                Q13. Active Welfare Entitlements Enrolled [SCH4] (Multi-Select)
+                                Q13. Government schemes your family receives [SCH4] (Select all that apply)
                             </label>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.65rem', marginTop: '0.5rem' }}>
                                 {SURVEY_CANONICAL_OPTIONS.SCH4_OPTIONS.map(opt => {
@@ -736,7 +736,7 @@ export default function SurveyFormView() {
                                 })}
                             </div>
                             <div style={{ fontSize: '0.72rem', color: 'var(--color-slate-500)', marginTop: '0.5rem' }}>
-                                Selecting 'None' automatically clears and disables specific scheme selections. Normalized as discrete database rows.
+                                Select all schemes you currently receive. Selecting 'None' clears other selections.
                             </div>
                         </div>
                     </section>
@@ -745,11 +745,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 4</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Emergency Directory & Helplines (CON1 & CON2)</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Emergency Contacts &amp; Helplines (CON1 &amp; CON2)</h2>
                         </div>
                         <div className="form-group" style={{ marginBottom: '1.25rem' }}>
                             <label className="form-label" style={{ marginBottom: '0.65rem' }}>
-                                Q14. Direct Contact Numbers Stored or Written Down? [CON1_Panchayat, CON1_PHC, CON1_Police, CON1_Lineman]
+                                Q14. Do you have these emergency phone numbers saved? [CON1]
                             </label>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.85rem' }}>
                                 {SURVEY_CANONICAL_OPTIONS.CON1_SUBCODES.map(sub => {
@@ -802,7 +802,7 @@ export default function SurveyFormView() {
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Q15. Urgent Emergency Number Retrieval Mode [CON2]</label>
+                            <label className="form-label">Q15. How do you find emergency numbers in an urgent situation? [CON2]</label>
                             <CustomSelect 
                                 value={formData.CON2}
                                 onChange={(val) => handleFieldChange('CON2', val)}
@@ -816,11 +816,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 5</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Healthcare, Education & Infrastructure</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Health, Schools &amp; Drinking Water</h2>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Q16. Primary Health Centre (PHC) Facility Experience [HLTH1]</label>
+                                <label className="form-label">Q16. Experience with the local clinic or PHC [HLTH1]</label>
                                 <CustomSelect 
                                     value={formData.HLTH1}
                                     onChange={(val) => handleFieldChange('HLTH1', val)}
@@ -829,7 +829,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q17. School & Anganwadi Information Accessibility [EDU1]</label>
+                                <label className="form-label">Q17. Access to school and Anganwadi information [EDU1]</label>
                                 <CustomSelect 
                                     value={formData.EDU1}
                                     onChange={(val) => handleFieldChange('EDU1', val)}
@@ -838,7 +838,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q18. Primary Household Drinking Water Supply Source [INFRA1]</label>
+                                <label className="form-label">Q18. Main source of drinking water [INFRA1]</label>
                                 <CustomSelect 
                                     value={formData.INFRA1}
                                     onChange={(val) => handleFieldChange('INFRA1', val)}
@@ -853,11 +853,11 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 6</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Local Trades & Artisan Directory Demand</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Local Workers &amp; Repair Services</h2>
                         </div>
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
-                                <label className="form-label">Q19. Access Mode for Local Tradespeople [BIZ1]</label>
+                                <label className="form-label">Q19. How do you find local repairers or workers? [BIZ1]</label>
                                 <CustomSelect 
                                     value={formData.BIZ1}
                                     onChange={(val) => handleFieldChange('BIZ1', val)}
@@ -866,7 +866,7 @@ export default function SurveyFormView() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Q20. Value of Verified Directory [BIZ2]</label>
+                                <label className="form-label">Q20. Would a village business directory be helpful? [BIZ2]</label>
                                 <CustomSelect 
                                     value={formData.BIZ2}
                                     onChange={(val) => handleFieldChange('BIZ2', val)}
@@ -881,10 +881,10 @@ export default function SurveyFormView() {
                     <section className="section-block" style={{ marginBottom: '2rem' }}>
                         <div className="section-head" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.5rem' }}>
                             <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Module 7</span>
-                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Citizen Information Priorities</h2>
+                            <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>Village Website Priorities</h2>
                         </div>
                         <div className="form-group">
-                            <label className="form-label">Q21. Single Most Important Information Priority [PRIO1]</label>
+                            <label className="form-label">Q21. Most important feature needed on this village website [PRIO1]</label>
                             <CustomSelect 
                                 value={formData.PRIO1}
                                 onChange={(val) => handleFieldChange('PRIO1', val)}
@@ -897,12 +897,12 @@ export default function SurveyFormView() {
                     {/* Qualitative Observations Section (survey_responses.notes) */}
                     <section className="section-block" style={{ marginBottom: '2rem', padding: '1.25rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-lg)' }}>
                         <div className="section-head" style={{ marginBottom: '0.75rem' }}>
-                            <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Interviewer Observations</span>
+                            <span className="badge badge-civic" style={{ fontSize: '0.7rem' }}>Surveyor Notes</span>
                             <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-slate-900)', marginTop: '0.25rem' }}>
-                                Qualitative Field Remarks & Specific Information Gaps
+                                Notes and Specific Feedback
                             </h3>
                             <p style={{ fontSize: '0.8rem', color: 'var(--color-slate-600)', marginTop: '0.15rem' }}>
-                                Document citizen anecdotes, unlisted scheme queries, or PHC timings confusion. Stored in response notes (excluded from mathematical percentages).
+                                Write down any citizen feedback, complaints, or remarks during the visit.
                             </p>
                         </div>
                         <div className="form-group">
@@ -912,7 +912,7 @@ export default function SurveyFormView() {
                                 rows="3"
                                 value={formData.notes}
                                 onChange={handleInputChange}
-                                placeholder="e.g. Household head reported visiting mandal office twice for caste certificate renewal; requested direct WhatsApp alert for PHC camp dates."
+                                placeholder="e.g. Citizen mentioned visiting the office twice for certificates; asked for clinic doctor timings to be posted clearly."
                             />
                         </div>
                     </section>

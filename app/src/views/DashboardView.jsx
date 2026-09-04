@@ -236,12 +236,12 @@ export default function DashboardView() {
             {/* Header with Title and Global Action Controls */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '1.75rem' }}>
                 <div>
-                    <span className="badge badge-civic">Academic CSP Empirical Field Analytics</span>
+                    <span className="badge badge-civic">Village Survey Analytics</span>
                     <h1 className="hero-title" style={{ fontSize: '1.85rem', marginTop: '0.4rem', letterSpacing: '-0.02em' }}>
-                        Interactive Village Survey Analytics Dashboard
+                        Village Survey Analytics Dashboard
                     </h1>
                     <p className="section-desc" style={{ maxWidth: '850px' }}>
-                        Socio-economic telemetry, digital connectivity distributions, and problem traceability indicators computed live from validated household field surveys.
+                        Live survey results, mobile access rates, and community feedback collected directly from village households.
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
@@ -253,7 +253,7 @@ export default function DashboardView() {
                         style={{ minHeight: '44px', padding: '0.55rem 1.15rem' }}
                     >
                         <RefreshCw size={15} style={{ marginRight: '6px' }} className={loading ? 'spin-icon' : ''} aria-hidden="true" />
-                        <span>Refresh Telemetry</span>
+                        <span>Refresh Data</span>
                     </button>
                     <button
                         type="button"
@@ -262,7 +262,7 @@ export default function DashboardView() {
                         style={{ minHeight: '44px', padding: '0.55rem 1.15rem' }}
                     >
                         <Download size={15} style={{ marginRight: '6px' }} aria-hidden="true" />
-                        <span>Export CSV Dataset</span>
+                        <span>Download CSV</span>
                     </button>
                 </div>
             </div>
@@ -359,26 +359,26 @@ export default function DashboardView() {
             <div className="kpi-grid">
                 <div className="kpi-stat-card">
                     <div className="kpi-stat-header">
-                        <span className="kpi-stat-label">Sample Size (N)</span>
+                        <span className="kpi-stat-label">Total Households</span>
                         <Users size={16} style={{ color: 'var(--color-slate-400)' }} aria-hidden="true" />
                     </div>
                     <div className="kpi-stat-val">{total}</div>
-                    <div className="kpi-stat-sub">Validated Household Field Interviews</div>
+                    <div className="kpi-stat-sub">Households surveyed</div>
                     <div className="kpi-meta-badge-row">
                         <span className="kpi-meta-chip chip-blue">
-                            {availableWards.length} Village Localities Audited
+                            {availableWards.length} Localities Covered
                         </span>
                     </div>
                 </div>
 
                 <div className="kpi-stat-card">
                     <div className="kpi-stat-header">
-                        <span className="kpi-stat-label">Smartphone Penetration</span>
+                        <span className="kpi-stat-label">Smartphone Access</span>
                         <Smartphone size={16} style={{ color: 'var(--color-blue-600)' }} aria-hidden="true" />
                     </div>
                     <div className="kpi-stat-val">{total > 0 ? `${smartPct}%` : '0%'}</div>
                     <div className="kpi-stat-sub">
-                        {total > 0 ? `${smartCount} of ${total} households with device access` : 'No data in filter'}
+                        {total > 0 ? `${smartCount} of ${total} homes have a smartphone` : 'No data in filter'}
                     </div>
                     <div className="kpi-progress-bar">
                         <div className="kpi-progress-fill fill-blue" style={{ width: `${smartPct}%` }}></div>
@@ -387,12 +387,12 @@ export default function DashboardView() {
 
                 <div className="kpi-stat-card">
                     <div className="kpi-stat-header">
-                        <span className="kpi-stat-label">Paperwork Barriers</span>
+                        <span className="kpi-stat-label">Paperwork Difficulties</span>
                         <FileText size={16} style={{ color: 'var(--color-amber-600)' }} aria-hidden="true" />
                     </div>
                     <div className="kpi-stat-val">{total > 0 ? `${docHurdlePct}%` : '0%'}</div>
                     <div className="kpi-stat-sub">
-                        {total > 0 ? `${docHurdleCount} of ${total} face scheme document hurdles` : 'No data in filter'}
+                        {total > 0 ? `${docHurdleCount} of ${total} face missing papers or unclear rules` : 'No data in filter'}
                     </div>
                     <div className="kpi-progress-bar">
                         <div className="kpi-progress-fill fill-amber" style={{ width: `${docHurdlePct}%` }}></div>
@@ -401,12 +401,12 @@ export default function DashboardView() {
 
                 <div className="kpi-stat-card">
                     <div className="kpi-stat-header">
-                        <span className="kpi-stat-label">Emergency Number Void</span>
+                        <span className="kpi-stat-label">Missing Emergency Numbers</span>
                         <PhoneCall size={16} style={{ color: 'var(--color-red-600)' }} aria-hidden="true" />
                     </div>
                     <div className="kpi-stat-val">{total > 0 ? `${noPhcPct}%` : '0%'}</div>
                     <div className="kpi-stat-sub">
-                        {total > 0 ? `${noPhcCount} of ${total} lack local emergency numbers` : 'No data in filter'}
+                        {total > 0 ? `${noPhcCount} of ${total} lack clinic or ambulance numbers` : 'No data in filter'}
                     </div>
                     <div className="kpi-progress-bar">
                         <div className="kpi-progress-fill fill-red" style={{ width: `${noPhcPct}%` }}></div>
@@ -415,16 +415,16 @@ export default function DashboardView() {
 
                 <div className="kpi-stat-card">
                     <div className="kpi-stat-header">
-                        <span className="kpi-stat-label">Typical Household Size</span>
+                        <span className="kpi-stat-label">Average Family Size</span>
                         <Briefcase size={16} style={{ color: 'var(--color-emerald-600)' }} aria-hidden="true" />
                     </div>
                     <div className="kpi-stat-val">{typicalHouseholdSize}</div>
                     <div className="kpi-stat-sub">
-                        {total > 0 ? `4 to 5 members per residence (${totalResidents} citizens audited)` : 'No household records'}
+                        {total > 0 ? `4 to 5 members per home (${totalResidents} citizens recorded)` : 'No household records'}
                     </div>
                     <div className="kpi-meta-badge-row">
                         <span className="kpi-meta-chip chip-emerald">
-                            Whole Person Metric (D5)
+                            Family Size (D5)
                         </span>
                     </div>
                 </div>
@@ -965,21 +965,21 @@ export default function DashboardView() {
             <div className="traceability-table-card">
                 <div className="section-head">
                     <h2 className="section-title">
-                        <span>CSP Problem Traceability Matrix</span>
+                        <span>How Survey Findings Shaped This Portal</span>
                     </h2>
                     <p className="section-desc">
-                        Direct empirical mapping between survey-identified community challenges and portal technical interventions.
+                        Every problem found in the survey directly connects to a feature built into this website.
                     </p>
                 </div>
 
                 <table className="traceability-table">
                     <thead>
                         <tr>
-                            <th>Identified Information Gap</th>
-                            <th>Survey Indicator &amp; Empirical Metric</th>
-                            <th>Derived Requirement</th>
-                            <th>Portal Technical Intervention</th>
-                            <th>Validation Method</th>
+                            <th>Village Problem Found</th>
+                            <th>Survey Number &amp; Percentage</th>
+                            <th>What Was Needed</th>
+                            <th>Feature Added to Portal</th>
+                            <th>How We Checked It</th>
                         </tr>
                     </thead>
                     <tbody>
