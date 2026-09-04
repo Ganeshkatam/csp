@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Phone, Menu, X, ShieldCheck, Home, FileText, Activity, Users, Building2, Store, ClipboardList, BarChart3, Lock, LogOut } from 'lucide-react';
 import { I18N_DICT, getLocalized } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
@@ -14,12 +14,44 @@ export default function Header({
     setTextZoom,
     user,
     verifiedContacts = [],
+    announcements = [],
     mobileMenuOpen,
     setMobileMenuOpen
 }) {
     const t = I18N_DICT[lang];
+    const [isTickerPaused, setIsTickerPaused] = useState(false);
     const hamburgerRef = useRef(null);
     const drawerCloseBtnRef = useRef(null);
+
+    const renderTickerGroup = (groupKey) => {
+        const list = announcements && announcements.length > 0 
+            ? announcements 
+            : [
+                {
+                    id: 'default-1',
+                    title: lang === 'te' ? 'త్రైమాసిక గ్రామసభ' : 'Quarterly Grama Sabha',
+                    description: lang === 'te' ? 'తాగునీటి నాణ్యత మరియు సంక్షేమ పథకాల సమీక్ష కొరకు గ్రామసభ నిర్వహించబడును.' : 'Scheduled for review of drinking water quality and welfare schemes.',
+                },
+                {
+                    id: 'default-2',
+                    title: lang === 'te' ? 'ఉచిత ఆరోగ్య శిబిరం' : 'Free Health Camp',
+                    description: lang === 'te' ? 'పీహెచ్‌సీలో ఉచిత అసంక్రమిత వ్యాధుల (NCD) పరీక్షా శిబిరం.' : 'Free NCD Health Screening Camp at PHC with doctor consultation.',
+                }
+            ];
+
+        return list.map((item, idx) => (
+            <span key={`${groupKey}-${item.id || idx}`} className="ticker-announcement">
+                <strong className="ticker-title">
+                    {lang === 'te' ? (item.title_te || item.title) : item.title}
+                </strong>
+                <span className="ticker-desc">
+                    {': '}
+                    {lang === 'te' ? (item.description_te || item.description) : item.description}
+                </span>
+                <span className="notice-bullet" aria-hidden="true">•</span>
+            </span>
+        ));
+    };
 
     const toggleLang = () => {
         setLang(prev => (prev === 'en' ? 'te' : 'en'));
@@ -277,13 +309,36 @@ export default function Header({
                     </div>
                 </div>
 
-                {/* Subtle Slim Announcement Bar */}
+                {/* Continuous Scrolling Announcement Bar */}
                 <div className="clean-notice-strip">
                     <div className="container notice-strip-inner">
-                        <span className="notice-badge">Notice</span>
-                        <span className="notice-text">
-                            Quarterly Grama Sabha scheduled for review of drinking water quality and welfare schemes. Free NCD Health Screening Camp at PHC.
-                        </span>
+                        <button
+                            type="button"
+                            className="notice-badge"
+                            onClick={() => scrollToSection('sectionAnnouncements')}
+                            title={lang === 'te' ? 'అన్ని ప్రకటనలను చూడండి' : 'View all announcements'}
+                            aria-label={lang === 'te' ? 'గ్రామ ప్రకటనల విభాగం' : 'View announcements section'}
+                        >
+                            {lang === 'te' ? 'సమాచారం' : 'Notice'}
+                        </button>
+                        <div 
+                            className={`notice-ticker-container ${isTickerPaused ? 'is-paused' : ''}`}
+                            role="region" 
+                            aria-label={lang === 'te' ? 'ముఖ్య గ్రామ సమాచారం స్క్రోలింగ్ బార్' : 'Important Village Announcements ticker'}
+                            onMouseEnter={() => setIsTickerPaused(true)}
+                            onMouseLeave={() => setIsTickerPaused(false)}
+                            onTouchStart={() => setIsTickerPaused(true)}
+                            onTouchEnd={() => setIsTickerPaused(false)}
+                        >
+                            <div className="notice-ticker-track">
+                                <div className="notice-ticker-group">
+                                    {renderTickerGroup('grp1')}
+                                </div>
+                                <div className="notice-ticker-group" aria-hidden="true">
+                                    {renderTickerGroup('grp2')}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>

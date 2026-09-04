@@ -37,8 +37,9 @@ export default function App() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [verifiedContacts, setVerifiedContacts] = useState([]);
+    const [announcements, setAnnouncements] = useState([]);
 
-    // Monitor Auth State and Load Verified Contacts from Supabase
+    // Monitor Auth State and Load Verified Contacts and Announcements from Supabase
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user || null);
@@ -56,6 +57,17 @@ export default function App() {
             .then(({ data, error }) => {
                 if (!error && data) {
                     setVerifiedContacts(data);
+                }
+            });
+
+        // Load published announcements from Supabase
+        supabase.from('announcements')
+            .select('*')
+            .eq('status', 'published')
+            .order('event_date', { ascending: true })
+            .then(({ data, error }) => {
+                if (!error && data) {
+                    setAnnouncements(data);
                 }
             });
 
@@ -142,6 +154,7 @@ export default function App() {
                 setTextZoom={setTextZoom}
                 user={user}
                 verifiedContacts={verifiedContacts}
+                announcements={announcements}
                 mobileMenuOpen={mobileMenuOpen}
                 setMobileMenuOpen={setMobileMenuOpen}
             />
