@@ -1,30 +1,41 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
+import { useAppContext } from '../../../app/providers';
 
 export function SchemeSearch({ 
     query, 
     search, 
-    onQueryChange, 
     onSearchChange, 
+    onQueryChange, 
     onClear, 
     placeholder = "Search schemes by name, benefits, or eligibility..." 
 }) {
+    const appContext = useAppContext();
+    const isTe = appContext?.lang === 'te';
     const val = query !== undefined ? query : (search || '');
+    
     const handleChange = (newVal) => {
         if (onQueryChange) onQueryChange(newVal);
         if (onSearchChange) onSearchChange(newVal);
     };
+    
     const handleClear = () => {
         if (onClear) onClear();
         else handleChange('');
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    };
+
     return (
-        <div className="search-bar-box" style={{ maxWidth: '640px', marginBottom: '1.25rem' }}>
-            <Search size={18} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
+        <form onSubmit={handleSubmit} className="hero-search-form" style={{ maxWidth: '680px', marginBottom: '1.25rem' }}>
+            <div className="hero-search-icon-badge" aria-hidden="true">
+                <Search size={18} />
+            </div>
             <input
                 type="text"
-                className="search-input"
+                className="hero-search-input"
                 value={val}
                 onChange={(e) => handleChange(e.target.value)}
                 placeholder={placeholder}
@@ -34,13 +45,17 @@ export function SchemeSearch({
                 <button
                     type="button"
                     onClick={handleClear}
-                    style={{ background: 'transparent', border: 'none', color: 'var(--color-slate-400)', cursor: 'pointer', display: 'flex' }}
-                    aria-label="Clear search"
+                    className="hero-search-clear-btn"
+                    aria-label="Clear search query"
                 >
                     <X size={16} />
                 </button>
             )}
-        </div>
+            <button type="submit" className="hero-search-submit-btn">
+                <Search size={14} />
+                <span>{isTe ? "శోధించండి" : "Search"}</span>
+            </button>
+        </form>
     );
 }
 

@@ -62,27 +62,33 @@ export function BusinessesPage() {
             <div className="container" style={{ paddingBottom: '3rem' }}>
                 {/* Search & Filter Bar */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    <div className="search-bar-box" style={{ maxWidth: '640px' }}>
-                        <Search size={18} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
+                    <form onSubmit={(e) => e.preventDefault()} className="hero-search-form" style={{ maxWidth: '680px', marginBottom: '0.75rem' }}>
+                        <div className="hero-search-icon-badge" aria-hidden="true">
+                            <Search size={18} />
+                        </div>
                         <input
                             type="text"
-                            className="search-input"
+                            className="hero-search-input"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search artisans, businesses, dairy, repairs..."
+                            placeholder={lang === 'te' ? "వృత్తులు, వ్యాపారాలు, మరమ్మతులు శోధించండి..." : "Search artisans, businesses, dairy, repairs..."}
                             aria-label="Search businesses"
                         />
                         {search && (
                             <button
                                 type="button"
                                 onClick={() => setSearch('')}
-                                style={{ background: 'transparent', border: 'none', color: 'var(--color-slate-400)', cursor: 'pointer', display: 'flex' }}
+                                className="hero-search-clear-btn"
                                 aria-label="Clear search"
                             >
                                 <X size={16} />
                             </button>
                         )}
-                    </div>
+                        <button type="submit" className="hero-search-submit-btn">
+                            <Search size={14} />
+                            <span>{lang === 'te' ? "శోధించండి" : "Search"}</span>
+                        </button>
+                    </form>
 
                     <div className="filter-pills-bar" role="tablist">
                         {BUSINESS_CATEGORIES.map(cat => (
