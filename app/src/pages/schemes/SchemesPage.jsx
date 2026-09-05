@@ -1,44 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../app/providers';
-import { schemeService, SCHEME_CATEGORIES } from '../../features/schemes/api/schemes';
-import { SchemeCard } from '../../features/schemes/components/SchemeCard';
-import { SchemeFilters } from '../../features/schemes/components/SchemeFilters';
-import { SchemeSearch } from '../../features/schemes/components/SchemeSearch';
+import { 
+    schemeService, 
+    SCHEME_CATEGORIES, 
+    SchemeCard, 
+    SchemeFilters, 
+    SchemeSearch 
+} from '../../features/schemes';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/ui/EmptyState';
 
-export function SchemesPage({ initialCategory = 'All' }) {
+const CATEGORY_SLUG_MAP = {
+    'agriculture': 'Agriculture',
+    'employment': 'Employment',
+    'housing': 'Housing',
+    'education': 'Education',
+    'healthcare': 'Healthcare',
+    'women-child': 'Women & Child',
+    'women-and-child': 'Women & Child',
+    'social-welfare': 'Social Welfare'
+};
+
+export function SchemesPage() {
+    const { category: paramCategory } = useParams();
     const { lang, t } = useAppContext();
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     
     const initialQuery = searchParams.get('q') || '';
-    const startCat = initialCategory !== 'All' ? initialCategory : (searchParams.get('cat') || 'All');
+    const mappedParamCat = paramCategory ? (CATEGORY_SLUG_MAP[paramCategory.toLowerCase()] || paramCategory) : null;
+    const initialCategory = mappedParamCat || searchParams.get('cat') || 'All';
 
     const [search, setSearch] = useState(initialQuery);
-    const [category, setCategory] = useState(startCat);
+    const [category, setCategory] = useState(initialCategory);
     const [schemes, setSchemes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (initialCategory && initialCategory !== 'All') {
-            setCategory(initialCategory);
+        if (mappedParamCat) {
+            setCategory(mappedParamCat);
         }
-    }, [initialCategory]);
+    }, [mappedParamCat]);
 
     const loadSchemes = () => {
         setLoading(true);
         setError(null);
         schemeService.getAllSchemes({ category, search })
             .then(data => {
-                setSchemes(data);
+                setSchemes(data || []);
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Error fetching schemes:', err);
-                setError(err.message || 'Failed to load welfare schemes');
+                setError(err.message || 'Failed to load welfare schemes from database.');
                 setLoading(false);
             });
     };
@@ -49,10 +66,12 @@ export function SchemesPage({ initialCategory = 'All' }) {
 
     const handleCategoryChange = (newCat) => {
         setCategory(newCat);
-        const params = new URLSearchParams(searchParams);
-        if (newCat === 'All') params.delete('cat');
-        else params.set('cat', newCat);
-        setSearchParams(params, { replace: true });
+        if (newCat === 'All') {
+            navigate('/schemes', { replace: true });
+        } else {
+            const slug = newCat.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-');
+            navigate(`/schemes/category/${slug}`, { replace: true });
+        }
     };
 
     const handleSearchChange = (newSearch) => {
@@ -69,68 +88,87 @@ export function SchemesPage({ initialCategory = 'All' }) {
             <div className="page-header">
                 <div className="container page-header-inner">
                     <div className="page-badge-row">
-                        <span className="badge badge-civic">Government Welfare Programmes</span>
-                        <span className="badge badge-verified">Direct .gov.in Portals</span>
+                        <span className="badge badge-civic">Direct Benefit Transfers &amp; Entitlements</span>
+                        <span className="badge badge-verified">State &amp; Central Portals</span>
                     </div>
                     <h1 className="page-title">{t?.schemesTitle || 'Government Welfare Schemes'}</h1>
                     <p className="page-subtitle">
-                        {t?.schemesDesc || 'Comprehensive directory of authentic public welfare schemes with eligibility requirements, required documents checklists, and official portal links.'}
+                        {t?.schemesDesc || 'Comprehensive repository of verified welfare schemes for agriculture, healthcare, housing, and social security. Transparent eligibility, document checklists, and application processes.'}
                     </p>
                 </div>
             </div>
 
-            <div className="container" style={{ paddingBottom: '2.5rem' }}>
-                {/* Search & Category Filter Bar */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    <SchemeSearch query={search} onQueryChange={handleSearchChange} />
-                    <SchemeFilters currentCategory={category} onSelectCategory={handleCategoryChange} />
+            <div className="container" style={{ paddingBottom: '3.5rem' }}>
+                {/* Search & Filter Controls */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
+                    <SchemeSearch
+                        search={search}
+                        onSearchChange={handleSearchChange}
+                        onClear={() => handleSearchChange('')}
+                        placeholder={t?.searchSchemesPlaceholder || 'Search schemes by name, eligibility, documents, or department...'}
+                    />
+
+                    <SchemeFilters
+                        categories={SCHEME_CATEGORIES}
+                        activeCategory={category}
+                        onSelectCategory={handleCategoryChange}
+                    />
                 </div>
 
-                {/* Count Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.875rem', color: 'var(--color-slate-600)' }}>
-                    <span>Showing <strong>{schemes.length}</strong> welfare schemes</span>
-                    {(search || category !== 'All') && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                handleCategoryChange('All');
-                                handleSearchChange('');
-                            }}
-                            className="btn btn-ghost btn-sm"
-                        >
-                            Reset filters
-                        </button>
-                    )}
-                </div>
+                {/* Results State */}
+                {loading && (
+                    <LoadingState count={6} message="Loading welfare scheme records..." />
+                )}
 
-                {/* Content Area */}
-                {loading && <LoadingState count={6} message="Loading published welfare schemes..." />}
-                {error && <ErrorState message={error} onRetry={loadSchemes} />}
+                {error && (
+                    <ErrorState
+                        message={error}
+                        onRetry={loadSchemes}
+                    />
+                )}
+
                 {!loading && !error && schemes.length === 0 && (
                     <EmptyState
-                        title="No welfare schemes match your criteria"
-                        description="Try searching for another keyword or selecting a different category."
+                        title={search ? 'No matching schemes found' : 'No schemes listed in this category'}
+                        description={
+                            search 
+                                ? `No verified welfare programs match "${search}". Try adjusting your keywords or clearing the category filter.`
+                                : 'No schemes currently published in this category. Check back soon for official updates.'
+                        }
                         action={
-                            <button
-                                type="button"
-                                className="btn btn-secondary btn-sm"
-                                onClick={() => {
-                                    handleCategoryChange('All');
-                                    handleSearchChange('');
-                                }}
-                            >
-                                View All Schemes
-                            </button>
+                            (search || category !== 'All') && (
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => {
+                                        setSearch('');
+                                        handleCategoryChange('All');
+                                    }}
+                                >
+                                    Reset Filters
+                                </button>
+                            )
                         }
                     />
                 )}
 
                 {!loading && !error && schemes.length > 0 && (
-                    <div className="card-grid">
-                        {schemes.map(scheme => (
-                            <SchemeCard key={scheme.id} scheme={scheme} lang={lang} t={t} />
-                        ))}
-                    </div>
+                    <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', fontSize: '0.85rem', color: 'var(--color-slate-600)' }}>
+                            <span>Showing <strong>{schemes.length}</strong> verified {schemes.length === 1 ? 'programme' : 'programmes'}</span>
+                            {category !== 'All' && <span>Filtered by: <strong>{category}</strong></span>}
+                        </div>
+                        <div className="portal-grid">
+                            {schemes.map(scheme => (
+                                <SchemeCard
+                                    key={scheme.id}
+                                    scheme={scheme}
+                                    lang={lang}
+                                    t={t}
+                                />
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
         </div>

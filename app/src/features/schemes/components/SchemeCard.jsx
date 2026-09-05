@@ -38,10 +38,15 @@ export function SchemeCard({ scheme, lang, t }) {
             )}
             <div className="card-top-content" style={{ flex: 1 }}>
                 <div className="card-header-row">
-                    <div className="badge badge-civic">
+                    <Link 
+                        to={`/schemes/category/${(scheme.category || '').toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-')}`}
+                        className="badge badge-civic"
+                        style={{ textDecoration: 'none' }}
+                        title={`Browse all ${scheme.category} schemes`}
+                    >
                         <Layers size={13} style={{ marginRight: '4px' }} aria-hidden="true" />
                         <span>{scheme.category}</span>
-                    </div>
+                    </Link>
                     {!scheme.image_url && (
                         <span className="badge badge-verified">
                             <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified

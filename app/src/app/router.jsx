@@ -1,86 +1,97 @@
-import React from 'react';
-import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
 import SurveyLayout from '../layouts/SurveyLayout';
 import AdminLayout from '../layouts/AdminLayout';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { LoadingState } from '../components/feedback/LoadingState';
 
-// Page components
-import HomePage from '../pages/home/HomePage';
-import SchemesPage from '../pages/schemes/SchemesPage';
-import SchemeDetailsPage from '../pages/schemes/SchemeDetailsPage';
-import ContactsPage from '../pages/contacts/ContactsPage';
-import HealthcarePage from '../pages/healthcare/HealthcarePage';
-import EducationPage from '../pages/education/EducationPage';
-import BusinessesPage from '../pages/businesses/BusinessesPage';
-import AnnouncementsPage from '../pages/announcements/AnnouncementsPage';
-import AnnouncementDetailsPage from '../pages/announcements/AnnouncementDetailsPage';
-import VillagePage from '../pages/village/VillagePage';
-import FeedbackPage from '../pages/feedback/FeedbackPage';
-import SurveyPage from '../pages/survey/SurveyPage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
-import AdminPage from '../pages/admin/AdminPage';
-
-// Smart dispatcher for /schemes/:slug (distinguishes category from scheme slug)
-function SchemeRouteDispatcher() {
-    const { slug } = useParams();
-    const clean = (slug || '').toLowerCase();
-    
-    const categoryMap = {
-        'agriculture': 'Agriculture',
-        'employment': 'Employment',
-        'housing': 'Housing',
-        'education': 'Education',
-        'healthcare': 'Healthcare',
-        'women-child': 'Women & Child',
-        'women-and-child': 'Women & Child',
-        'social-welfare': 'Social Welfare'
-    };
-    
-    if (categoryMap[clean]) {
-        return <SchemesPage initialCategory={categoryMap[clean]} />;
-    }
-    
-    return <SchemeDetailsPage />;
+// Route Suspense Fallback
+function RouteFallback() {
+    return (
+        <div className="container" style={{ padding: '3.5rem 0' }}>
+            <LoadingState count={3} message="Loading requested view..." />
+        </div>
+    );
 }
+
+function withSuspense(Component) {
+    return (
+        <Suspense fallback={<RouteFallback />}>
+            <Component />
+        </Suspense>
+    );
+}
+
+// Route-level code-splitting: each page chunk is fetched only on-demand
+const HomePage = lazy(() => import('../pages/home/HomePage'));
+const SchemesPage = lazy(() => import('../pages/schemes/SchemesPage'));
+const SchemeDetailsPage = lazy(() => import('../pages/schemes/SchemeDetailsPage'));
+const ContactsPage = lazy(() => import('../pages/contacts/ContactsPage'));
+const HealthcarePage = lazy(() => import('../pages/healthcare/HealthcarePage'));
+const EducationPage = lazy(() => import('../pages/education/EducationPage'));
+const BusinessesPage = lazy(() => import('../pages/businesses/BusinessesPage'));
+const AnnouncementsPage = lazy(() => import('../pages/announcements/AnnouncementsPage'));
+const AnnouncementDetailsPage = lazy(() => import('../pages/announcements/AnnouncementDetailsPage'));
+const VillagePage = lazy(() => import('../pages/village/VillagePage'));
+const FeedbackPage = lazy(() => import('../pages/feedback/FeedbackPage'));
+const SurveyPage = lazy(() => import('../pages/survey/SurveyPage'));
+const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
+const AdminPage = lazy(() => import('../pages/admin/AdminPage'));
 
 export const router = createBrowserRouter([
     {
         path: '/',
         element: <PublicLayout />,
         children: [
-            { index: true, element: <HomePage /> },
-            { path: 'schemes', element: <SchemesPage /> },
-            { path: 'schemes/:slug', element: <SchemeRouteDispatcher /> },
-            { path: 'contacts', element: <ContactsPage /> },
-            { path: 'contacts/:category', element: <ContactsPage /> },
-            { path: 'healthcare', element: <HealthcarePage /> },
-            { path: 'healthcare/:institutionId', element: <HealthcarePage /> },
-            { path: 'education', element: <EducationPage /> },
-            { path: 'education/:institutionId', element: <EducationPage /> },
-            { path: 'businesses', element: <BusinessesPage /> },
-            { path: 'businesses/:businessId', element: <BusinessesPage /> },
-            { path: 'announcements', element: <AnnouncementsPage /> },
-            { path: 'announcements/:announcementId', element: <AnnouncementDetailsPage /> },
-            { path: 'village', element: <VillagePage /> },
-            { path: 'feedback', element: <FeedbackPage /> }
+            { index: true, element: withSuspense(HomePage) },
+            { path: 'schemes', element: withSuspense(SchemesPage) },
+            // Note: /schemes/category/:category is declared BEFORE /schemes/:schemeSlug for unambiguous routing
+            { path: 'schemes/category/:category', element: withSuspense(SchemesPage) },
+            { path: 'schemes/:schemeSlug', element: withSuspense(SchemeDetailsPage) },
+            { path: 'contacts', element: withSuspense(ContactsPage) },
+            { path: 'contacts/:category', element: withSuspense(ContactsPage) },
+            { path: 'healthcare', element: withSuspense(HealthcarePage) },
+            { path: 'healthcare/:institutionId', element: withSuspense(HealthcarePage) },
+            { path: 'education', element: withSuspense(EducationPage) },
+            { path: 'education/:institutionId', element: withSuspense(EducationPage) },
+            { path: 'businesses', element: withSuspense(BusinessesPage) },
+            { path: 'businesses/:businessId', element: withSuspense(BusinessesPage) },
+            { path: 'announcements', element: withSuspense(AnnouncementsPage) },
+            { path: 'announcements/:announcementId', element: withSuspense(AnnouncementDetailsPage) },
+            { path: 'village', element: withSuspense(VillagePage) },
+            { path: 'feedback', element: withSuspense(FeedbackPage) }
         ]
     },
     {
         path: '/survey',
         element: <SurveyLayout />,
         children: [
-            { index: true, element: <SurveyPage /> },
-            { path: 'complete', element: <SurveyPage /> }
+            { index: true, element: withSuspense(SurveyPage) },
+            { path: 'complete', element: withSuspense(SurveyPage) }
         ]
     },
     {
-        path: '/',
+        path: '/dashboard',
         element: <AdminLayout />,
         children: [
-            { path: 'dashboard', element: <DashboardPage /> },
-            { path: 'dashboard/:subtab', element: <DashboardPage /> },
-            { path: 'admin', element: <AdminPage /> },
-            { path: 'admin/:section', element: <AdminPage /> }
+            { index: true, element: withSuspense(DashboardPage) },
+            { path: ':subtab', element: withSuspense(DashboardPage) }
+        ]
+    },
+    {
+        path: '/admin',
+        element: <AdminLayout />,
+        children: [
+            { index: true, element: withSuspense(AdminPage) },
+            { 
+                path: ':section', 
+                element: (
+                    <ProtectedRoute>
+                        {withSuspense(AdminPage)}
+                    </ProtectedRoute>
+                ) 
+            }
         ]
     },
     {
