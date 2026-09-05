@@ -181,11 +181,19 @@ export function SchemeDetailsPage() {
                                     <AlertCircle size={15} style={{ color: 'var(--color-amber-600)' }} />
                                     Who is Excluded?
                                 </h4>
-                                <ul style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--color-slate-600)', lineHeight: '1.6', margin: 0 }}>
-                                    <li>Institutional landholders or agricultural income tax payees.</li>
-                                    <li>Individuals holding regular public office or central/state government employment.</li>
-                                    <li>Households failing biometric e-KYC or mandatory bank account Aadhaar seeding.</li>
-                                </ul>
+                                {scheme.exclusions ? (
+                                    <ul style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--color-slate-600)', lineHeight: '1.6', margin: 0 }}>
+                                        {scheme.exclusions.split(';').map((ex, i) => (
+                                            <li key={i}>{ex.trim()}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <ul style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--color-slate-600)', lineHeight: '1.6', margin: 0 }}>
+                                        <li>Institutional landholders or agricultural income tax payees.</li>
+                                        <li>Individuals holding regular public office or central/state government employment.</li>
+                                        <li>Households failing biometric e-KYC or mandatory bank account Aadhaar seeding.</li>
+                                    </ul>
+                                )}
                             </div>
                         </div>
 
@@ -217,12 +225,20 @@ export function SchemeDetailsPage() {
                                 <HelpCircle size={18} style={{ color: 'var(--color-indigo-600)' }} />
                                 How to Apply
                             </h2>
-                            <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--color-slate-700)', lineHeight: '1.7', margin: 0 }}>
-                                <li>{scheme.application_process || 'Visit the local Grama Sachivalayam (Village Secretariat) or designated MeeSeva center.'}</li>
-                                <li>Submit self-attested photocopies of the required documents listed in the checklist above.</li>
-                                <li>Complete mandatory biometric e-KYC authentication with the Village Revenue Officer (VRO) or Welfare Assistant.</li>
-                                <li>Verify status using your Application ID or Aadhaar number through the official portal.</li>
-                            </ol>
+                            {scheme.application_process ? (
+                                <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--color-slate-700)', lineHeight: '1.7', margin: 0 }}>
+                                    {scheme.application_process.split(';').map((step, i) => (
+                                        <li key={i}>{step.trim()}</li>
+                                    ))}
+                                </ol>
+                            ) : (
+                                <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--color-slate-700)', lineHeight: '1.7', margin: 0 }}>
+                                    <li>Visit the local Grama Sachivalayam (Village Secretariat) or designated MeeSeva center.</li>
+                                    <li>Submit self-attested photocopies of the required documents listed in the checklist above.</li>
+                                    <li>Complete mandatory biometric e-KYC authentication with the Village Revenue Officer (VRO) or Welfare Assistant.</li>
+                                    <li>Verify status using your Application ID or Aadhaar number through the official portal.</li>
+                                </ol>
+                            )}
                         </div>
                     </div>
 
