@@ -19,6 +19,8 @@ html {
     font-size: var(--base-font-size);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 body {
@@ -31,6 +33,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 #root,
@@ -923,6 +927,7 @@ textarea.form-control {
     align-items: center;
     min-height: 36px;
     gap: 0.85rem;
+    min-width: 0;
 }
 
 .ticker-badge {
@@ -941,6 +946,7 @@ textarea.form-control {
     white-space: nowrap;
     position: relative;
     flex: 1;
+    min-width: 0;
 }
 
 .ticker-track {
@@ -1281,12 +1287,18 @@ textarea.form-control {
 
 @media (max-width: 960px) {
     .hero-grid-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
+}
+
+.hero-content-col {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .hero-project-badge {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.45rem;
     background: var(--color-blue-50);
@@ -1297,6 +1309,8 @@ textarea.form-control {
     font-size: 0.78rem;
     font-weight: 700;
     margin-bottom: 1rem;
+    max-width: 100%;
+    line-height: 1.35;
 }
 
 .hero-title {
@@ -1306,6 +1320,17 @@ textarea.form-control {
     letter-spacing: -0.025em;
     line-height: 1.2;
     margin-bottom: 0.35rem;
+    word-break: break-word;
+}
+
+@media (max-width: 640px) {
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    .hero-project-badge {
+        font-size: 0.72rem;
+        border-radius: var(--radius-md);
+    }
 }
 
 .hero-title-suffix {
@@ -1419,15 +1444,128 @@ textarea.form-control {
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
-/* Search Bar */
+/* Modern Hero Search Console */
+.hero-search-form {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 2px solid var(--color-slate-200);
+    border-radius: 14px;
+    padding: 0.4rem 0.5rem 0.4rem 0.75rem;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    gap: 0.75rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 680px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.hero-search-form:hover {
+    border-color: var(--color-slate-300);
+    box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.10), 0 2px 8px -1px rgba(15, 23, 42, 0.05);
+}
+
+.hero-search-form:focus-within {
+    border-color: var(--color-blue-600);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14), 0 8px 28px -4px rgba(37, 99, 235, 0.12);
+}
+
+.hero-search-icon-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-blue-600);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.hero-search-form:focus-within .hero-search-icon-badge {
+    background: #dbeafe;
+    color: var(--color-blue-700);
+    transform: scale(1.05);
+}
+
+.hero-search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-slate-900);
+    outline: none;
+    padding: 0.35rem 0.25rem;
+    letter-spacing: -0.01em;
+}
+
+.hero-search-input::placeholder {
+    color: var(--color-slate-400);
+    font-weight: 400;
+}
+
+.hero-search-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-slate-400);
+    padding: 0.35rem;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.hero-search-clear-btn:hover {
+    color: var(--color-slate-700);
+    background: var(--color-slate-100);
+}
+
+.hero-search-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.4rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    transition: all 0.18s ease;
+}
+
+.hero-search-submit-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
+}
+
+.hero-search-submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+/* General Search Bar */
 .search-bar-box {
     display: flex;
     align-items: center;
     background: #ffffff;
-    border: 1.5px solid var(--color-slate-300);
-    border-radius: var(--radius-md);
-    padding: 0.35rem 0.85rem;
-    box-shadow: var(--shadow-sm);
+    border: 1.5px solid var(--color-slate-200);
+    border-radius: 10px;
+    padding: 0.45rem 0.95rem;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
     gap: 0.65rem;
     transition: all 0.15s ease;
 }
@@ -1444,6 +1582,27 @@ textarea.form-control {
     color: var(--color-slate-900);
     width: 100%;
     outline: none;
+}
+
+@media (max-width: 480px) {
+    .hero-search-form {
+        padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+        gap: 0.45rem;
+        border-radius: 12px;
+    }
+    .hero-search-icon-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    }
+    .hero-search-input {
+        font-size: 0.875rem;
+    }
+    .hero-search-submit-btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+    }
 }
 
 /* Custom DatePicker Component */

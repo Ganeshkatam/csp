@@ -4,7 +4,7 @@ import {
     Search, FileText, Phone, Activity, GraduationCap,
     Building2, MessageSquare, ArrowRight, ShieldCheck,
     HeartPulse, Store, Calendar, CheckCircle2,
-    Landmark
+    Landmark, X
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { villageService } from '../../features/village/api/village';
@@ -166,18 +166,31 @@ export function HomePage() {
                         </p>
 
                         {/* Global Unified Search Bar */}
-                        <form onSubmit={handleSearchSubmit} className="search-bar-box" style={{ maxWidth: '680px', marginBottom: '1.25rem' }}>
-                            <Search size={18} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
+                        <form onSubmit={handleSearchSubmit} className="hero-search-form">
+                            <div className="hero-search-icon-badge" aria-hidden="true">
+                                <Search size={18} />
+                            </div>
                             <input
                                 type="text"
-                                className="search-input"
+                                className="hero-search-input"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={t?.searchPlaceholder || 'Search schemes, contacts, doctors, schools...'}
                                 aria-label="Global search query"
                             />
-                            <button type="submit" className="btn btn-primary btn-sm" style={{ flexShrink: 0 }}>
-                                Search
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery('')}
+                                    className="hero-search-clear-btn"
+                                    aria-label="Clear search query"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
+                            <button type="submit" className="hero-search-submit-btn">
+                                <Search size={14} />
+                                <span>{isTe ? "శోధించండి" : "Search"}</span>
                             </button>
                         </form>
 
