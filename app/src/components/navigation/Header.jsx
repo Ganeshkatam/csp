@@ -4,6 +4,7 @@ import { Phone, Menu, X, Landmark, LogOut } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { contactService } from '../../features/contacts/api/contacts';
 import { authService } from '../../lib/auth';
+import { createTelLink } from '../../utils/phone';
 import { MobileDrawer } from './MobileDrawer';
 
 export function Header() {
@@ -43,7 +44,7 @@ export function Header() {
                             {helplines.slice(0, 3).map(hl => (
                                 <a 
                                     key={hl.phone}
-                                    href={`tel:${hl.phone}`} 
+                                    href={createTelLink(hl.phone)} 
                                     className={`helpline-pill ${hl.phone === '108' ? 'helpline-red' : hl.phone === '100' ? 'helpline-blue' : 'helpline-green'}`} 
                                     title={`${hl.name} (${hl.phone})`}
                                 >

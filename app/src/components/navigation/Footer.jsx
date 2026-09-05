@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, ShieldCheck, Landmark } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
+import { createTelLink } from '../../utils/phone';
 
 export function Footer() {
     const { t } = useAppContext();
@@ -77,7 +78,7 @@ export function Footer() {
                             {emergencyHelplines.map(hl => (
                                 <a 
                                     key={hl.phone}
-                                    href={`tel:${hl.phone}`} 
+                                    href={createTelLink(hl.phone)} 
                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-slate-800)', border: '1px solid var(--color-slate-700)', padding: '0.45rem 0.75rem', borderRadius: 'var(--radius-sm)', color: '#ffffff', fontSize: '0.8125rem', textDecoration: 'none', fontWeight: 600 }}
                                 >
                                     <Phone size={13} style={{ color: 'var(--color-emerald-400)' }} />

@@ -424,6 +424,31 @@ export function HomePage() {
 
                     {activeExplorerTab === 'contacts' && (
                         <div>
+                            {/* 24x7 Statutory Helplines Quick Call Bar */}
+                            <div className="quick-dial-bar" style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem', alignItems: 'center', background: 'var(--color-slate-50)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)' }}>
+                                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-slate-700)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <Phone size={14} style={{ color: 'var(--color-red-600)' }} />
+                                    {isTe ? "అత్యవసర హెల్ప్‌లైన్‌లు:" : "24x7 Emergency Helplines:"}
+                                </span>
+                                {[
+                                    { code: '108', label: isTe ? '108 అంబులెన్స్' : '108 Ambulance', cls: 'btn-danger' },
+                                    { code: '100', label: isTe ? '100 పోలీస్' : '100 Police', cls: 'btn-primary' },
+                                    { code: '104', label: isTe ? '104 వైద్య సలహా' : '104 Health', cls: 'btn-secondary' },
+                                    { code: '1912', label: isTe ? '1912 విద్యుత్' : '1912 Power', cls: 'btn-secondary' }
+                                ].map(hl => (
+                                    <a
+                                        key={hl.code}
+                                        href={createTelLink(hl.code)}
+                                        className={`btn ${hl.cls} btn-sm`}
+                                        style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem', textDecoration: 'none' }}
+                                        title={`Call ${hl.label}`}
+                                    >
+                                        <Phone size={12} style={{ marginRight: '4px' }} />
+                                        <span>{hl.label}</span>
+                                    </a>
+                                ))}
+                            </div>
+
                             <div className="card-grid">
                                 {contacts.map(c => (
                                     <ContactCard key={c.id} contact={c} lang={lang} t={t} />
@@ -580,6 +605,15 @@ export function HomePage() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <a 
+                            href={createTelLink('08922-246155')}
+                            className="btn btn-secondary"
+                            style={{ background: 'rgba(255,255,255,0.1)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)', fontWeight: 600, textDecoration: 'none' }}
+                            title="Call Grama Sachivalayam Administration Desk"
+                        >
+                            <Phone size={15} style={{ marginRight: '4px' }} />
+                            <span>{isTe ? "సచివాలయం: 08922-246155" : "Sachivalayam: 08922-246155"}</span>
+                        </a>
                         <Link to="/feedback" className="btn btn-primary" style={{ background: 'var(--color-blue-600)', color: '#ffffff', fontWeight: 700, border: 'none' }}>
                             <span>Submit Record Update</span>
                             <ArrowRight size={15} />
