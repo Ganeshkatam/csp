@@ -134,20 +134,6 @@ export default function PublicPortalView({
         (b.services && b.services.toLowerCase().includes(query))
     );
 
-    const LIVE_PORTAL_URL = 'https://villagemitra.vercel.app';
-    const isLocalhost = typeof window !== 'undefined' && (
-        window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1'
-    );
-    const portalUrl = isLocalhost ? LIVE_PORTAL_URL : (window.location.origin || LIVE_PORTAL_URL);
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(LIVE_PORTAL_URL)}`;
-
-    const handleCopyUrl = () => {
-        navigator.clipboard.writeText(portalUrl);
-        setCopiedUrl(true);
-        setTimeout(() => setCopiedUrl(false), 3000);
-    };
-
     return (
         <main className="container" id="mainContent">
             {/* Rich Civic Hero Banner */}
@@ -363,57 +349,6 @@ export default function PublicPortalView({
             {/* Citizen Feedback & Correction Module */}
             <FeedbackForm villageId={village?.id} t={t} />
 
-            {/* High-End Smartphone Access & Field Evaluation Hub */}
-            <section className="section-block" id="sectionQrAccess">
-                <div className="mobile-access-hub-card">
-                    <div className="mobile-access-content">
-                        <h2 className="mobile-hub-title">{t.qrHeading}</h2>
-                        <p className="mobile-hub-desc">{t.qrDesc}</p>
-
-                        <div className="mobile-steps-list">
-                            <div className="mobile-step-item">
-                                <span className="step-number-dot">1</span>
-                                <span>Open the Camera app on any smartphone.</span>
-                            </div>
-                            <div className="mobile-step-item">
-                                <span className="step-number-dot">2</span>
-                                <span>Focus on the QR code to open the instant mobile portal.</span>
-                            </div>
-                            <div className="mobile-step-item">
-                                <span className="step-number-dot">3</span>
-                                <span>Browse emergency contacts, scheme checklists, and PHC hours in the field.</span>
-                            </div>
-                        </div>
-
-                        <div className="mobile-action-row">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={handleCopyUrl}
-                                style={{ minHeight: '42px', padding: '0.5rem 1rem' }}
-                            >
-                                <Copy size={14} style={{ marginRight: '6px' }} aria-hidden="true" />
-                                {copiedUrl ? 'Copied Portal URL!' : 'Copy Portal URL'}
-                            </button>
-                            <span className="mobile-url-tag">
-                                {portalUrl}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="mobile-qr-frame">
-                        <div className="qr-image-wrapper">
-                            <img 
-                                src={qrCodeUrl} 
-                                alt="Scan QR Code to open Village Mitra on Smartphone" 
-                                width="200" 
-                                height="200" 
-                                className="qr-code-img"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
     );
 }
