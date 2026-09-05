@@ -26,45 +26,51 @@ import { getLocalized } from '../../i18n';
 
 export function HomePage() {
     const { lang, t } = useAppContext();
-    const [village, setVillage] = useState(null);
-    const [announcements, setAnnouncements] = useState([]);
-    const [schemes, setSchemes] = useState([]);
-    const [contacts, setContacts] = useState([]);
-    const [healthcare, setHealthcare] = useState([]);
-    const [education, setEducation] = useState([]);
-    const [businesses, setBusinesses] = useState([]);
+    const [pageData, setPageData] = useState({
+        village: null,
+        announcements: [],
+        schemes: [],
+        contacts: [],
+        healthcare: [],
+        education: [],
+        businesses: []
+    });
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [copiedUrl, setCopiedUrl] = useState(false);
     const navigate = useNavigate();
 
+    const { village, announcements, schemes, contacts, healthcare, education, businesses } = pageData;
+
     useEffect(() => {
-        villageService.getVillageProfile()
-            .then(data => { if (data) setVillage(data); })
-            .catch(err => console.error('Village profile fetch error:', err));
+        let isMounted = true;
 
-        announcementService.getAnnouncements()
-            .then(data => { if (data) setAnnouncements(data.slice(0, 3)); })
-            .catch(err => console.error('Announcements fetch error:', err));
+        Promise.allSettled([
+            villageService.getVillageProfile(),
+            announcementService.getAnnouncements(),
+            schemeService.getAllSchemes(),
+            contactService.getContacts(),
+            healthcareService.getHealthcareFacilities(),
+            educationService.getEducationInstitutions(),
+            businessService.getBusinesses()
+        ]).then(([vRes, aRes, sRes, cRes, hRes, eRes, bRes]) => {
+            if (!isMounted) return;
+            setPageData({
+                village: vRes.status === 'fulfilled' && vRes.value ? vRes.value : null,
+                announcements: aRes.status === 'fulfilled' && Array.isArray(aRes.value) ? aRes.value.slice(0, 3) : [],
+                schemes: sRes.status === 'fulfilled' && Array.isArray(sRes.value) ? sRes.value.slice(0, 4) : [],
+                contacts: cRes.status === 'fulfilled' && Array.isArray(cRes.value) ? cRes.value.slice(0, 4) : [],
+                healthcare: hRes.status === 'fulfilled' && Array.isArray(hRes.value) ? hRes.value.slice(0, 2) : [],
+                education: eRes.status === 'fulfilled' && Array.isArray(eRes.value) ? eRes.value.slice(0, 2) : [],
+                businesses: bRes.status === 'fulfilled' && Array.isArray(bRes.value) ? bRes.value.slice(0, 4) : []
+            });
+            setLoading(false);
+        }).catch(err => {
+            console.error('Home data load error:', err);
+            if (isMounted) setLoading(false);
+        });
 
-        schemeService.getAllSchemes()
-            .then(data => { if (data) setSchemes(data.slice(0, 4)); })
-            .catch(err => console.error('Schemes fetch error:', err));
-
-        contactService.getContacts()
-            .then(data => { if (data) setContacts(data.slice(0, 4)); })
-            .catch(err => console.error('Contacts fetch error:', err));
-
-        healthcareService.getHealthcareFacilities()
-            .then(data => { if (data) setHealthcare(data.slice(0, 2)); })
-            .catch(err => console.error('Healthcare fetch error:', err));
-
-        educationService.getEducationInstitutions()
-            .then(data => { if (data) setEducation(data.slice(0, 2)); })
-            .catch(err => console.error('Education fetch error:', err));
-
-        businessService.getBusinesses()
-            .then(data => { if (data) setBusinesses(data.slice(0, 4)); })
-            .catch(err => console.error('Businesses fetch error:', err));
+        return () => { isMounted = false; };
     }, []);
 
     const handleSearchSubmit = (e) => {
@@ -249,7 +255,7 @@ export function HomePage() {
             </section>
 
             {/* 1. Recent Announcements Highlight */}
-            {announcements.length > 0 && (
+            {(loading || announcements.length > 0) && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
@@ -264,15 +270,21 @@ export function HomePage() {
                     </div>
 
                     <div className="card-grid">
-                        {announcements.map(a => (
-                            <AnnouncementCard key={a.id} announcement={a} lang={lang} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} className="civic-card skeleton-card"></div>
+                            ))
+                        ) : (
+                            announcements.map(a => (
+                                <AnnouncementCard key={a.id} announcement={a} lang={lang} />
+                            ))
+                        )}
                     </div>
                 </section>
             )}
 
             {/* 2. Popular Welfare Schemes Section */}
-            {schemes.length > 0 && (
+            {(loading || schemes.length > 0) && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
@@ -287,15 +299,21 @@ export function HomePage() {
                     </div>
 
                     <div className="card-grid">
-                        {schemes.map(s => (
-                            <SchemeCard key={s.id} scheme={s} lang={lang} t={t} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="civic-card skeleton-card"></div>
+                            ))
+                        ) : (
+                            schemes.map(s => (
+                                <SchemeCard key={s.id} scheme={s} lang={lang} t={t} />
+                            ))
+                        )}
                     </div>
                 </section>
             )}
 
             {/* 3. Emergency & Administrative Contacts Section */}
-            {contacts.length > 0 && (
+            {(loading || contacts.length > 0) && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
@@ -310,15 +328,21 @@ export function HomePage() {
                     </div>
 
                     <div className="card-grid">
-                        {contacts.map(c => (
-                            <ContactCard key={c.id} contact={c} lang={lang} t={t} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="civic-card skeleton-card"></div>
+                            ))
+                        ) : (
+                            contacts.map(c => (
+                                <ContactCard key={c.id} contact={c} lang={lang} t={t} />
+                            ))
+                        )}
                     </div>
                 </section>
             )}
 
             {/* 4. Public Institutions (Healthcare & Education) */}
-            {(healthcare.length > 0 || education.length > 0) && (
+            {(loading || healthcare.length > 0 || education.length > 0) && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
@@ -339,18 +363,26 @@ export function HomePage() {
                     </div>
 
                     <div className="card-grid">
-                        {healthcare.map(f => (
-                            <HealthcareCard key={f.id} facility={f} lang={lang} t={t} />
-                        ))}
-                        {education.map(inst => (
-                            <EducationCard key={inst.id} institution={inst} lang={lang} t={t} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="civic-card skeleton-card"></div>
+                            ))
+                        ) : (
+                            <>
+                                {healthcare.map(f => (
+                                    <HealthcareCard key={f.id} facility={f} lang={lang} t={t} />
+                                ))}
+                                {education.map(inst => (
+                                    <EducationCard key={inst.id} institution={inst} lang={lang} t={t} />
+                                ))}
+                            </>
+                        )}
                     </div>
                 </section>
             )}
 
             {/* 5. Local Artisans & Businesses Section */}
-            {businesses.length > 0 && (
+            {(loading || businesses.length > 0) && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
@@ -365,9 +397,15 @@ export function HomePage() {
                     </div>
 
                     <div className="card-grid">
-                        {businesses.map(b => (
-                            <BusinessCard key={b.id} business={b} lang={lang} t={t} />
-                        ))}
+                        {loading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="civic-card skeleton-card"></div>
+                            ))
+                        ) : (
+                            businesses.map(b => (
+                                <BusinessCard key={b.id} business={b} lang={lang} t={t} />
+                            ))
+                        )}
                     </div>
                 </section>
             )}

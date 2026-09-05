@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, CheckCircle2, UserCheck, ShieldCheck, FileCheck, Layers, ArrowRight } from 'lucide-react';
+import { ExternalLink, CheckCircle2, UserCheck, ShieldCheck, FileCheck, Layers, ArrowRight, FileText } from 'lucide-react';
 import { getLocalized } from '../../../i18n';
 import { generateSlug } from '../api/schemes';
 
@@ -20,8 +20,8 @@ export function SchemeCard({ scheme, lang, t }) {
     const schemeSlug = generateSlug(scheme.name);
 
     return (
-        <div className="civic-card scheme-card" style={{ display: 'flex', flexDirection: 'column' }}>
-            {scheme.image_url && (
+        <div className="civic-card scheme-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {scheme.image_url ? (
                 <div className="card-media-banner">
                     <img 
                         src={scheme.image_url} 
@@ -35,8 +35,19 @@ export function SchemeCard({ scheme, lang, t }) {
                         </span>
                     </div>
                 </div>
+            ) : (
+                <div className="card-media-banner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, var(--color-blue-50) 0%, var(--color-slate-100) 100%)' }}>
+                    <div style={{ textAlign: 'center', color: 'var(--color-blue-600)' }}>
+                        <FileText size={36} strokeWidth={1.5} />
+                    </div>
+                    <div className="card-media-badge-overlay">
+                        <span className="badge badge-verified">
+                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
+                        </span>
+                    </div>
+                </div>
             )}
-            <div className="card-top-content" style={{ flex: 1 }}>
+            <div className="card-top-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <div className="card-header-row">
                     <Link 
                         to={`/schemes/category/${(scheme.category || '').toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-')}`}
@@ -47,30 +58,25 @@ export function SchemeCard({ scheme, lang, t }) {
                         <Layers size={13} style={{ marginRight: '4px' }} aria-hidden="true" />
                         <span>{scheme.category}</span>
                     </Link>
-                    {!scheme.image_url && (
-                        <span className="badge badge-verified">
-                            <ShieldCheck size={12} style={{ marginRight: '3px' }} aria-hidden="true" /> Verified
-                        </span>
-                    )}
                 </div>
 
-                <h3 className="card-item-title">
+                <h3 className="card-item-title" style={{ minHeight: '2.8rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     <Link to={`/schemes/${schemeSlug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                         {getLocalized(scheme, 'name', lang)}
                     </Link>
                 </h3>
 
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', marginBottom: '1rem', lineHeight: '1.55' }}>
+                <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', marginBottom: '0.85rem', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getLocalized(scheme, 'description', lang)}
                 </p>
 
                 {scheme.eligibility && (
-                    <div style={{ background: 'var(--color-slate-50)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-slate-200)', marginBottom: '0.85rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-blue-700)', marginBottom: '0.25rem' }}>
+                    <div style={{ background: 'var(--color-slate-50)', padding: '0.65rem 0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-slate-200)', marginBottom: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-blue-700)', marginBottom: '0.2rem' }}>
                             <UserCheck size={14} />
                             <span>{t?.eligibility || 'Eligibility:'}</span>
                         </div>
-                        <p style={{ fontSize: '0.8125rem', color: 'var(--color-slate-700)', margin: 0, lineHeight: '1.4' }}>
+                        <p style={{ fontSize: '0.8125rem', color: 'var(--color-slate-700)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                             {getLocalized(scheme, 'eligibility', lang)}
                         </p>
                     </div>
