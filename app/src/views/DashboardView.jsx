@@ -26,7 +26,7 @@ function DistributionBar({ label, count, total, colorClass = 'fill-blue', sublab
     );
 }
 
-export default function DashboardView() {
+export default function DashboardView({ initialTab = 'ALL' } = {}) {
     const [responses, setResponses] = useState(SEED_RESPONSES);
     const [answers, setAnswers] = useState(SEED_ANSWERS);
     const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function DashboardView() {
     // Interactive Filters
     const [selectedWard, setSelectedWard] = useState('ALL');
     const [selectedSurveyor, setSelectedSurveyor] = useState('ALL');
-    const [activeTab, setActiveTab] = useState('ALL'); // 'ALL' | 'TECH' | 'SCHEMES' | 'EMERGENCY' | 'HEALTH' | 'DEMO' | 'LEDGER'
+    const [activeTab, setActiveTab] = useState(initialTab || 'ALL'); // 'ALL' | 'TECH' | 'SCHEMES' | 'EMERGENCY' | 'HEALTH' | 'DEMO' | 'LEDGER'
     const [ledgerSearch, setLedgerSearch] = useState('');
     const [inspectedHousehold, setInspectedHousehold] = useState(null);
 

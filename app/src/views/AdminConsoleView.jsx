@@ -244,7 +244,7 @@ const defaultBusiness = {
     status: "published"
 };
 
-export default function AdminConsoleView() {
+export default function AdminConsoleView({ initialTab = 'profile' } = {}) {
     const [user, setUser] = useState(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -270,7 +270,7 @@ export default function AdminConsoleView() {
     const [selfPasswordLoading, setSelfPasswordLoading] = useState(false);
     const [selfPasswordError, setSelfPasswordError] = useState(null);
 
-    const [activeTab, setActiveTab] = useState('profile');
+    const [activeTab, setActiveTab] = useState(initialTab || 'profile');
     const [notification, setNotification] = useState(null);
 
     // Module Data States
