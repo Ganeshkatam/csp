@@ -10,11 +10,10 @@ export function EducationCard({ institution, lang, t }) {
     return (
         <div className="civic-card" style={{ display: 'flex', flexDirection: 'column' }}>
             {institution.image_url && (
-                <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '1rem', height: '160px', background: 'var(--color-slate-100)' }}>
+                <div className="civic-card-media">
                     <img 
                         src={institution.image_url} 
                         alt={institution.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         loading="lazy"
                     />
                 </div>

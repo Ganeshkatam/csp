@@ -10,11 +10,10 @@ export function AnnouncementCard({ announcement, lang }) {
     return (
         <div className="civic-card" style={{ display: 'flex', flexDirection: 'column' }}>
             {announcement.image_url && (
-                <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '1rem', height: '160px', background: 'var(--color-slate-100)' }}>
+                <div className="civic-card-media">
                     <img 
                         src={announcement.image_url} 
                         alt={announcement.title} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         loading="lazy"
                     />
                 </div>

@@ -1844,6 +1844,199 @@ textarea.form-control {
     margin-top: 0.35rem;
 }
 
+/* Responsive Civic Page Layout */
+.civic-page-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .civic-page-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-slate-200);
+}
+
+.table-responsive-wrapper .infra-ledger-table {
+    margin-top: 0;
+    border: none;
+}
+
+/* Healthcare Provenance Trust Badges */
+.badge-level-a {
+    background: var(--color-blue-50);
+    color: var(--color-blue-800);
+    border: 1px solid var(--color-blue-200);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-level-b {
+    background: var(--color-emerald-50);
+    color: var(--color-emerald-800);
+    border: 1px solid var(--color-emerald-200);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-level-c {
+    background: var(--color-slate-100);
+    color: var(--color-slate-700);
+    border: 1px solid var(--color-slate-300);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.provenance-box {
+    background: var(--color-slate-50);
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.15rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+}
+
+.first-aid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+.first-aid-do-card {
+    background: var(--color-emerald-50);
+    border: 1px solid var(--color-emerald-200);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.first-aid-dont-card {
+    background: var(--color-red-50);
+    border: 1px solid var(--color-red-200);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+/* Facility Showcase Card (Horizontal Split Layout) */
+.facility-showcase-card {
+    background: #ffffff;
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.facility-showcase-card:hover {
+    border-color: var(--color-slate-300);
+    box-shadow: var(--shadow-md);
+}
+
+.facility-showcase-media {
+    position: relative;
+    background: var(--color-slate-100);
+    min-height: 280px;
+    height: 100%;
+}
+
+.facility-showcase-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.facility-showcase-body {
+    padding: 1.75rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@media (max-width: 860px) {
+    .facility-showcase-card {
+        grid-template-columns: 1fr;
+    }
+
+    .facility-showcase-media {
+        height: 220px;
+        min-height: 220px;
+    }
+
+    .facility-showcase-body {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+/* Card Media Universal Aspect Ratio */
+.civic-card-media {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: 240px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-slate-100);
+    margin-bottom: 1rem;
+}
+
+.civic-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Action Button Limit for Desktop */
+.card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 220px;
+    max-width: 320px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .card-action-btn {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+
+
 /* Infrastructure Observation Table */
 .infra-ledger-table {
     width: 100%;
