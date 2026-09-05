@@ -38,27 +38,33 @@ export function HomePage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        villageService.getVillageProfile().then(data => {
-            if (data) setVillage(data);
-        });
-        announcementService.getAnnouncements().then(data => {
-            if (data) setAnnouncements(data.slice(0, 3));
-        });
-        schemeService.getAllSchemes().then(data => {
-            if (data) setSchemes(data.slice(0, 4));
-        });
-        contactService.getContacts().then(data => {
-            if (data) setContacts(data.slice(0, 4));
-        });
-        healthcareService.getHealthcareFacilities().then(data => {
-            if (data) setHealthcare(data.slice(0, 2));
-        });
-        educationService.getEducationInstitutions().then(data => {
-            if (data) setEducation(data.slice(0, 2));
-        });
-        businessService.getBusinesses().then(data => {
-            if (data) setBusinesses(data.slice(0, 4));
-        });
+        villageService.getVillageProfile()
+            .then(data => { if (data) setVillage(data); })
+            .catch(err => console.error('Village profile fetch error:', err));
+
+        announcementService.getAnnouncements()
+            .then(data => { if (data) setAnnouncements(data.slice(0, 3)); })
+            .catch(err => console.error('Announcements fetch error:', err));
+
+        schemeService.getAllSchemes()
+            .then(data => { if (data) setSchemes(data.slice(0, 4)); })
+            .catch(err => console.error('Schemes fetch error:', err));
+
+        contactService.getContacts()
+            .then(data => { if (data) setContacts(data.slice(0, 4)); })
+            .catch(err => console.error('Contacts fetch error:', err));
+
+        healthcareService.getHealthcareFacilities()
+            .then(data => { if (data) setHealthcare(data.slice(0, 2)); })
+            .catch(err => console.error('Healthcare fetch error:', err));
+
+        educationService.getEducationInstitutions()
+            .then(data => { if (data) setEducation(data.slice(0, 2)); })
+            .catch(err => console.error('Education fetch error:', err));
+
+        businessService.getBusinesses()
+            .then(data => { if (data) setBusinesses(data.slice(0, 4)); })
+            .catch(err => console.error('Businesses fetch error:', err));
     }, []);
 
     const handleSearchSubmit = (e) => {
