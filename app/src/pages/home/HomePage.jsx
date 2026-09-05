@@ -444,7 +444,7 @@ export function HomePage() {
                         <div>
                             <div className="card-grid">
                                 {healthcare.map(f => (
-                                    <HealthcareCard key={f.id} facility={f} lang={lang} t={t} />
+                                    <HealthcareCard key={f.id} facility={f} lang={lang} t={t} variant="vertical" />
                                 ))}
                                 {education.map(inst => (
                                     <EducationCard key={inst.id} institution={inst} lang={lang} t={t} />

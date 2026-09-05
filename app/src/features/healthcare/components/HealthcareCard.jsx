@@ -12,7 +12,7 @@ function checkIsOpenNow(timings) {
     return hour >= 9 && hour < 16;
 }
 
-export function HealthcareCard({ facility, lang, t, variant = 'showcase' }) {
+export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
     const timings = facility.timings || facility.operating_hours || '9:00 AM - 4:00 PM (Mon-Sat)';
     const isOpen = checkIsOpenNow(timings);
     const services = facility.services ? facility.services.split(',').map(s => s.trim()) : [];
@@ -145,7 +145,9 @@ export function HealthcareCard({ facility, lang, t, variant = 'showcase' }) {
                 <div className="card-header-row">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Activity size={18} style={{ color: 'var(--color-emerald-600)' }} />
-                        <span className="badge badge-verified">Primary Healthcare</span>
+                        <span className="badge badge-verified">
+                            {isTe ? "డెంకాడ పిహెచ్‌సి (సేవా కేంద్రం)" : "Serving PHC (Denkada)"}
+                        </span>
                     </div>
                     <span className="badge badge-verified">
                         <ShieldCheck size={12} style={{ marginRight: '3px' }} /> Verified
@@ -174,7 +176,7 @@ export function HealthcareCard({ facility, lang, t, variant = 'showcase' }) {
                     {facility.address && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <MapPin size={14} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
-                            <span>{facility.address}</span>
+                            <span>{facility.address} {isTe ? "• డెంకాడ మండల కేంద్రం (3.2 కి.మీ.)" : "• 3.2 km at Mandal HQ"}</span>
                         </div>
                     )}
                 </div>
