@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-    Search, FileText, Phone, Activity, GraduationCap, 
-    Building2, MessageSquare, ArrowRight, ShieldCheck, 
-    HeartPulse, Store, Bell, Landmark,
-    Siren, Stethoscope, Sparkles
+import {
+    Search, FileText, Phone, Activity, GraduationCap,
+    Building2, MessageSquare, ArrowRight, ShieldCheck,
+    HeartPulse, Store, QrCode, Copy, Check,
+    ExternalLink
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { villageService } from '../../features/village/api/village';
@@ -37,6 +37,7 @@ export function HomePage() {
     });
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [copiedUrl, setCopiedUrl] = useState(false);
     const navigate = useNavigate();
 
     const { village, announcements, schemes, contacts, healthcare, education, businesses } = pageData;
@@ -129,6 +130,23 @@ export function HomePage() {
             actionText: 'Submit Correction'
         }
     ];
+
+    const LIVE_PORTAL_URL = 'https://villagemitra.vercel.app';
+    const isLocalhost = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.startsWith('192.168.') ||
+        window.location.hostname.startsWith('10.')
+    );
+    // On localhost or local networks, target the live production deployment so phone cameras can connect over cellular data:
+    const portalUrl = isLocalhost ? LIVE_PORTAL_URL : (window.location.origin || LIVE_PORTAL_URL);
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(LIVE_PORTAL_URL)}`;
+
+    const handleCopyUrl = () => {
+        navigator.clipboard.writeText(portalUrl);
+        setCopiedUrl(true);
+        setTimeout(() => setCopiedUrl(false), 2500);
+    };
 
     return (
         <div className="container">
@@ -419,6 +437,56 @@ export function HomePage() {
                 </div>
             </section>
 
+            {/* 7. Mobile QR Code Access */}
+            <section className="section-block">
+                <div className="portal-qr-card">
+                    <div className="portal-qr-content">
+                        {/* <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-blue-50)', color: 'var(--color-blue-700)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.75rem', border: '1px solid var(--color-blue-200)' }}>
+                            <QrCode size={14} />
+                            <span>Mobile Phone Access • Live Cellular Link</span>
+                        </div> */}
+                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-slate-950)', marginBottom: '0.5rem' }}>
+                            Scan to Open on Smartphone
+                        </h3>
+                        <p style={{ fontSize: '0.9375rem', color: 'var(--color-slate-600)', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                            Point any mobile camera at this QR code to access the live portal over cellular internet. Ideal for examiner evaluations, field surveying, and citizen onboarding on iOS and Android devices.
+                        </p>
+                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <button type="button" onClick={handleCopyUrl} className="btn btn-secondary btn-sm" aria-label="Copy portal URL">
+                                {copiedUrl ? <Check size={14} style={{ color: 'var(--color-emerald-600)' }} /> : <Copy size={14} />}
+                                <span>{copiedUrl ? 'Copied to Clipboard' : 'Copy Live Portal URL'}</span>
+                            </button>
+                            <a
+                                href={portalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    fontSize: '0.8125rem',
+                                    color: 'var(--color-blue-600)',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontWeight: 600,
+                                    textDecoration: 'underline'
+                                }}
+                            >
+                                <span>{portalUrl}</span>
+                                <ExternalLink size={13} />
+                            </a>
+                        </div>
+                    </div>
+                    <div className="portal-qr-frame">
+                        <img
+                            src={qrCodeUrl}
+                            alt="QR code to open live portal on mobile"
+                            width="140"
+                            height="140"
+                        />
+                        <span className="portal-qr-caption">Scan with Camera</span>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }
