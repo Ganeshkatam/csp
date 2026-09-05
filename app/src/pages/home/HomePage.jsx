@@ -410,7 +410,7 @@ export function HomePage() {
                         <div>
                             <div className="card-grid">
                                 {schemes.map(s => (
-                                    <SchemeCard key={s.id} scheme={s} lang={lang} t={t} />
+                                    <SchemeCard key={s.id} scheme={s} lang={lang} t={t} variant="vertical" />
                                 ))}
                             </div>
                             <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>

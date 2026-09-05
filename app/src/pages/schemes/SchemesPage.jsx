@@ -158,13 +158,14 @@ export function SchemesPage() {
                             <span>Showing <strong>{schemes.length}</strong> verified {schemes.length === 1 ? 'programme' : 'programmes'}</span>
                             {category !== 'All' && <span>Filtered by: <strong>{category}</strong></span>}
                         </div>
-                        <div className="card-grid">
+                        <div className="scheme-showcase-list">
                             {schemes.map(scheme => (
                                 <SchemeCard
                                     key={scheme.id}
                                     scheme={scheme}
                                     lang={lang}
                                     t={t}
+                                    variant="showcase"
                                 />
                             ))}
                         </div>
