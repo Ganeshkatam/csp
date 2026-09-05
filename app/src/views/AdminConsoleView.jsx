@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Lock, LogOut, Plus, Trash2, ShieldCheck, UserPlus, Key, Edit, Eye, EyeOff, ChevronDown, ChevronUp, Check, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
+import CustomDatePicker from '../components/CustomDatePicker';
 
 // Categories matching only the existing database records
 const ANNOUNCEMENT_CATEGORIES = [
@@ -1056,11 +1057,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={village.verified_on}
-                                            onChange={(e) => setVillage({ ...village, verified_on: e.target.value })}
+                                            onChange={(val) => setVillage({ ...village, verified_on: val })}
                                             required
                                         />
                                     </div>
@@ -1156,11 +1155,10 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Event Date</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={announcementForm.event_date || ""}
-                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, event_date: e.target.value })}
+                                            onChange={(val) => setAnnouncementForm({ ...announcementForm, event_date: val })}
+                                            placeholder="Select event date..."
                                         />
                                     </div>
                                 </div>
@@ -1202,11 +1200,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={announcementForm.verified_on}
-                                            onChange={(e) => setAnnouncementForm({ ...announcementForm, verified_on: e.target.value })}
+                                            onChange={(val) => setAnnouncementForm({ ...announcementForm, verified_on: val })}
                                             required
                                         />
                                     </div>
@@ -1500,11 +1496,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={schemeForm.verified_on}
-                                            onChange={(e) => setSchemeForm({ ...schemeForm, verified_on: e.target.value })}
+                                            onChange={(val) => setSchemeForm({ ...schemeForm, verified_on: val })}
                                             required
                                         />
                                     </div>
@@ -1799,11 +1793,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={contactForm.verified_on}
-                                            onChange={(e) => setContactForm({ ...contactForm, verified_on: e.target.value })}
+                                            onChange={(val) => setContactForm({ ...contactForm, verified_on: val })}
                                             required
                                         />
                                     </div>
@@ -2043,11 +2035,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={institutionForm.verified_on}
-                                            onChange={(e) => setInstitutionForm({ ...institutionForm, verified_on: e.target.value })}
+                                            onChange={(val) => setInstitutionForm({ ...institutionForm, verified_on: val })}
                                             required
                                         />
                                     </div>
@@ -2341,11 +2331,9 @@ export default function AdminConsoleView() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Verified Date *</label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
+                                        <CustomDatePicker
                                             value={businessForm.verified_on}
-                                            onChange={(e) => setBusinessForm({ ...businessForm, verified_on: e.target.value })}
+                                            onChange={(val) => setBusinessForm({ ...businessForm, verified_on: val })}
                                             required
                                         />
                                     </div>
