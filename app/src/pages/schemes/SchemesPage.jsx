@@ -158,7 +158,7 @@ export function SchemesPage() {
                             <span>Showing <strong>{schemes.length}</strong> verified {schemes.length === 1 ? 'programme' : 'programmes'}</span>
                             {category !== 'All' && <span>Filtered by: <strong>{category}</strong></span>}
                         </div>
-                        <div className="portal-grid">
+                        <div className="card-grid">
                             {schemes.map(scheme => (
                                 <SchemeCard
                                     key={scheme.id}
