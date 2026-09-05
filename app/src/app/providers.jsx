@@ -14,6 +14,7 @@ export function AppProvider({ children }) {
         localStorage.getItem(APP_CONFIG.storageKeys.zoom) || 'normal'
     );
     const [user, setUser] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [sessionLoading, setSessionLoading] = useState(true);
     const isOnline = useOnlineStatus();
 
@@ -32,17 +33,35 @@ export function AppProvider({ children }) {
         }
     }, [textZoom]);
 
+    // Check user admin role
+    const verifyAdminRole = async (currentUser) => {
+        if (!currentUser) {
+            setIsAdmin(false);
+            return;
+        }
+        try {
+            const adminStatus = await authService.isAdmin();
+            setIsAdmin(adminStatus);
+        } catch {
+            setIsAdmin(false);
+        }
+    };
+
     // Supabase Auth Listener
     useEffect(() => {
         authService.getSession()
             .then(session => {
-                setUser(session?.user || null);
-                setSessionLoading(false);
+                const currentUser = session?.user || null;
+                setUser(currentUser);
+                return verifyAdminRole(currentUser);
             })
-            .catch(() => setSessionLoading(false));
+            .catch(() => setIsAdmin(false))
+            .finally(() => setSessionLoading(false));
 
-        const { data: { subscription } } = authService.onAuthStateChange((_event, session) => {
-            setUser(session?.user || null);
+        const { data: { subscription } } = authService.onAuthStateChange(async (_event, session) => {
+            const currentUser = session?.user || null;
+            setUser(currentUser);
+            await verifyAdminRole(currentUser);
             setSessionLoading(false);
         });
 
@@ -62,6 +81,7 @@ export function AppProvider({ children }) {
         setTextZoom,
         user,
         setUser,
+        isAdmin,
         sessionLoading,
         isOnline
     };

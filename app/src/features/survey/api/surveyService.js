@@ -17,49 +17,34 @@ export async function uploadSurveyPayload(payload, client = defaultSupabase) {
     if (!payload) throw new Error('Survey payload is missing.');
     const { answers, ...responseHeader } = payload;
 
-    // 1. Idempotency Check: if survey_client_uuid is provided, check existence
-    if (responseHeader.survey_client_uuid) {
-        const { data: existing, error: checkErr } = await client
-            .from('survey_responses')
-            .select('id')
-            .eq('survey_client_uuid', responseHeader.survey_client_uuid)
-            .maybeSingle();
+    // 1. Assign deterministic client UUID for the response header if not already set
+    const responseId = responseHeader.id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    }));
 
-        if (checkErr) {
-            throw checkErr;
-        }
+    const payloadHeader = {
+        ...responseHeader,
+        id: responseId
+    };
 
-        if (existing) {
-            return { id: existing.id, alreadyExists: true, answersCount: 0 };
-        }
-    }
-
-    // 2. Insert survey response header
-    const { data: headerData, error: headerErr } = await client
+    // 2. Insert survey response header without .select() (write-only intake)
+    const { error: headerErr } = await client
         .from('survey_responses')
-        .insert(responseHeader)
-        .select('id')
-        .single();
+        .insert(payloadHeader);
 
     if (headerErr) {
         // Postgres unique constraint violation on survey_responses_client_uuid_uidx (code 23505)
-        if (headerErr.code === '23505' && responseHeader.survey_client_uuid) {
-            const { data: existing } = await client
-                .from('survey_responses')
-                .select('id')
-                .eq('survey_client_uuid', responseHeader.survey_client_uuid)
-                .maybeSingle();
-            if (existing) {
-                return { id: existing.id, alreadyExists: true, answersCount: 0 };
-            }
+        if (headerErr.code === '23505') {
+            return { id: responseId, alreadyExists: true, answersCount: 0 };
         }
         throw headerErr;
     }
 
-    // 3. Insert normalized answer rows
+    // 3. Insert normalized answer rows without .select() (write-only intake)
     if (answers && answers.length > 0) {
         const rowsToInsert = answers.map(a => ({
-            response_id: headerData.id,
+            response_id: responseId,
             question_code: a.question_code,
             answer_value: a.answer_value
         }));
@@ -72,10 +57,10 @@ export async function uploadSurveyPayload(payload, client = defaultSupabase) {
             throw answersErr;
         }
 
-        return { id: headerData.id, alreadyExists: false, answersCount: rowsToInsert.length };
+        return { id: responseId, alreadyExists: false, answersCount: rowsToInsert.length };
     }
 
-    return { id: headerData.id, alreadyExists: false, answersCount: 0 };
+    return { id: responseId, alreadyExists: false, answersCount: 0 };
 }
 
 /**
@@ -147,4 +132,21 @@ export async function syncOfflineSurveys(storageKey = OFFLINE_SURVEY_STORAGE_KEY
 
     storageObj.setItem(storageKey, JSON.stringify(remaining));
     return { successCount, remainingCount: remaining.length, errors };
+}
+
+/**
+ * Fetches secure, database-calculated aggregated survey analytics.
+ * Anonymous clients receive high-level distributions with zero access to raw household rows,
+ * respondent codes, interviewer names, or timestamps.
+ * 
+ * @param {string} [filterWard] - Optional ward to filter by (or 'ALL')
+ * @param {Object} [client] - Supabase client instance
+ * @returns {Promise<{ total_responses: number, question_distributions: Object, locality_distribution: Object }>}
+ */
+export async function getSurveyAnalyticsSummary(filterWard = 'ALL', client = defaultSupabase) {
+    const { data, error } = await client.rpc('get_survey_analytics_summary', {
+        filter_ward: filterWard
+    });
+    if (error) throw error;
+    return data;
 }

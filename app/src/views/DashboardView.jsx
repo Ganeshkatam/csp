@@ -3,9 +3,11 @@ import {
     BarChart3, RefreshCw, Download, AlertCircle, Smartphone,
     ShieldCheck, Users, PhoneCall, Activity, Layers, Filter,
     CheckCircle2, X, Eye, ArrowUpRight, HelpCircle, FileText,
-    Briefcase, Calendar, Search, MapPin
+    Briefcase, Calendar, Search, MapPin, Lock
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAppContext } from '../app/providers';
+import { getSurveyAnalyticsSummary } from '../features/survey/api/surveyService';
 import { SEED_RESPONSES, SEED_ANSWERS } from '../lib/surveySeedData';
 import CustomSelect from '../components/CustomSelect';
 
@@ -27,6 +29,8 @@ function DistributionBar({ label, count, total, colorClass = 'fill-blue', sublab
 }
 
 export default function DashboardView({ initialTab = 'ALL' } = {}) {
+    const { isAdmin } = useAppContext();
+    const [summary, setSummary] = useState(null);
     const [responses, setResponses] = useState(SEED_RESPONSES);
     const [answers, setAnswers] = useState(SEED_ANSWERS);
     const [loading, setLoading] = useState(false);
@@ -41,54 +45,82 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [isAdmin, selectedWard]);
 
     async function loadData() {
         setLoading(true);
         setErrorMsg(null);
         try {
-            const [rRes, aRes] = await Promise.all([
-                supabase.from('survey_responses').select('*').order('created_at', { ascending: true }),
-                supabase.from('survey_answers').select('*')
-            ]);
+            if (isAdmin) {
+                // Admin role: fetch full microdata from database
+                const [rRes, aRes] = await Promise.all([
+                    supabase.from('survey_responses').select('*').order('created_at', { ascending: true }),
+                    supabase.from('survey_answers').select('*')
+                ]);
 
-            if (rRes.data && rRes.data.length > 0) {
-                setResponses(rRes.data);
-            }
-            if (aRes.data && aRes.data.length > 0) {
-                setAnswers(aRes.data);
+                if (rRes.data && rRes.data.length > 0) {
+                    setResponses(rRes.data);
+                }
+                if (aRes.data && aRes.data.length > 0) {
+                    setAnswers(aRes.data);
+                }
+            } else {
+                // Public anonymous user: query secure PostgreSQL aggregated summary
+                const data = await getSurveyAnalyticsSummary(selectedWard);
+                if (data) {
+                    setSummary(data);
+                }
             }
         } catch (err) {
-            console.warn('Live survey telemetry fetch notice, using verified dataset:', err);
+            console.warn('Survey telemetry notice, using verified baseline dataset:', err);
         } finally {
             setLoading(false);
         }
     }
 
-    // Extract unique wards and surveyors for dropdown filters
+    // Extract unique wards
     const availableWards = useMemo(() => {
-        const set = new Set();
-        responses.forEach(r => {
-            if (r.locality_ward) set.add(r.locality_ward);
-        });
-        return Array.from(set).sort();
-    }, [responses]);
+        if (isAdmin) {
+            const set = new Set();
+            responses.forEach(r => {
+                if (r.locality_ward) set.add(r.locality_ward);
+            });
+            return Array.from(set).sort();
+        }
+        if (summary?.locality_distribution) {
+            return Object.keys(summary.locality_distribution).sort();
+        }
+        return ['Central Bazaar', 'East Weavers Colony', 'North Ward'];
+    }, [isAdmin, responses, summary]);
 
+    // Surveyors are private field personnel; exposed only to verified administrators
     const availableSurveyors = useMemo(() => {
+        if (!isAdmin) return [];
         const set = new Set();
         responses.forEach(r => {
             if (r.interviewer_name) set.add(r.interviewer_name);
         });
         return Array.from(set).sort();
-    }, [responses]);
+    }, [isAdmin, responses]);
 
-    const wardOptions = useMemo(() => [
-        { value: 'ALL', label: `All Localities (${responses.length} Total)` },
-        ...availableWards.map(w => {
-            const count = responses.filter(r => r.locality_ward === w).length;
-            return { value: w, label: w, count: `${count}` };
-        })
-    ], [responses, availableWards]);
+    const wardOptions = useMemo(() => {
+        const totalCount = isAdmin 
+            ? responses.length 
+            : (summary?.total_responses || responses.length);
+
+        return [
+            { value: 'ALL', label: `All Localities (${totalCount} Total)` },
+            ...availableWards.map(w => {
+                let count = 0;
+                if (isAdmin) {
+                    count = responses.filter(r => r.locality_ward === w).length;
+                } else if (summary?.locality_distribution) {
+                    count = summary.locality_distribution[w] || 0;
+                }
+                return { value: w, label: w, count: `${count}` };
+            })
+        ];
+    }, [isAdmin, responses, summary, availableWards]);
 
     const surveyorOptions = useMemo(() => [
         { value: 'ALL', label: 'All Surveyors' },
@@ -98,39 +130,53 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
         })
     ], [responses, availableSurveyors]);
 
-    // Apply Ward and Surveyor filters reactively
+    // Apply Ward and Surveyor filters reactively when admin
     const filteredResponses = useMemo(() => {
+        if (!isAdmin) return [];
         return responses.filter(r => {
             const matchWard = selectedWard === 'ALL' || r.locality_ward === selectedWard;
             const matchSurveyor = selectedSurveyor === 'ALL' || r.interviewer_name === selectedSurveyor;
             return matchWard && matchSurveyor;
         });
-    }, [responses, selectedWard, selectedSurveyor]);
+    }, [isAdmin, responses, selectedWard, selectedSurveyor]);
 
     const filteredResponseIds = useMemo(() => {
         return new Set(filteredResponses.map(r => r.id));
     }, [filteredResponses]);
 
     const filteredAnswers = useMemo(() => {
+        if (!isAdmin) return [];
         return answers.filter(a => filteredResponseIds.has(a.response_id));
-    }, [answers, filteredResponseIds]);
+    }, [isAdmin, answers, filteredResponseIds]);
 
-    const total = filteredResponses.length;
+    const total = useMemo(() => {
+        if (isAdmin) return filteredResponses.length;
+        if (summary) return summary.total_responses;
+        return responses.length;
+    }, [isAdmin, filteredResponses, summary, responses]);
 
     // Aggregate answers by question code for the filtered cohort
     const answersByCode = useMemo(() => {
+        if (!isAdmin) return {};
         const map = {};
         filteredAnswers.forEach(a => {
             if (!map[a.question_code]) map[a.question_code] = [];
             map[a.question_code].push(a.answer_value);
         });
         return map;
-    }, [filteredAnswers]);
+    }, [isAdmin, filteredAnswers]);
 
-    // Metric Helper Function
+    // Metric Helper Function: reads directly from PostgreSQL aggregate or cohort map
     const getFrequency = (code, value) => {
-        const arr = answersByCode[code] || [];
-        return arr.filter(v => v === value).length;
+        if (isAdmin && Object.keys(answersByCode).length > 0) {
+            const arr = answersByCode[code] || [];
+            return arr.filter(v => v === value).length;
+        }
+        if (summary?.question_distributions?.[code]) {
+            return summary.question_distributions[code][value] || 0;
+        }
+        const fallbackAnswers = SEED_ANSWERS.filter(a => a.question_code === code && a.answer_value === value);
+        return fallbackAnswers.length;
     };
 
     // Calculate core empirical KPIs
@@ -139,8 +185,9 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
     const smartPct = total > 0 ? Math.round((smartCount / total) * 100) : 0;
 
     // 2. Scheme Document Hurdles (SCH2)
-    const sch2Arr = answersByCode['SCH2'] || [];
-    const docHurdleCount = sch2Arr.filter(v => v === 'Unknown-Eligibility-Docs' || v === 'Repeated-Office-Visits' || v === 'Unsure-Official-Link').length;
+    const docHurdleCount = getFrequency('SCH2', 'Unknown-Eligibility-Docs') + 
+                           getFrequency('SCH2', 'Repeated-Office-Visits') + 
+                           getFrequency('SCH2', 'Unsure-Official-Link');
     const docHurdlePct = total > 0 ? Math.round((docHurdleCount / total) * 100) : 0;
 
     // 3. Emergency Contact Gap (CON1_PHC, CON1_Police)
@@ -153,8 +200,16 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
     const tech3Pct = total > 0 ? Math.round((tech3Independent / total) * 100) : 0;
 
     // 5. Household Size & Total Surveyed Population (D5)
-    const d5Arr = answersByCode['D5'] || [];
-    const totalResidents = d5Arr.reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
+    let totalResidents = 0;
+    if (isAdmin && answersByCode['D5']) {
+        totalResidents = answersByCode['D5'].reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
+    } else if (summary?.question_distributions?.['D5']) {
+        Object.entries(summary.question_distributions['D5']).forEach(([size, count]) => {
+            totalResidents += (parseInt(size, 10) || 0) * count;
+        });
+    } else {
+        totalResidents = 67;
+    }
     const typicalHouseholdSize = total > 0 ? '4 – 5' : '0';
 
     // Problem Traceability Metrics (100% computed dynamically from active filter)
@@ -173,44 +228,80 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
     const bplCardCount = getFrequency('D6', 'White-BPL-Card');
     const bplCardPct = total > 0 ? Math.round((bplCardCount / total) * 100) : 0;
 
-    // CSV Export Engine (Exports the active filtered cohort)
+    // CSV Export Engine: Exports raw records for authenticated admins, aggregated indicator distributions for public
     const exportCSV = () => {
-        if (filteredResponses.length === 0) {
-            alert('No survey records matching criteria to export.');
-            return;
-        }
+        if (isAdmin) {
+            if (filteredResponses.length === 0) {
+                alert('No survey records matching criteria to export.');
+                return;
+            }
 
-        const headers = ['Response ID', 'Household Code', 'Surveyor', 'Ward', 'Started At', 'Completed At', 'Question Code', 'Answer'];
-        const rows = [];
+            const headers = ['Response ID', 'Household Code', 'Surveyor', 'Ward', 'Started At', 'Completed At', 'Question Code', 'Answer'];
+            const rows = [];
 
-        filteredResponses.forEach(r => {
-            const respAnswers = answers.filter(a => a.response_id === r.id);
-            respAnswers.forEach(a => {
-                rows.push([
-                    r.id,
-                    `"${r.respondent_code}"`,
-                    `"${r.interviewer_name}"`,
-                    `"${r.locality_ward || ''}"`,
-                    r.started_at,
-                    r.completed_at,
-                    a.question_code,
-                    `"${a.answer_value}"`
-                ]);
+            filteredResponses.forEach(r => {
+                const respAnswers = answers.filter(a => a.response_id === r.id);
+                respAnswers.forEach(a => {
+                    rows.push([
+                        r.id,
+                        `"${r.respondent_code}"`,
+                        `"${r.interviewer_name}"`,
+                        `"${r.locality_ward || ''}"`,
+                        r.started_at,
+                        r.completed_at,
+                        a.question_code,
+                        `"${a.answer_value}"`
+                    ]);
+                });
             });
-        });
 
-        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', `csp_survey_dataset_${selectedWard.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `csp_survey_microdata_${selectedWard.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            // Aggregated indicator summary for public research export
+            const headers = ['Question Code', 'Indicator Category', 'Count', 'Distribution (%)'];
+            const rows = [];
+
+            if (summary?.question_distributions) {
+                Object.entries(summary.question_distributions).forEach(([qCode, dist]) => {
+                    Object.entries(dist).forEach(([val, count]) => {
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                        rows.push([`"${qCode}"`, `"${val}"`, count, `${pct}%`]);
+                    });
+                });
+            } else {
+                const codes = ['TECH1', 'TECH2', 'TECH3', 'SCH1', 'SCH2', 'SCH3', 'SCH4', 'CON1_PHC', 'CON1_Police', 'CON1_Lineman', 'CON1_Panchayat', 'CON2', 'HLTH1', 'INFRA1', 'BIZ1', 'BIZ2', 'EDU1', 'PRIO1', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6'];
+                codes.forEach(c => {
+                    const arr = answers.filter(a => a.question_code === c);
+                    const counts = {};
+                    arr.forEach(a => { counts[a.answer_value] = (counts[a.answer_value] || 0) + 1; });
+                    Object.entries(counts).forEach(([val, count]) => {
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                        rows.push([`"${c}"`, `"${val}"`, count, `${pct}%`]);
+                    });
+                });
+            }
+
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `csp_survey_aggregated_indicators_${selectedWard.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
-    // Filtered ledger rows for the data audit explorer
+    // Filtered ledger rows for the authenticated data audit explorer
     const ledgerRows = useMemo(() => {
+        if (!isAdmin) return [];
         return filteredResponses.filter(r => {
             if (!ledgerSearch.trim()) return true;
             const q = ledgerSearch.toLowerCase();
@@ -220,7 +311,7 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
                 r.interviewer_name.toLowerCase().includes(q)
             );
         });
-    }, [filteredResponses, ledgerSearch]);
+    }, [isAdmin, filteredResponses, ledgerSearch]);
 
     // Open detailed responses modal for a selected household
     const inspectHousehold = (household) => {
@@ -289,16 +380,20 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
                         ariaLabel="Filter by Locality or Ward"
                     />
 
-                    <div className="analytics-filter-label" style={{ marginLeft: '0.5rem' }}>
-                        <span>Surveyor:</span>
-                    </div>
-                    <CustomSelect
-                        value={selectedSurveyor}
-                        onChange={setSelectedSurveyor}
-                        options={surveyorOptions}
-                        minWidth="160px"
-                        ariaLabel="Filter by Field Surveyor"
-                    />
+                    {isAdmin && (
+                        <>
+                            <div className="analytics-filter-label" style={{ marginLeft: '0.5rem' }}>
+                                <span>Surveyor:</span>
+                            </div>
+                            <CustomSelect
+                                value={selectedSurveyor}
+                                onChange={setSelectedSurveyor}
+                                options={surveyorOptions}
+                                minWidth="160px"
+                                ariaLabel="Filter by Field Surveyor"
+                            />
+                        </>
+                    )}
                 </div>
 
                 {/* Module View Filter Tabs */}
@@ -349,8 +444,10 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
                         type="button"
                         className={`analytics-tab-btn ${activeTab === 'LEDGER' ? 'active' : ''}`}
                         onClick={() => setActiveTab('LEDGER')}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                     >
-                        Audited Ledger
+                        {!isAdmin && <Lock size={12} style={{ color: 'var(--color-amber-600)' }} />}
+                        <span>{isAdmin ? 'Audited Ledger' : 'Audited Ledger (Restricted)'}</span>
                     </button>
                 </div>
             </div>
@@ -865,12 +962,12 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
                 </div>
             )}
 
-            {/* Audited Submissions Ledger (Data Verification Explorer) */}
-            {(activeTab === 'ALL' || activeTab === 'LEDGER') && (
+            {/* Audited Submissions Ledger (Restricted to Authenticated Administrators) */}
+            {(activeTab === 'ALL' || activeTab === 'LEDGER') && isAdmin && (
                 <div className="ledger-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                         <div>
-                            <span className="badge badge-civic">Data Transparency</span>
+                            <span className="badge badge-civic">Admin Data Transparency</span>
                             <h2 className="section-title" style={{ fontSize: '1.25rem', marginTop: '0.25rem' }}>
                                 Audited Field Survey Submissions Ledger
                             </h2>
@@ -961,6 +1058,28 @@ export default function DashboardView({ initialTab = 'ALL' } = {}) {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Academic Privacy & RLS Protection Card for Public Visitors */}
+            {(activeTab === 'ALL' || activeTab === 'LEDGER') && !isAdmin && (
+                <div className="ledger-card" style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
+                    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--color-blue-50)', color: 'var(--color-blue-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                            <ShieldCheck size={28} />
+                        </div>
+                        <span className="badge badge-civic" style={{ marginBottom: '0.5rem' }}>Data Privacy &amp; Academic Ethics</span>
+                        <h2 className="section-title" style={{ fontSize: '1.3rem', marginTop: '0.25rem' }}>
+                            Household Privacy &amp; Data Protection Boundary
+                        </h2>
+                        <p className="section-desc" style={{ fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                            To safeguard village household privacy, individual doorstep survey records, respondent codes, field surveyor identities, and interview timestamps are protected under PostgreSQL Row Level Security (RLS). Public visitors have full real-time access to database-calculated indicator summaries across all 7 study modules above.
+                        </p>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.5rem 1rem', background: '#f8fafc', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', color: 'var(--color-slate-700)' }}>
+                            <Lock size={13} style={{ color: 'var(--color-amber-600)' }} />
+                            <span>Raw household microdata access requires authenticated administrator credentials.</span>
+                        </div>
                     </div>
                 </div>
             )}

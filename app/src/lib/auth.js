@@ -29,6 +29,22 @@ export const authService = {
         return data;
     },
 
+    async isAdmin() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) return false;
+            const { data, error } = await supabase
+                .from('admin_users')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .eq('role', 'admin')
+                .maybeSingle();
+            return !error && !!data;
+        } catch {
+            return false;
+        }
+    },
+
     onAuthStateChange(callback) {
         return supabase.auth.onAuthStateChange(callback);
     }
