@@ -1680,3 +1680,230 @@ textarea.form-control {
     max-width: 1280px;
     margin: 0 auto;
 }
+
+/* Emergency Helplines Quick-Access Strip */
+.emergency-strip-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1.5px solid var(--color-red-200);
+    border-radius: var(--radius-lg);
+    padding: 0.85rem 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.08);
+}
+
+.emergency-strip-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.emergency-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-full);
+    font-size: 0.825rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.emergency-pill-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pill-ambulance {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.pill-police {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.pill-health {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+.pill-electricity {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+/* Civic Data Explorer Tabs */
+.civic-explorer-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--color-slate-200);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+}
+
+.civic-explorer-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.civic-explorer-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-slate-600);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    margin-bottom: -2px;
+}
+
+.civic-explorer-tab:hover {
+    color: var(--color-slate-950);
+}
+
+.civic-explorer-tab.active {
+    color: var(--color-blue-700);
+    border-bottom-color: var(--color-blue-600);
+    background: rgba(37, 99, 235, 0.04);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.civic-explorer-tab-badge {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: var(--color-slate-200);
+    color: var(--color-slate-700);
+}
+
+.civic-explorer-tab.active .civic-explorer-tab-badge {
+    background: var(--color-blue-100);
+    color: var(--color-blue-800);
+}
+
+/* Demographics Factsheet Grid */
+.demographics-factsheet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.factsheet-stat-card {
+    background: var(--color-slate-50);
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.factsheet-stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+}
+
+.factsheet-stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-slate-950);
+    line-height: 1.1;
+}
+
+.factsheet-stat-sub {
+    font-size: 0.72rem;
+    color: var(--color-slate-500);
+    margin-top: 0.35rem;
+}
+
+/* Infrastructure Observation Table */
+.infra-ledger-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.infra-ledger-table th {
+    background: var(--color-slate-100);
+    color: var(--color-slate-700);
+    font-weight: 700;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-slate-200);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.infra-ledger-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-slate-100);
+    color: var(--color-slate-800);
+    vertical-align: middle;
+}
+
+.infra-ledger-table tr:last-child td {
+    border-bottom: none;
+}
+
+.infra-ledger-table tr:hover td {
+    background: var(--color-slate-50);
+}
+
+/* Print Styles */
+@media print {
+    .site-header,
+    .site-footer,
+    .btn,
+    .search-bar-box,
+    .civic-explorer-tabs,
+    .emergency-strip-banner {
+        display: none !important;
+    }
+
+    body, .app-root, .container {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .civic-card {
+        border: 1px solid #000000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+}

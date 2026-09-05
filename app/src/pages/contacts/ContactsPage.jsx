@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Phone, Siren, Search, X } from 'lucide-react';
+import { Phone, Siren, Search, X, Printer } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { contactService } from '../../features/contacts/api/contacts';
 import { ContactCard } from '../../features/contacts/components/ContactCard';

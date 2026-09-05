@@ -9,10 +9,13 @@ export function FeedbackForm({ villageId, t }) {
     const [fbType, setFbType] = useState('Correction');
     const [fbMessage, setFbMessage] = useState('');
     const [fbStatus, setFbStatus] = useState(null); // 'submitting' | 'success' | 'error' | 'offline'
+    const [generatedRefId, setGeneratedRefId] = useState(null);
+    const [copiedRef, setCopiedRef] = useState(false);
 
     async function handleSubmit(e) {
         e.preventDefault();
         setFbStatus('submitting');
+        setGeneratedRefId(null);
         try {
             const result = await feedbackService.submitFeedback({
                 village_id: villageId,
@@ -21,6 +24,10 @@ export function FeedbackForm({ villageId, t }) {
                 category: fbType,
                 message: fbMessage
             });
+
+            if (result.reference_id) {
+                setGeneratedRefId(result.reference_id);
+            }
 
             if (result.offline) {
                 setFbStatus('offline');
@@ -36,16 +43,41 @@ export function FeedbackForm({ villageId, t }) {
         }
     }
 
+    const handleCopyRef = () => {
+        if (generatedRefId) {
+            navigator.clipboard.writeText(generatedRefId);
+            setCopiedRef(true);
+            setTimeout(() => setCopiedRef(false), 2500);
+        }
+    };
+
     return (
         <div className="civic-card" style={{ padding: '1.75rem' }}>
             {fbStatus === 'success' && (
-                <div className="alert alert-success" role="status">
-                    {t?.feedbackSuccess || 'Thank you. Your feedback has been recorded successfully.'}
+                <div className="alert alert-success" role="status" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div>{t?.feedbackSuccess || 'Thank you. Your submission has been recorded securely.'}</div>
+                    {generatedRefId && (
+                        <div style={{ background: 'rgba(255,255,255,0.85)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-emerald-300)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <div>
+                                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-emerald-800)', textTransform: 'uppercase' }}>Tracking Reference ID</div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-slate-950)', fontFamily: 'var(--font-mono)' }}>{generatedRefId}</div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', marginTop: '2px' }}>Please note this ID. Public lookup only reveals verification status; your personal data is kept confidential.</div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleCopyRef}
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                            >
+                                {copiedRef ? 'Copied' : 'Copy ID'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
             {fbStatus === 'offline' && (
                 <div className="alert alert-info" role="status">
-                    You appear to be offline. Your feedback has been saved locally and will synchronize when connection restores.
+                    You appear to be offline. Your feedback has been saved locally with Reference ID {generatedRefId || ''} and will synchronize when connection restores.
                 </div>
             )}
             {fbStatus === 'error' && (

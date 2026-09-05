@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { 
     ExternalLink, CheckCircle2, UserCheck, ShieldCheck, 
     FileCheck, Layers, ArrowLeft, Building, HelpCircle, 
-    AlertCircle, FileText, Check, Calendar, Landmark
+    AlertCircle, FileText, Check, Calendar, Landmark, Printer
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { schemeService } from '../../features/schemes';
@@ -199,10 +199,22 @@ export function SchemeDetailsPage() {
 
                         {/* 4. Required Documents Checklist */}
                         <div className="civic-card" style={{ padding: '1.75rem' }}>
-                            <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-slate-900)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <FileCheck size={18} style={{ color: 'var(--color-emerald-600)' }} />
-                                Required Documents / Verification Checklist
-                            </h2>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                                <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-slate-900)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <FileCheck size={18} style={{ color: 'var(--color-emerald-600)' }} />
+                                    Required Documents / Verification Checklist
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => window.print()}
+                                    className="btn btn-secondary btn-sm"
+                                    style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    aria-label="Print document checklist"
+                                >
+                                    <Printer size={14} />
+                                    <span>Print Checklist</span>
+                                </button>
+                            </div>
                             {docs.length > 0 ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
                                     {docs.map((doc, idx) => (
