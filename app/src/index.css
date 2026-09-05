@@ -903,7 +903,7 @@ main.container {
     white-space: nowrap;
     width: max-content;
     will-change: transform;
-    animation: notice-ticker-slide 32s linear infinite;
+    animation: notice-ticker-slide 45s linear infinite;
 }
 
 .notice-ticker-container:hover .notice-ticker-track,
@@ -1952,6 +1952,108 @@ main.container {
     background: var(--color-blue-50);
     border-color: var(--color-blue-700);
     color: var(--color-blue-800);
+}
+
+/* Compact button variant for table actions */
+.btn-sm {
+    min-height: 32px;
+    height: 32px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.78rem;
+    border-radius: var(--radius-sm);
+    gap: 4px;
+}
+
+.btn-sm svg {
+    flex-shrink: 0;
+}
+
+/* ==============================================================================
+   6b. Admin Ledger Tables & Status Badges
+   ============================================================================== */
+
+/* Responsive wrapper for horizontal scroll on narrow screens */
+.table-responsive-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-slate-200);
+}
+
+/* Ledger data table */
+.ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.ledger-table thead {
+    background: var(--color-slate-50);
+    border-bottom: 2px solid var(--color-slate-200);
+}
+
+.ledger-table thead th {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-slate-600);
+    white-space: nowrap;
+    text-align: left;
+}
+
+.ledger-table tbody tr {
+    border-bottom: 1px solid var(--color-slate-100);
+    transition: background 0.15s ease;
+}
+
+.ledger-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.ledger-table tbody tr:hover {
+    background: var(--color-slate-50);
+}
+
+.ledger-table tbody td {
+    padding: 0.625rem 0.875rem;
+    vertical-align: middle;
+    color: var(--color-text-primary);
+}
+
+/* Status badges */
+.badge-green {
+    display: inline-block;
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge-amber {
+    display: inline-block;
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* Alert / error messages */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.alert-success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
 }
 
 /* ==============================================================================

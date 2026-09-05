@@ -1,6 +1,6 @@
 import React from 'react';
 import { Phone, MapPin, ShieldCheck, User, Zap, Siren, Building } from 'lucide-react';
-import { getLocalized } from '../lib/i18n';
+import { getLocalized, formatPhoneDisplay } from '../lib/i18n';
 
 export default function ContactCard({ contact, lang, t }) {
     const isEmergency = contact.category === 'Emergency';
@@ -61,7 +61,7 @@ export default function ContactCard({ contact, lang, t }) {
                     title={`Call ${contact.name}`}
                 >
                     <Phone size={15} style={{ marginRight: '8px' }} aria-hidden="true" /> 
-                    <span>{t.callNow} {contact.phone}</span>
+                    <span>{t.callNow} {formatPhoneDisplay(contact.phone)}</span>
                 </a>
                 
                 <div className="card-verify-tag">

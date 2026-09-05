@@ -1,6 +1,6 @@
 import React from 'react';
 import { Phone, MapPin, ShieldCheck, User, Wrench, CheckCircle2 } from 'lucide-react';
-import { getLocalized } from '../lib/i18n';
+import { getLocalized, formatPhoneDisplay } from '../lib/i18n';
 
 export default function BusinessCard({ business, lang, t }) {
     const servicesList = business.services ? business.services.split(',') : [];
@@ -76,11 +76,11 @@ export default function BusinessCard({ business, lang, t }) {
                 {business.phone ? (
                     <a 
                         href={`tel:${business.phone}`} 
-                        className="btn btn-secondary call-action-btn"
+                        className="btn btn-primary call-action-btn"
                         title={`Call ${business.name}`}
                     >
                         <Phone size={15} style={{ marginRight: '8px' }} aria-hidden="true" /> 
-                        <span>{t.callNow} {business.phone}</span>
+                        <span>{t.callNow} {formatPhoneDisplay(business.phone)}</span>
                     </a>
                 ) : (
                     <div className="no-direct-phone">Physical storefront in village market</div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Phone, Clock, User, CheckCircle2, ShieldCheck, MapPin, Activity, GraduationCap } from 'lucide-react';
-import { getLocalized } from '../lib/i18n';
+import { getLocalized, formatPhoneDisplay } from '../lib/i18n';
 
 function checkIsOpenNow(timings) {
     if (!timings) return false;
@@ -106,11 +106,11 @@ export default function InstitutionCard({ institution, lang, t }) {
                 {institution.phone ? (
                     <a 
                         href={`tel:${institution.phone}`} 
-                        className="btn btn-secondary call-action-btn"
+                        className="btn btn-primary call-action-btn"
                         title={`Call ${institution.name}`}
                     >
                         <Phone size={15} style={{ marginRight: '8px' }} aria-hidden="true" /> 
-                        <span>{t.callNow} {institution.phone}</span>
+                        <span>{t.callNow} {formatPhoneDisplay(institution.phone)}</span>
                     </a>
                 ) : (
                     <div className="no-direct-phone">Direct contact available via Gram Panchayat desk</div>

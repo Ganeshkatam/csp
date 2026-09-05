@@ -304,6 +304,7 @@ export default function AdminConsoleView() {
     const [showContactForm, setShowContactForm] = useState(false);
     const [showInstitutionForm, setShowInstitutionForm] = useState(false);
     const [showBusinessForm, setShowBusinessForm] = useState(false);
+    const [showProfileForm, setShowProfileForm] = useState(false);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -890,102 +891,187 @@ export default function AdminConsoleView() {
             {/* Tab: Profile */}
             {activeTab === 'profile' && (
                 <div className="survey-card">
-                    <h2 className="section-title">Habitation Details & Administration</h2>
-                    <p className="section-desc">Configure the geographic and administrative profile of your assigned village for the CSP study.</p>
-                    <form onSubmit={handleSaveVillage} style={{ marginTop: '1rem' }}>
-                        <div className="choice-grid columns-2">
-                            <div className="form-group">
-                                <label className="form-label">Village / Habitation Name *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.name}
-                                    onChange={(e) => setVillage({ ...village, name: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label">Gram Panchayat *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.gram_panchayat}
-                                    onChange={(e) => setVillage({ ...village, gram_panchayat: e.target.value })}
-                                    required
-                                />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div>
+                            <h2 className="section-title" style={{ margin: 0 }}>Habitation Details & Administration</h2>
+                            <p className="section-desc" style={{ margin: '4px 0 0' }}>Geographic and administrative profile of the assigned village for the CSP study.</p>
+                        </div>
+                        {!showProfileForm && (
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-sm"
+                                onClick={() => setShowProfileForm(true)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Edit size={15} /> Edit Profile
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Read-Only Village Profile Summary */}
+                    {!showProfileForm && (
+                        <div className="info-card" style={{ marginTop: '0.5rem' }}>
+                            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.25rem', fontWeight: 700 }}>
+                                {village.name || 'Village Name Not Set'}
+                            </h3>
+                            {village.gram_panchayat && (
+                                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', margin: '0 0 1rem' }}>
+                                    {village.gram_panchayat} Gram Panchayat | {village.mandal} Mandal | {village.district} District | {village.state}
+                                </p>
+                            )}
+
+                            {village.description && (
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <h4 style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '0.35rem' }}>Overview</h4>
+                                    <p style={{ fontSize: '0.875rem', lineHeight: 1.6, color: 'var(--color-text-primary)', margin: 0 }}>{village.description}</p>
+                                </div>
+                            )}
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem', marginTop: '0.75rem' }}>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>Gram Panchayat</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.gram_panchayat || '--'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>Mandal / Taluk</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.mandal || '--'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>District</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.district || '--'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>State</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.state || '--'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>Verification Source</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.source || '--'}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '2px' }}>Verified On</div>
+                                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{village.verified_on || '--'}</div>
+                                </div>
                             </div>
                         </div>
+                    )}
 
-                        <div className="choice-grid columns-3">
-                            <div className="form-group">
-                                <label className="form-label">Mandal / Taluk *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.mandal}
-                                    onChange={(e) => setVillage({ ...village, mandal: e.target.value })}
-                                    required
-                                />
+                    {/* Collapsible Edit Form */}
+                    {showProfileForm && (
+                        <div className="info-card" style={{ marginTop: '0.75rem', background: 'var(--color-slate-50)', border: '1px solid var(--color-slate-200)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Edit Village Profile</h3>
+                                    <span className="badge" style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.75rem', fontWeight: 600 }}>
+                                        {village.name || 'New Profile'}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setShowProfileForm(false)}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                                >
+                                    <ChevronUp size={14} /> Hide Form
+                                </button>
                             </div>
-                            <div className="form-group">
-                                <label className="form-label">District *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.district}
-                                    onChange={(e) => setVillage({ ...village, district: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label">State *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.state}
-                                    onChange={(e) => setVillage({ ...village, state: e.target.value })}
-                                    required
-                                />
-                            </div>
+
+                            <form onSubmit={handleSaveVillage}>
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Village / Habitation Name *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.name}
+                                            onChange={(e) => setVillage({ ...village, name: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Gram Panchayat *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.gram_panchayat}
+                                            onChange={(e) => setVillage({ ...village, gram_panchayat: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="choice-grid columns-3">
+                                    <div className="form-group">
+                                        <label className="form-label">Mandal / Taluk *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.mandal}
+                                            onChange={(e) => setVillage({ ...village, mandal: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">District *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.district}
+                                            onChange={(e) => setVillage({ ...village, district: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">State *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.state}
+                                            onChange={(e) => setVillage({ ...village, state: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Habitation Overview & Description</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="3"
+                                        value={village.description}
+                                        onChange={(e) => setVillage({ ...village, description: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="choice-grid columns-2">
+                                    <div className="form-group">
+                                        <label className="form-label">Verification Source *</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={village.source}
+                                            onChange={(e) => setVillage({ ...village, source: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Verified Date *</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={village.verified_on}
+                                            onChange={(e) => setVillage({ ...village, verified_on: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                                    Update Village Profile
+                                </button>
+                            </form>
                         </div>
-
-                        <div className="form-group">
-                            <label className="form-label">Habitation Overview & Description</label>
-                            <textarea
-                                className="form-control"
-                                rows="3"
-                                value={village.description}
-                                onChange={(e) => setVillage({ ...village, description: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="choice-grid columns-2">
-                            <div className="form-group">
-                                <label className="form-label">Verification Source *</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={village.source}
-                                    onChange={(e) => setVillage({ ...village, source: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label">Verified Date *</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    value={village.verified_on}
-                                    onChange={(e) => setVillage({ ...village, verified_on: e.target.value })}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-                            Update Village Profile
-                        </button>
-                    </form>
+                    )}
                 </div>
             )}
 

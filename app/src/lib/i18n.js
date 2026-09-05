@@ -3,10 +3,10 @@ export const I18N_DICT = {
         govtState: "COMMUNITY SERVICE PROJECT (CSP) | B.TECH CSE",
         govtDept: "Department of Computer Science & Engineering",
         projectBadge: "Community Service Project (CSP) • Department of Computer Science & Engineering",
-        portalTitleRegional: "డిజిటల్ గ్రామ సమాచార వేదిక",
-        portalTitleEn: "DIGITAL VILLAGE INFORMATION PORTAL",
+        portalTitleRegional: "గ్రామ మిత్ర",
+        portalTitleEn: "VILLAGE MITRA",
         portalSubtitle: "Village Information Gateway • Academic CSP Initiative",
-        digitalIndiaTag: "Digital Village",
+        digitalIndiaTag: "Village Mitra",
         digitalIndiaSub: "Academic CSP Project",
 
         // Nav
@@ -111,10 +111,10 @@ export const I18N_DICT = {
         govtState: "కమ్యూనిటీ సర్వీస్ ప్రాజెక్ట్ (CSP) | బి.టెక్ సిఎస్ఇ",
         govtDept: "కంప్యూటర్ సైన్స్ అండ్ ఇంజనీరింగ్ విభాగం",
         projectBadge: "కమ్యూనిటీ సర్వీస్ ప్రాజెక్ట్ (CSP) • కంప్యూటర్ సైన్స్ అండ్ ఇంజనీరింగ్ విభాగం",
-        portalTitleRegional: "డిజిటల్ గ్రామ సమాచార వేదిక",
-        portalTitleEn: "DIGITAL VILLAGE INFORMATION PORTAL",
+        portalTitleRegional: "గ్రామ మిత్ర",
+        portalTitleEn: "VILLAGE MITRA",
         portalSubtitle: "గ్రామ సమాచార వేదిక • అకడమిక్ సీఎస్పీ ప్రాజెక్ట్",
-        digitalIndiaTag: "డిజిటల్ విలేజ్",
+        digitalIndiaTag: "గ్రామ మిత్ర",
         digitalIndiaSub: "అకడమిక్ ప్రాజెక్ట్",
 
         // Nav
@@ -226,4 +226,35 @@ export function getLocalized(item, field, lang = 'en') {
         }
     }
     return item[field] || '';
+}
+
+/**
+ * Formats a raw Indian phone number for clean display.
+ * Keeps the original string for tel: href, but returns a human-readable version.
+ * Examples:
+ *   "08772277100" -> "0877-227-7100"
+ *   "9989001122"  -> "99890-01122"
+ *   "100"         -> "100"
+ *   "1912"        -> "1912"
+ */
+export function formatPhoneDisplay(phone) {
+    if (!phone) return '';
+    const digits = phone.replace(/\D/g, '');
+
+    // Short helpline codes (3-5 digits): return as-is
+    if (digits.length <= 5) return phone;
+
+    // 11-digit landline with STD code (e.g. 08772277100)
+    if (digits.length === 11 && digits.startsWith('0')) {
+        // Format: 0XXX-XXX-XXXX (4-3-4 after leading 0)
+        return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+    }
+
+    // 10-digit mobile number (e.g. 9989001122)
+    if (digits.length === 10) {
+        return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    }
+
+    // Fallback: return original
+    return phone;
 }

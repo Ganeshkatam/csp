@@ -2,10 +2,20 @@ import React from 'react';
 import { ExternalLink, CheckCircle2, UserCheck, ShieldCheck, FileCheck, Layers } from 'lucide-react';
 import { getLocalized } from '../lib/i18n';
 
+function sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return '#';
+    const trimmed = url.trim();
+    if (/^https?:\/\//i.test(trimmed)) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+}
+
 export default function SchemeCard({ scheme, lang, t }) {
     // Parse required documents into clean chips
     const docStr = scheme.documents_required || scheme.documents || '';
     const docs = docStr.split(',').map(d => d.trim()).filter(Boolean);
+    const portalUrl = sanitizeUrl(scheme.official_url);
 
     return (
         <div className="civic-card scheme-card">
@@ -80,16 +90,13 @@ export default function SchemeCard({ scheme, lang, t }) {
             <div className="card-action-footer">
                 {scheme.official_url && (
                     <a 
-                        href={scheme.official_url} 
+                        href={portalUrl} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="btn btn-scheme-portal scheme-action-btn"
                         title={`Open official portal for ${scheme.name}`}
                     >
                         <span className="scheme-btn-label">{t.officialPortal}</span>
-                        {scheme.official_url.includes('.gov.in') && (
-                            <span className="scheme-gov-pill">.gov.in</span>
-                        )}
                         <ExternalLink size={15} className="scheme-btn-icon" aria-hidden="true" />
                     </a>
                 )}

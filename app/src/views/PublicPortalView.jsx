@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { I18N_DICT, getLocalized } from '../lib/i18n';
 import { supabase } from '../lib/supabase';
 import SearchBar from '../components/SearchBar';
@@ -9,10 +9,10 @@ import InstitutionCard from '../components/InstitutionCard';
 import BusinessCard from '../components/BusinessCard';
 import AnnouncementCard from '../components/AnnouncementCard';
 import FeedbackForm from '../components/FeedbackForm';
-import { Smartphone, CheckCircle2, Copy, ExternalLink, ShieldCheck, HeartPulse, FileText, Phone, Store } from 'lucide-react';
+import { Copy, ShieldCheck, HeartPulse, FileText, Phone, Store } from 'lucide-react';
 
-export default function PublicPortalView({ 
-    lang, 
+export default function PublicPortalView({
+    lang,
     currentFilter = 'ALL',
     setCurrentFilter,
     searchQuery = '',
@@ -95,39 +95,39 @@ export default function PublicPortalView({
     // Client-side search filters
     const query = searchQuery.toLowerCase().trim();
 
-    const filteredAnnouncements = announcements.filter(a => 
-        !query || 
+    const filteredAnnouncements = announcements.filter(a =>
+        !query ||
         (a.title && a.title.toLowerCase().includes(query)) ||
         (a.title_te && a.title_te.toLowerCase().includes(query)) ||
         (a.description && a.description.toLowerCase().includes(query))
     );
 
-    const filteredSchemes = schemes.filter(s => 
-        !query || 
+    const filteredSchemes = schemes.filter(s =>
+        !query ||
         (s.name && s.name.toLowerCase().includes(query)) ||
         (s.name_te && s.name_te.toLowerCase().includes(query)) ||
         (s.category && s.category.toLowerCase().includes(query)) ||
         (s.eligibility && s.eligibility.toLowerCase().includes(query))
     );
 
-    const filteredContacts = contacts.filter(c => 
-        !query || 
+    const filteredContacts = contacts.filter(c =>
+        !query ||
         (c.name && c.name.toLowerCase().includes(query)) ||
         (c.name_te && c.name_te.toLowerCase().includes(query)) ||
         (c.designation && c.designation.toLowerCase().includes(query)) ||
         (c.phone && c.phone.includes(query))
     );
 
-    const filteredInstitutions = institutions.filter(i => 
-        !query || 
+    const filteredInstitutions = institutions.filter(i =>
+        !query ||
         (i.name && i.name.toLowerCase().includes(query)) ||
         (i.name_te && i.name_te.toLowerCase().includes(query)) ||
         (i.type && i.type.toLowerCase().includes(query)) ||
         (i.services && i.services.toLowerCase().includes(query))
     );
 
-    const filteredBusinesses = businesses.filter(b => 
-        !query || 
+    const filteredBusinesses = businesses.filter(b =>
+        !query ||
         (b.name && b.name.toLowerCase().includes(query)) ||
         (b.name_te && b.name_te.toLowerCase().includes(query)) ||
         (b.category && b.category.toLowerCase().includes(query)) ||
@@ -156,7 +156,7 @@ export default function PublicPortalView({
                         </div>
 
                         <h1 className="hero-title">
-                            {village?.name ? `${t.welcomeTo} ${village.name}` : 'Digital Village'}
+                            {village?.name ? `${t.welcomeTo} ${village.name}` : 'Village Mitra'}
                             <span className="hero-title-suffix"> {t.portalTitleEn}</span>
                         </h1>
 
@@ -165,14 +165,14 @@ export default function PublicPortalView({
                         </div>
 
                         <p className="hero-subtitle">
-                            {village?.gram_panchayat 
+                            {village?.gram_panchayat
                                 ? `${village.gram_panchayat} Gram Panchayat | ${village.mandal} Mandal | ${village.district} District`
                                 : t.portalSubtitle
                             }
                         </p>
 
                         {/* Search Command Bar */}
-                        <SearchBar 
+                        <SearchBar
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
                             currentFilter={currentFilter}
@@ -204,10 +204,10 @@ export default function PublicPortalView({
                     {/* Right Hero Visual Illustration Banner */}
                     <div className="hero-visual-col">
                         <div className="hero-illustration-frame">
-                            <img 
-                                src="/images/rural_village_illustration.jpg" 
+                            <img
+                                src="/images/rural_village_illustration.jpg"
                                 alt="Digital Village Civic Community Landscape with Panchayat, Healthcare, and Education facilities"
-                                className="hero-illustration-img" 
+                                className="hero-illustration-img"
                             />
                             <div className="hero-illustration-caption">
                                 <ShieldCheck size={16} className="caption-icon" aria-hidden="true" />
@@ -362,10 +362,6 @@ export default function PublicPortalView({
             <section className="section-block" id="sectionQrAccess">
                 <div className="mobile-access-hub-card">
                     <div className="mobile-access-content">
-                        <div className="mobile-badge">
-                            <Smartphone size={15} style={{ marginRight: '6px' }} aria-hidden="true" />
-                            <span>Mobile Optimization &amp; Field Evaluation</span>
-                        </div>
                         <h2 className="mobile-hub-title">{t.qrHeading}</h2>
                         <p className="mobile-hub-desc">{t.qrDesc}</p>
 
@@ -385,8 +381,8 @@ export default function PublicPortalView({
                         </div>
 
                         <div className="mobile-action-row">
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="btn btn-secondary"
                                 onClick={handleCopyUrl}
                                 style={{ minHeight: '42px', padding: '0.5rem 1rem' }}
@@ -404,15 +400,11 @@ export default function PublicPortalView({
                         <div className="qr-image-wrapper">
                             <img 
                                 src={qrCodeUrl} 
-                                alt="Scan QR Code to open Digital Village Information Portal on Smartphone" 
+                                alt="Scan QR Code to open Village Mitra on Smartphone" 
                                 width="200" 
                                 height="200" 
                                 className="qr-code-img"
                             />
-                        </div>
-                        <div className="qr-scan-badge">
-                            <CheckCircle2 size={13} style={{ marginRight: '4px', color: 'var(--color-emerald-600)' }} aria-hidden="true" />
-                            <span>Mobile Responsive | Instant Field Access</span>
                         </div>
                     </div>
                 </div>

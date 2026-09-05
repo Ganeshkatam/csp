@@ -6,7 +6,7 @@
 const I18N_DICT = {
     en: {
         // Navigation & Branding
-        portalTitle: "Digital Village Information Portal",
+        portalTitle: "Village Mitra",
         portalSubtitle: "Department of Panchayati Raj & Rural Development",
         navHome: "Home",
         navServices: "Citizen Corner",
@@ -117,7 +117,7 @@ const I18N_DICT = {
     },
     te: {
         // Navigation & Branding
-        portalTitle: "డిజిటల్ గ్రామ సమాచార వేదిక",
+        portalTitle: "గ్రామ మిత్ర (Village Mitra)",
         portalSubtitle: "పంచాయతీ రాజ్ మరియు గ్రామీణాభివృద్ధి శాఖ",
         navHome: "హోమ్",
         navServices: "సేవల వేదిక",
