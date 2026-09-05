@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Wifi, WifiOff, RefreshCw, CheckCircle2, AlertCircle, MapPin, Info, Users, ShieldCheck, HeartPulse, Building2, PhoneCall, Check } from 'lucide-react';
 import { supabase, DEFAULT_VILLAGE_ID } from '../lib/supabase';
 import CustomSelect from '../components/CustomSelect';
 import { SURVEY_CANONICAL_OPTIONS } from '../lib/surveyConstants';
+import { validateSurveyForm, buildSurveyPayload } from '../utils/surveyValidation';
+import { uploadSurveyPayload, enqueueOfflineSurvey, getOfflineSurveys, syncOfflineSurveys as syncSurveysFromStorage } from '../features/survey/api/surveyService';
 
 export default function SurveyFormView() {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -78,8 +80,46 @@ export default function SurveyFormView() {
         { id: 7, name: 'Priorities' }
     ];
 
+    const updateOfflineCount = useCallback(() => {
+        setOfflineCount(getOfflineSurveys().length);
+    }, []);
+
+    const syncOfflineSurveys = useCallback(async () => {
+        if (!navigator.onLine) {
+            setStatusMsg({ type: 'warning', text: 'Cannot synchronize: device is offline.' });
+            return;
+        }
+
+        setIsSyncing(true);
+        try {
+            const res = await syncSurveysFromStorage();
+            updateOfflineCount();
+
+            if (res.successCount === 0 && res.remainingCount === 0) {
+                setStatusMsg({ type: 'success', text: 'No pending records to synchronize.' });
+            } else if (res.remainingCount === 0) {
+                setStatusMsg({
+                    type: 'success',
+                    text: `All ${res.successCount} offline survey records verified and synchronized to database.`
+                });
+            } else {
+                setStatusMsg({
+                    type: 'warning',
+                    text: `Synchronized ${res.successCount} records. ${res.remainingCount} records remain pending.`
+                });
+            }
+        } catch (e) {
+            setStatusMsg({ type: 'error', text: 'Synchronization process encountered an error.' });
+        } finally {
+            setIsSyncing(false);
+        }
+    }, [updateOfflineCount]);
+
     useEffect(() => {
-        const handleOnline = () => setIsOnline(true);
+        const handleOnline = () => {
+            setIsOnline(true);
+            syncOfflineSurveys();
+        };
         const handleOffline = () => setIsOnline(false);
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
@@ -91,7 +131,7 @@ export default function SurveyFormView() {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
         };
-    }, []);
+    }, [syncOfflineSurveys, updateOfflineCount]);
 
     // Query verified localities from village_localities table
     async function loadVerifiedLocalities() {
@@ -136,15 +176,6 @@ export default function SurveyFormView() {
         }
     }
 
-    const updateOfflineCount = () => {
-        try {
-            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-            setOfflineCount(cached.length);
-        } catch (e) {
-            setOfflineCount(0);
-        }
-    };
-
     const handleFieldChange = (fieldName, value) => {
         setFormData(prev => ({ ...prev, [fieldName]: value }));
     };
@@ -183,7 +214,7 @@ export default function SurveyFormView() {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
             return crypto.randomUUID();
         }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
@@ -191,87 +222,18 @@ export default function SurveyFormView() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.interviewerName.trim()) {
-            setStatusMsg({ type: 'error', text: 'Please enter surveyor name / student ID.' });
-            return;
-        }
 
-        const finalLocality = formData.localityWard === 'OTHER' 
-            ? (formData.customLocality.trim() || 'General Habitation') 
-            : formData.localityWard;
-
-        if (!finalLocality) {
-            setStatusMsg({ type: 'error', text: 'Please select or enter the locality / ward.' });
+        const validation = validateSurveyForm(formData);
+        if (!validation.isValid) {
+            setStatusMsg({ type: 'error', text: validation.error });
             return;
         }
 
         setIsSubmitting(true);
         setStatusMsg(null);
 
-        const completedTime = new Date().toISOString();
         const clientUuid = generateClientUuid();
-
-        // Assemble normalized answer rows (Option A for SCH4)
-        const answerRows = [
-            // 01. Demographics
-            { question_code: 'D1', answer_value: formData.D1 },
-            { question_code: 'D2', answer_value: formData.D2 },
-            { question_code: 'D3', answer_value: formData.D3 },
-            { question_code: 'D4', answer_value: formData.D4 },
-            { question_code: 'D5', answer_value: String(formData.D5) },
-            { question_code: 'D6', answer_value: formData.D6 },
-
-            // 02. Digital Connectivity
-            { question_code: 'TECH1', answer_value: formData.TECH1 },
-            { question_code: 'TECH2', answer_value: formData.TECH2 },
-            { question_code: 'TECH3', answer_value: formData.TECH3 },
-
-            // 03. Welfare Schemes
-            { question_code: 'SCH1', answer_value: formData.SCH1 },
-            { question_code: 'SCH2', answer_value: formData.SCH2 },
-            { question_code: 'SCH3', answer_value: formData.SCH3 },
-
-            // 04. Emergency Directory (4 discrete CON1 sub-codes + CON2)
-            { question_code: 'CON1_Panchayat', answer_value: formData.CON1_Panchayat },
-            { question_code: 'CON1_PHC', answer_value: formData.CON1_PHC },
-            { question_code: 'CON1_Police', answer_value: formData.CON1_Police },
-            { question_code: 'CON1_Lineman', answer_value: formData.CON1_Lineman },
-            { question_code: 'CON2', answer_value: formData.CON2 },
-
-            // 05. Healthcare & Education
-            { question_code: 'HLTH1', answer_value: formData.HLTH1 },
-            { question_code: 'EDU1', answer_value: formData.EDU1 },
-            { question_code: 'INFRA1', answer_value: formData.INFRA1 },
-
-            // 06. Local Livelihoods & Business Directory
-            { question_code: 'BIZ1', answer_value: formData.BIZ1 },
-            { question_code: 'BIZ2', answer_value: formData.BIZ2 },
-
-            // 07. Information Priorities
-            { question_code: 'PRIO1', answer_value: formData.PRIO1 }
-        ];
-
-        // Multi-select SCH4: Add a discrete normalized row per entitlement
-        if (formData.SCH4 && formData.SCH4.length > 0) {
-            formData.SCH4.forEach(scheme => {
-                answerRows.push({ question_code: 'SCH4', answer_value: scheme });
-            });
-        } else {
-            answerRows.push({ question_code: 'SCH4', answer_value: 'None' });
-        }
-
-        const payload = {
-            survey_client_uuid: clientUuid,
-            village_id: DEFAULT_VILLAGE_ID,
-            respondent_code: formData.respondentCode.trim(),
-            interviewer_name: formData.interviewerName.trim(),
-            locality_ward: finalLocality,
-            consent_obtained: formData.consentObtained,
-            notes: formData.notes.trim() || null,
-            started_at: startTime,
-            completed_at: completedTime,
-            answers: answerRows
-        };
+        const payload = buildSurveyPayload(formData, clientUuid, startTime, DEFAULT_VILLAGE_ID);
 
         // If offline: save into local idempotent queue
         if (!navigator.onLine) {
@@ -283,17 +245,17 @@ export default function SurveyFormView() {
         // If online: upload to Supabase with database-enforced idempotency
         try {
             await uploadSingleSurvey(payload);
-            setStatusMsg({ 
-                type: 'success', 
-                text: `Household Survey (${payload.respondent_code}) successfully synchronized to database (${payload.answers.length} verified answer records).` 
+            setStatusMsg({
+                type: 'success',
+                text: `Household Survey (${payload.respondent_code}) successfully synchronized to database (${payload.answers.length} verified answer records).`
             });
             resetForm();
         } catch (err) {
             console.warn('Online upload failed. Queuing locally:', err);
             saveToOfflineQueue(payload);
-            setStatusMsg({ 
-                type: 'warning', 
-                text: 'Connection disrupted. Survey securely cached locally in pending synchronization queue.' 
+            setStatusMsg({
+                type: 'warning',
+                text: 'Connection disrupted. Survey securely cached locally in pending synchronization queue.'
             });
         } finally {
             setIsSubmitting(false);
@@ -302,16 +264,11 @@ export default function SurveyFormView() {
 
     const saveToOfflineQueue = (payload) => {
         try {
-            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-            const exists = cached.some(item => item.survey_client_uuid === payload.survey_client_uuid);
-            if (!exists) {
-                cached.push(payload);
-                localStorage.setItem('csp_offline_surveys', JSON.stringify(cached));
-            }
+            enqueueOfflineSurvey(payload);
             updateOfflineCount();
-            setStatusMsg({ 
-                type: 'warning', 
-                text: `Offline Mode: Survey cached locally (${payload.respondent_code}). Pending synchronization.` 
+            setStatusMsg({
+                type: 'warning',
+                text: `Offline Mode: Survey cached locally (${payload.respondent_code}). Pending synchronization.`
             });
             resetForm();
         } catch (e) {
@@ -321,92 +278,7 @@ export default function SurveyFormView() {
     };
 
     const uploadSingleSurvey = async (payload) => {
-        const { answers, ...responseHeader } = payload;
-        
-        // 1. Check if record with survey_client_uuid already exists (idempotency guard)
-        if (responseHeader.survey_client_uuid) {
-            const { data: existing } = await supabase
-                .from('survey_responses')
-                .select('id')
-                .eq('survey_client_uuid', responseHeader.survey_client_uuid)
-                .maybeSingle();
-
-            if (existing) {
-                // Record already successfully ingested
-                return;
-            }
-        }
-
-        // 2. Insert survey response header
-        const { data: headerData, error: headerErr } = await supabase
-            .from('survey_responses')
-            .insert(responseHeader)
-            .select('id')
-            .single();
-
-        if (headerErr) throw headerErr;
-
-        // 3. Insert normalized answer rows
-        const rowsToInsert = answers.map(a => ({
-            response_id: headerData.id,
-            question_code: a.question_code,
-            answer_value: a.answer_value
-        }));
-
-        const { error: answersErr } = await supabase
-            .from('survey_answers')
-            .insert(rowsToInsert);
-
-        if (answersErr) throw answersErr;
-    };
-
-    const syncOfflineSurveys = async () => {
-        if (!navigator.onLine) {
-            setStatusMsg({ type: 'warning', text: 'Cannot synchronize: device is offline.' });
-            return;
-        }
-
-        setIsSyncing(true);
-        try {
-            const cached = JSON.parse(localStorage.getItem('csp_offline_surveys') || '[]');
-            if (cached.length === 0) {
-                setStatusMsg({ type: 'success', text: 'No pending records to synchronize.' });
-                setIsSyncing(false);
-                return;
-            }
-
-            const remaining = [];
-            let successCount = 0;
-
-            for (const item of cached) {
-                try {
-                    await uploadSingleSurvey(item);
-                    successCount++;
-                } catch (err) {
-                    console.error('Failed to sync item:', item.respondent_code, err);
-                    remaining.push(item);
-                }
-            }
-
-            localStorage.setItem('csp_offline_surveys', JSON.stringify(remaining));
-            updateOfflineCount();
-
-            if (remaining.length === 0) {
-                setStatusMsg({ 
-                    type: 'success', 
-                    text: `All ${successCount} offline survey records verified and synchronized to database.` 
-                });
-            } else {
-                setStatusMsg({ 
-                    type: 'warning', 
-                    text: `Synchronized ${successCount} records. ${remaining.length} records remain pending.` 
-                });
-            }
-        } catch (e) {
-            setStatusMsg({ type: 'error', text: 'Synchronization process encountered an error.' });
-        } finally {
-            setIsSyncing(false);
-        }
+        return await uploadSurveyPayload(payload);
     };
 
     const resetForm = () => {
@@ -445,8 +317,8 @@ export default function SurveyFormView() {
                                 {isOnline ? 'Online' : 'Offline'}
                             </span>
                             {offlineCount > 0 && (
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className="btn btn-secondary"
                                     onClick={syncOfflineSurveys}
                                     disabled={isSyncing}
@@ -491,31 +363,31 @@ export default function SurveyFormView() {
                         <div className="choice-grid columns-3" style={{ gap: '1rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Household ID Code *</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="respondentCode"
-                                    className="form-control" 
+                                    className="form-control"
                                     value={formData.respondentCode}
                                     onChange={handleInputChange}
                                     placeholder="e.g. HH-016"
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Surveyor Name / Student ID *</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="interviewerName"
-                                    className="form-control" 
+                                    className="form-control"
                                     value={formData.interviewerName}
                                     onChange={handleInputChange}
                                     placeholder="Ganesh Katam / Roll No"
-                                    required 
+                                    required
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Locality / Ward (Verified) *</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.localityWard}
                                     onChange={(val) => handleFieldChange('localityWard', val)}
                                     options={localityOptions}
@@ -529,22 +401,22 @@ export default function SurveyFormView() {
                         {formData.localityWard === 'OTHER' && (
                             <div className="form-group" style={{ marginTop: '0.75rem' }}>
                                 <label className="form-label">Specify Habitation / Street Name *</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     name="customLocality"
-                                    className="form-control" 
+                                    className="form-control"
                                     value={formData.customLocality}
                                     onChange={handleInputChange}
                                     placeholder="Enter new street or locality name..."
-                                    required 
+                                    required
                                 />
                             </div>
                         )}
 
                         <div className="form-group" style={{ marginTop: '0.75rem' }}>
                             <label className="choice-card" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.75rem 1rem', background: '#ffffff', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     name="consentObtained"
                                     checked={formData.consentObtained}
                                     onChange={handleInputChange}
@@ -565,7 +437,7 @@ export default function SurveyFormView() {
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Q1. Age Group [D1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.D1}
                                     onChange={(val) => handleFieldChange('D1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.D1}
@@ -574,7 +446,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q2. Gender [D2]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.D2}
                                     onChange={(val) => handleFieldChange('D2', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.D2}
@@ -583,7 +455,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q3. Main Family Occupation / Work [D3]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.D3}
                                     onChange={(val) => handleFieldChange('D3', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.D3}
@@ -592,7 +464,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q4. Highest Education Level in Family [D4]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.D4}
                                     onChange={(val) => handleFieldChange('D4', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.D4}
@@ -601,7 +473,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q5. Total Members Living in House [D5]</label>
-                                <input 
+                                <input
                                     type="number"
                                     min="1"
                                     max="15"
@@ -617,7 +489,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q6. Ration Card Type [D6]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.D6}
                                     onChange={(val) => handleFieldChange('D6', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.D6}
@@ -636,7 +508,7 @@ export default function SurveyFormView() {
                         <div className="choice-grid columns-3" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Q7. Smartphone in Household [TECH1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.TECH1}
                                     onChange={(val) => handleFieldChange('TECH1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.TECH1}
@@ -645,7 +517,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q8. How do you connect to internet? [TECH2]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.TECH2}
                                     onChange={(val) => handleFieldChange('TECH2', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.TECH2}
@@ -654,7 +526,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q9. Using websites and reading online [TECH3]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.TECH3}
                                     onChange={(val) => handleFieldChange('TECH3', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.TECH3}
@@ -673,7 +545,7 @@ export default function SurveyFormView() {
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem', marginBottom: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Q10. How do you learn about schemes? [SCH1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.SCH1}
                                     onChange={(val) => handleFieldChange('SCH1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.SCH1}
@@ -682,7 +554,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q11. Main difficulty when applying [SCH2]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.SCH2}
                                     onChange={(val) => handleFieldChange('SCH2', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.SCH2}
@@ -692,7 +564,7 @@ export default function SurveyFormView() {
                         </div>
                         <div className="form-group" style={{ marginBottom: '1.25rem' }}>
                             <label className="form-label">Q12. Telling genuine government websites from fake ones [SCH3]</label>
-                            <CustomSelect 
+                            <CustomSelect
                                 value={formData.SCH3}
                                 onChange={(val) => handleFieldChange('SCH3', val)}
                                 options={SURVEY_CANONICAL_OPTIONS.SCH3}
@@ -803,7 +675,7 @@ export default function SurveyFormView() {
 
                         <div className="form-group">
                             <label className="form-label">Q15. How do you find emergency numbers in an urgent situation? [CON2]</label>
-                            <CustomSelect 
+                            <CustomSelect
                                 value={formData.CON2}
                                 onChange={(val) => handleFieldChange('CON2', val)}
                                 options={SURVEY_CANONICAL_OPTIONS.CON2}
@@ -821,7 +693,7 @@ export default function SurveyFormView() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Q16. Experience with the local clinic or PHC [HLTH1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.HLTH1}
                                     onChange={(val) => handleFieldChange('HLTH1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.HLTH1}
@@ -830,7 +702,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q17. Access to school and Anganwadi information [EDU1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.EDU1}
                                     onChange={(val) => handleFieldChange('EDU1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.EDU1}
@@ -839,7 +711,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q18. Main source of drinking water [INFRA1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.INFRA1}
                                     onChange={(val) => handleFieldChange('INFRA1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.INFRA1}
@@ -858,7 +730,7 @@ export default function SurveyFormView() {
                         <div className="choice-grid columns-2" style={{ gap: '1.25rem' }}>
                             <div className="form-group">
                                 <label className="form-label">Q19. How do you find local repairers or workers? [BIZ1]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.BIZ1}
                                     onChange={(val) => handleFieldChange('BIZ1', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.BIZ1}
@@ -867,7 +739,7 @@ export default function SurveyFormView() {
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Q20. Would a village business directory be helpful? [BIZ2]</label>
-                                <CustomSelect 
+                                <CustomSelect
                                     value={formData.BIZ2}
                                     onChange={(val) => handleFieldChange('BIZ2', val)}
                                     options={SURVEY_CANONICAL_OPTIONS.BIZ2}
@@ -885,7 +757,7 @@ export default function SurveyFormView() {
                         </div>
                         <div className="form-group">
                             <label className="form-label">Q21. Most important feature needed on this village website [PRIO1]</label>
-                            <CustomSelect 
+                            <CustomSelect
                                 value={formData.PRIO1}
                                 onChange={(val) => handleFieldChange('PRIO1', val)}
                                 options={SURVEY_CANONICAL_OPTIONS.PRIO1}
@@ -917,8 +789,8 @@ export default function SurveyFormView() {
                         </div>
                     </section>
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="btn btn-primary"
                         disabled={isSubmitting}
                         style={{ minHeight: '48px', width: '100%', fontSize: '1rem', fontWeight: 700 }}
