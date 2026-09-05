@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { GraduationCap, BookOpen, Clock, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { GraduationCap, BookOpen, Clock, ShieldCheck, Utensils, Baby, Award, PhoneCall, ArrowLeft } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
-import { educationService } from '../../features/education/api/education';
-import { EducationCard } from '../../features/education/components/EducationCard';
-import { LoadingState } from '../../components/feedback/LoadingState';
-import { ErrorState } from '../../components/feedback/ErrorState';
-import { EmptyState } from '../../components/ui/EmptyState';
+import { 
+    educationService,
+    EducationDirectory,
+    MidDayMealMenu,
+    AnganwadiNutrition,
+    EducationSchemes,
+    EducationContacts
+} from '../../features/education';
 
 export function EducationPage() {
     const { institutionId } = useParams();
     const { lang, t } = useAppContext();
+    const isTe = lang === 'te';
+
     const [institutions, setInstitutions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,74 +29,135 @@ export function EducationPage() {
                     const filtered = (data || []).filter(inst => String(inst.id) === String(institutionId));
                     setInstitutions(filtered.length > 0 ? filtered : data);
                 } else {
-                    setInstitutions(data);
+                    setInstitutions(data || []);
                 }
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Error loading education:', err);
-                setError(err.message || 'Failed to load education institutions');
+                setError(err.message || 'Failed to load educational institutions');
                 setLoading(false);
             });
     };
 
     useEffect(() => {
         loadEducation();
-    }, []);
+    }, [institutionId]);
+
+    const scrollToSection = (id) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
 
     return (
-        <div>
+        <div style={{ paddingBottom: '4rem' }}>
             {/* Page Header */}
             <div className="page-header">
                 <div className="container page-header-inner">
                     <div className="page-badge-row">
                         <span className="badge badge-civic">
-                            <GraduationCap size={12} style={{ marginRight: '3px' }} /> Public Education
+                            <GraduationCap size={12} style={{ marginRight: '3px' }} /> 
+                            {isTe ? "ప్రజా విద్య & అంగన్‌వాడీ సేవలు" : "Public Education & Anganwadi Portal"}
                         </span>
-                        <span className="badge badge-verified">Department of School Education</span>
+                        <span className="badge badge-verified">
+                            {isTe ? "పాఠశాల విద్యా శాఖ, ఆంధ్రప్రదేశ్" : "Department of School Education AP"}
+                        </span>
                     </div>
-                    <h1 className="page-title">Schools &amp; Anganwadi Centers</h1>
+
+                    <h1 className="page-title">
+                        {isTe 
+                            ? "మోదవలస పాఠశాలలు & అంగన్‌వాడీ పోర్టల్"
+                            : "Schools, Anganwadi & Student Welfare Portal"
+                        }
+                    </h1>
+
                     <p className="page-subtitle">
-                        Mandal Parishad Primary Schools (MPPS), Zilla Parishad High Schools, Anganwadi early childhood education centers, mid-day meal programmes, and Headmaster contacts.
+                        {isTe
+                            ? "మోదవలస గ్రామ పరిధిలోని మండల పరిషత్ ప్రాథమిక పాఠశాల, అంగన్‌వాడీ ప్రారంభ శిశు సంరక్షణ, పీఎం పోషణ్ మధ్యాహ్న భోజన ప్రచురిత సూచిక, విద్యా పథకాలు మరియు అధికారిక కార్యాలయ సంప్రదింపులు."
+                            : "Authoritative directory of Mandal Parishad Primary School (MPPS), Anganwadi early childhood education, PM POSHAN nutritional standards, state school meal schedule reference, and official administrative desks for Modavalasa Village."
+                        }
                     </p>
+
+                    {/* Section Jump Nav Pills */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '1.25rem' }}>
+                        <button 
+                            onClick={() => scrollToSection('sec-schools')}
+                            className="badge badge-civic"
+                            style={{ cursor: 'pointer', border: '1px solid var(--color-border)', background: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        >
+                            <GraduationCap size={13} style={{ color: 'var(--color-indigo-600)' }} />
+                            {isTe ? "పాఠశాలలు & అంగన్‌వాడీ" : "Schools & Anganwadi"}
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('sec-meals')}
+                            className="badge badge-civic"
+                            style={{ cursor: 'pointer', border: '1px solid var(--color-border)', background: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        >
+                            <Utensils size={13} style={{ color: 'var(--color-amber-600)' }} />
+                            {isTe ? "మధ్యాహ్న భోజన మెనూ" : "PM POSHAN School Meal"}
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('sec-anganwadi')}
+                            className="badge badge-civic"
+                            style={{ cursor: 'pointer', border: '1px solid var(--color-border)', background: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        >
+                            <Baby size={13} style={{ color: 'var(--color-pink-600)' }} />
+                            {isTe ? "అంగన్‌వాడీ పోషకాహారం" : "Anganwadi Services"}
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('sec-schemes')}
+                            className="badge badge-civic"
+                            style={{ cursor: 'pointer', border: '1px solid var(--color-border)', background: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        >
+                            <Award size={13} style={{ color: 'var(--color-blue-600)' }} />
+                            {isTe ? "విద్యా పథకాలు" : "Education Schemes"}
+                        </button>
+                        <button 
+                            onClick={() => scrollToSection('sec-contacts')}
+                            className="badge badge-civic"
+                            style={{ cursor: 'pointer', border: '1px solid var(--color-border)', background: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                        >
+                            <PhoneCall size={13} style={{ color: 'var(--color-emerald-600)' }} />
+                            {isTe ? "అధికారిక సంప్రదింపులు" : "Official Contacts"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className="container" style={{ paddingBottom: '3rem' }}>
-                {/* Highlights Banner */}
-                <div style={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', marginBottom: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-                    <div>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-indigo-700)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>School Timings</div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-slate-900)' }}>9:00 AM - 4:30 PM</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Monday to Saturday with regular attendance tracking</div>
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-emerald-700)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Mid-Day Meals (Jagananna Gorumudha)</div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-slate-900)' }}>Provided Daily</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Nutritious hot meals, boiled eggs, and chikkis for enrolled students</div>
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-blue-700)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Anganwadi Nutrition</div>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-slate-900)' }}>Ages 0 - 6 Years</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>Supplementary nutrition and pre-school non-formal education</div>
-                    </div>
+            <div className="container" style={{ marginTop: '2rem' }}>
+                {/* 1. Schools & Anganwadi Directory */}
+                <div id="sec-schools">
+                    <EducationDirectory 
+                        institutions={institutions}
+                        loading={loading}
+                        error={error}
+                        onRetry={loadEducation}
+                        lang={lang}
+                        t={t}
+                    />
                 </div>
 
-                {loading && <LoadingState count={3} message="Loading educational institutions..." />}
-                {error && <ErrorState message={error} onRetry={loadEducation} />}
-                {!loading && !error && institutions.length === 0 && (
-                    <EmptyState
-                        title="No school records found"
-                        description="School and Anganwadi listings are being verified with the Mandal Educational Officer."
-                    />
-                )}
-                {!loading && !error && institutions.length > 0 && (
-                    <div className="card-grid">
-                        {institutions.map(i => (
-                            <EducationCard key={i.id} institution={i} lang={lang} t={t} />
-                        ))}
-                    </div>
-                )}
+                {/* 2. PM POSHAN School Meal Programme (Standards & AP Menu Reference) */}
+                <div id="sec-meals">
+                    <MidDayMealMenu lang={lang} />
+                </div>
+
+                {/* 3. Anganwadi Services & Nutrition Framework */}
+                <div id="sec-anganwadi">
+                    <AnganwadiNutrition lang={lang} />
+                </div>
+
+                {/* 4. Education Schemes Linkages */}
+                <div id="sec-schemes">
+                    <EducationSchemes lang={lang} />
+                </div>
+
+                {/* 5. Official Education Contacts */}
+                <div id="sec-contacts">
+                    <EducationContacts lang={lang} />
+                </div>
             </div>
         </div>
     );
