@@ -4,7 +4,7 @@ import {
     Search, FileText, Phone, Activity, GraduationCap, 
     Building2, MessageSquare, ArrowRight, ShieldCheck, 
     HeartPulse, Store, Bell, Landmark, QrCode, Copy, Check,
-    Siren, Stethoscope, Sparkles
+    Siren, Stethoscope, Sparkles, ExternalLink
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { villageService } from '../../features/village/api/village';
@@ -131,8 +131,16 @@ export function HomePage() {
         }
     ];
 
-    const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://villagemitra.vercel.app';
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(portalUrl)}`;
+    const LIVE_PORTAL_URL = 'https://villagemitra.vercel.app';
+    const isLocalhost = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.startsWith('192.168.') ||
+        window.location.hostname.startsWith('10.')
+    );
+    // On localhost or local networks, target the live production deployment so phone cameras can connect over cellular data:
+    const portalUrl = isLocalhost ? LIVE_PORTAL_URL : (window.location.origin || LIVE_PORTAL_URL);
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(LIVE_PORTAL_URL)}`;
 
     const handleCopyUrl = () => {
         navigator.clipboard.writeText(portalUrl);
@@ -431,30 +439,51 @@ export function HomePage() {
 
             {/* 7. Mobile QR Code Access */}
             <section className="section-block">
-                <div className="civic-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2rem', padding: '2rem' }}>
-                    <div style={{ maxWidth: '580px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-blue-50)', color: 'var(--color-blue-700)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                <div className="portal-qr-card">
+                    <div className="portal-qr-content">
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--color-blue-50)', color: 'var(--color-blue-700)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.75rem', border: '1px solid var(--color-blue-200)' }}>
                             <QrCode size={14} />
-                            <span>Mobile Phone Access</span>
+                            <span>Mobile Phone Access • Live Cellular Link</span>
                         </div>
                         <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-slate-950)', marginBottom: '0.5rem' }}>
                             Scan to Open on Smartphone
                         </h3>
                         <p style={{ fontSize: '0.9375rem', color: 'var(--color-slate-600)', lineHeight: '1.6', marginBottom: '1.25rem' }}>
-                            Point any mobile camera at this QR code to access the live portal over cellular internet. Ideal for examiner evaluations and field surveying.
+                            Point any mobile camera at this QR code to access the live portal over cellular internet. Ideal for examiner evaluations, field surveying, and citizen onboarding on iOS and Android devices.
                         </p>
                         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <button type="button" onClick={handleCopyUrl} className="btn btn-secondary btn-sm">
+                            <button type="button" onClick={handleCopyUrl} className="btn btn-secondary btn-sm" aria-label="Copy portal URL">
                                 {copiedUrl ? <Check size={14} style={{ color: 'var(--color-emerald-600)' }} /> : <Copy size={14} />}
-                                <span>{copiedUrl ? 'Copied to Clipboard' : 'Copy Portal URL'}</span>
+                                <span>{copiedUrl ? 'Copied to Clipboard' : 'Copy Live Portal URL'}</span>
                             </button>
-                            <span style={{ fontSize: '0.8125rem', color: 'var(--color-slate-500)', fontFamily: 'var(--font-mono)' }}>
-                                {portalUrl}
-                            </span>
+                            <a 
+                                href={portalUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                style={{ 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    gap: '5px', 
+                                    fontSize: '0.8125rem', 
+                                    color: 'var(--color-blue-600)', 
+                                    fontFamily: 'var(--font-mono)',
+                                    fontWeight: 600,
+                                    textDecoration: 'underline'
+                                }}
+                            >
+                                <span>{portalUrl}</span>
+                                <ExternalLink size={13} />
+                            </a>
                         </div>
                     </div>
-                    <div style={{ background: '#ffffff', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
-                        <img src={qrCodeUrl} alt="QR code to open portal" style={{ width: '160px', height: '160px', display: 'block' }} />
+                    <div className="portal-qr-frame">
+                        <img 
+                            src={qrCodeUrl} 
+                            alt="QR code to open live portal on mobile" 
+                            width="140" 
+                            height="140" 
+                        />
+                        <span className="portal-qr-caption">Scan with Camera</span>
                     </div>
                 </div>
             </section>

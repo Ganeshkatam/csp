@@ -505,6 +505,69 @@ textarea.form-control {
     100% { background-position: -200% 0; }
 }
 
+/* Portal Mobile QR Card */
+.portal-qr-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
+    border: 1px solid var(--color-blue-100);
+    border-radius: var(--radius-xl);
+    padding: clamp(1.5rem, 2.5vw, 2.25rem);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.portal-qr-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 680px;
+}
+
+.portal-qr-frame {
+    background: #ffffff;
+    padding: 0.85rem;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--color-blue-200);
+    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+.portal-qr-frame img {
+    width: 150px;
+    height: 150px;
+    display: block;
+    border-radius: var(--radius-sm);
+}
+
+.portal-qr-caption {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-blue-700);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .portal-qr-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .portal-qr-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
 /* Filter Pills */
 .filter-pills-bar {
     display: flex;

@@ -134,8 +134,13 @@ export default function PublicPortalView({
         (b.services && b.services.toLowerCase().includes(query))
     );
 
-    const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://csp-village-portal.web.app';
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(portalUrl)}`;
+    const LIVE_PORTAL_URL = 'https://villagemitra.vercel.app';
+    const isLocalhost = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+    );
+    const portalUrl = isLocalhost ? LIVE_PORTAL_URL : (window.location.origin || LIVE_PORTAL_URL);
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(LIVE_PORTAL_URL)}`;
 
     const handleCopyUrl = () => {
         navigator.clipboard.writeText(portalUrl);
