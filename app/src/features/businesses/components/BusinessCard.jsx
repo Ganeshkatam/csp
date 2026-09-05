@@ -78,7 +78,7 @@ export function BusinessCard({ business, lang, t }) {
 
                 <div className="card-verify-tag">
                     <span>Source: {business.source || 'Local Survey'}</span>
-                    <span>Verified: {business.verified_on || 'Current'}</span>
+                    <span>Status: {business.status === 'published' ? 'Locally Verified' : business.status} ({business.verified_on || 'Current'})</span>
                 </div>
             </div>
         </div>

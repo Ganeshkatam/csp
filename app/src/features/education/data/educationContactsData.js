@@ -51,7 +51,7 @@ export const educationContactsData = {
             titleTe: "ప్రభుత్వ అంగన్‌వాడీ కేంద్రం డెస్క్ (వార్డు 2)",
             role: "Early Childhood Care, Supplementary Nutrition & Maternal Helpdesk",
             roleTe: "పూర్వ ప్రాథమిక విద్య, పోషకాహార పంపిణీ & మాతా శిశు సహాయ కేంద్రం",
-            phone: "9440112233",
+            phone: "08922-246230",
             availability: "9:00 AM - 1:00 PM (Monday to Saturday)",
             availabilityTe: "ఉదయం 9:00 - మధ్యాహ్నం 1:00 (సోమవారం నుండి శనివారం)",
             address: "Near Water Tank, BC Colony, Modavalasa",

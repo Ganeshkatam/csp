@@ -32,7 +32,7 @@ export function HealthcareCard({ facility, lang, t, variant = 'showcase' }) {
                         <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
                             <span className="badge badge-verified" style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(4px)', boxShadow: 'var(--shadow-sm)' }}>
                                 <Activity size={13} style={{ color: 'var(--color-emerald-600)', marginRight: '4px' }} />
-                                {isTe ? "ప్రాథమిక ఆరోగ్య కేంద్రం" : "Primary Health Center"}
+                                {isTe ? "డెంకాడ పిహెచ్‌సి (మోదవలస సేవా కేంద్రం)" : "Serving PHC (Denkada Mandal HQ)"}
                             </span>
                         </div>
                     </div>
@@ -84,7 +84,9 @@ export function HealthcareCard({ facility, lang, t, variant = 'showcase' }) {
                                         <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-slate-500)', textTransform: 'uppercase' }}>
                                             {isTe ? "చిరునామా / ప్రాంతం" : "Location"}
                                         </div>
-                                        <div style={{ fontWeight: 600, color: 'var(--color-slate-900)' }}>{facility.address}</div>
+                                        <div style={{ fontWeight: 600, color: 'var(--color-slate-900)' }}>
+                                            {facility.address} {isTe ? "• డెంకాడ మండల కేంద్రం (మోదవలస నుండి 3.2 కి.మీ.)" : "• 3.2 km at Mandal HQ (Serving Modavalasa)"}
+                                        </div>
                                     </div>
                                 </div>
                             )}
