@@ -67,7 +67,7 @@ $$\text{Percentage} = \left(\frac{\text{Count of responses for value } V \text{ 
 
 ## 6. How to Apply the Schema in Supabase
 
-1. Open your Supabase project: `https://supabase.com/dashboard/project/mjpuyirbwaznnomzifyv`.
+1. Open your Supabase project: `https://supabase.com/dashboard/`.
 2. Navigate to **SQL Editor** in the left sidebar.
 3. Open `database/schema.sql`, copy the complete text, paste it into the editor, and click **Run**.
 4. All 9 tables, indices, RLS policies, analytical view, and the 21 seed survey questions will be created.

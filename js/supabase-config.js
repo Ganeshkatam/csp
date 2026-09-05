@@ -1,12 +1,12 @@
 // ==============================================================================
 // Supabase Configuration
-// Target Project: https://mjpuyirbwaznnomzifyv.supabase.co
+// Target Project: Configured via environment variables
 // ==============================================================================
 
 const SUPABASE_CONFIG = {
-    url: "https://mjpuyirbwaznnomzifyv.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qcHV5aXJid2F6bm5vbXppZnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTQ1MzQsImV4cCI6MjEwMzk5MDUzNH0.0bNQqeKwzPqmFzRlfZmRsCtFjWmbpYYwkH1VREbJpes",
-    defaultVillageId: "00000000-0000-0000-0000-000000000001"
+    url: window.SUPABASE_URL || (window.ENV && window.ENV.SUPABASE_URL) || "",
+    anonKey: window.SUPABASE_ANON_KEY || (window.ENV && window.ENV.SUPABASE_ANON_KEY) || "",
+    defaultVillageId: window.DEFAULT_VILLAGE_ID || (window.ENV && window.ENV.DEFAULT_VILLAGE_ID) || "00000000-0000-0000-0000-000000000001"
 };
 
 // Initialize Supabase Client

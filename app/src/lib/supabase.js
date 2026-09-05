@@ -1,7 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://mjpuyirbwaznnomzifyv.supabase.co';
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qcHV5aXJid2F6bm5vbXppZnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MTQ1MzQsImV4cCI6MjEwMzk5MDUzNH0.0bNQqeKwzPqmFzRlfZmRsCtFjWmbpYYwkH1VREbJpes';
-export const DEFAULT_VILLAGE_ID = import.meta.env.VITE_DEFAULT_VILLAGE_ID || '00000000-0000-0000-0000-000000000001';
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+export const DEFAULT_VILLAGE_ID = import.meta.env.VITE_DEFAULT_VILLAGE_ID || '';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.warn('Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY) are missing. Please configure them in your .env file or hosting provider settings.');
+}
+
+export const supabase = createClient(
+    SUPABASE_URL || 'https://placeholder.supabase.co',
+    SUPABASE_ANON_KEY || 'placeholder'
+);
