@@ -3,12 +3,24 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
     Search, FileText, Phone, Activity, GraduationCap, 
     Building2, MessageSquare, ArrowRight, ShieldCheck, 
-    HeartPulse, Store, Bell, Landmark, QrCode, Copy, Check 
+    HeartPulse, Store, Bell, Landmark, QrCode, Copy, Check,
+    Siren, Stethoscope, Sparkles
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { villageService } from '../../features/village/api/village';
 import { announcementService } from '../../features/announcements/api/announcements';
+import { schemeService } from '../../features/schemes/api/schemes';
+import { contactService } from '../../features/contacts/api/contacts';
+import { healthcareService } from '../../features/healthcare/api/healthcare';
+import { educationService } from '../../features/education/api/education';
+import { businessService } from '../../features/businesses/api/businesses';
 import { AnnouncementCard } from '../../features/announcements/components/AnnouncementCard';
+import { SchemeCard } from '../../features/schemes/components/SchemeCard';
+import { ContactCard } from '../../features/contacts/components/ContactCard';
+import { HealthcareCard } from '../../features/healthcare/components/HealthcareCard';
+import { EducationCard } from '../../features/education/components/EducationCard';
+import { BusinessCard } from '../../features/businesses/components/BusinessCard';
+import { FeedbackForm } from '../../features/feedback/components/FeedbackForm';
 import { VillageSpotlight } from '../../features/village/components/VillageSpotlight';
 import { getLocalized } from '../../i18n';
 
@@ -16,6 +28,11 @@ export function HomePage() {
     const { lang, t } = useAppContext();
     const [village, setVillage] = useState(null);
     const [announcements, setAnnouncements] = useState([]);
+    const [schemes, setSchemes] = useState([]);
+    const [contacts, setContacts] = useState([]);
+    const [healthcare, setHealthcare] = useState([]);
+    const [education, setEducation] = useState([]);
+    const [businesses, setBusinesses] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [copiedUrl, setCopiedUrl] = useState(false);
     const navigate = useNavigate();
@@ -26,6 +43,21 @@ export function HomePage() {
         });
         announcementService.getAnnouncements().then(data => {
             if (data) setAnnouncements(data.slice(0, 3));
+        });
+        schemeService.getAllSchemes().then(data => {
+            if (data) setSchemes(data.slice(0, 4));
+        });
+        contactService.getContacts().then(data => {
+            if (data) setContacts(data.slice(0, 4));
+        });
+        healthcareService.getHealthcareFacilities().then(data => {
+            if (data) setHealthcare(data.slice(0, 2));
+        });
+        educationService.getEducationInstitutions().then(data => {
+            if (data) setEducation(data.slice(0, 2));
+        });
+        businessService.getBusinesses().then(data => {
+            if (data) setBusinesses(data.slice(0, 4));
         });
     }, []);
 
@@ -210,7 +242,7 @@ export function HomePage() {
                 </div>
             </section>
 
-            {/* Recent Announcements Highlight */}
+            {/* 1. Recent Announcements Highlight */}
             {announcements.length > 0 && (
                 <section className="section-block">
                     <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
@@ -233,7 +265,127 @@ export function HomePage() {
                 </section>
             )}
 
-            {/* Mobile QR Code Access */}
+            {/* 2. Popular Welfare Schemes Section */}
+            {schemes.length > 0 && (
+                <section className="section-block">
+                    <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Direct Benefit Transfers</span>
+                            <h2 className="section-title">Government Welfare Schemes</h2>
+                            <p className="section-desc">Verified entitlement schemes with eligibility guidelines, document checklists, and direct official portals.</p>
+                        </div>
+                        <Link to="/schemes" className="btn btn-secondary btn-sm">
+                            <span>View All Schemes</span>
+                            <ArrowRight size={14} />
+                        </Link>
+                    </div>
+
+                    <div className="card-grid">
+                        {schemes.map(s => (
+                            <SchemeCard key={s.id} scheme={s} lang={lang} t={t} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* 3. Emergency & Administrative Contacts Section */}
+            {contacts.length > 0 && (
+                <section className="section-block">
+                    <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <span className="badge badge-alert" style={{ marginBottom: '6px' }}>Emergency &amp; Administration</span>
+                            <h2 className="section-title">Verified Village Contacts</h2>
+                            <p className="section-desc">Direct verified phone numbers for Panchayat Administration, Revenue, Police, and 24x7 Helplines.</p>
+                        </div>
+                        <Link to="/contacts" className="btn btn-secondary btn-sm">
+                            <span>View Full Directory</span>
+                            <ArrowRight size={14} />
+                        </Link>
+                    </div>
+
+                    <div className="card-grid">
+                        {contacts.map(c => (
+                            <ContactCard key={c.id} contact={c} lang={lang} t={t} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* 4. Public Institutions (Healthcare & Education) */}
+            {(healthcare.length > 0 || education.length > 0) && (
+                <section className="section-block">
+                    <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <span className="badge badge-verified" style={{ marginBottom: '6px' }}>Public Facilities</span>
+                            <h2 className="section-title">Primary Healthcare &amp; Public Schools</h2>
+                            <p className="section-desc">Operating hours, doctor OPD schedules, and school facilities serving Modavalasa village.</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <Link to="/healthcare" className="btn btn-secondary btn-sm">
+                                <span>All Healthcare</span>
+                                <ArrowRight size={14} />
+                            </Link>
+                            <Link to="/education" className="btn btn-secondary btn-sm">
+                                <span>All Schools</span>
+                                <ArrowRight size={14} />
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="card-grid">
+                        {healthcare.map(f => (
+                            <HealthcareCard key={f.id} facility={f} lang={lang} t={t} />
+                        ))}
+                        {education.map(inst => (
+                            <EducationCard key={inst.id} institution={inst} lang={lang} t={t} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* 5. Local Artisans & Businesses Section */}
+            {businesses.length > 0 && (
+                <section className="section-block">
+                    <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                            <span className="badge badge-warning" style={{ marginBottom: '6px' }}>Rural Economy</span>
+                            <h2 className="section-title">Local Artisans &amp; Businesses</h2>
+                            <p className="section-desc">Handloom weavers, dairy centers, electrical rewinding services, and women's self-help groups.</p>
+                        </div>
+                        <Link to="/businesses" className="btn btn-secondary btn-sm">
+                            <span>View All Artisans &amp; Shops</span>
+                            <ArrowRight size={14} />
+                        </Link>
+                    </div>
+
+                    <div className="card-grid">
+                        {businesses.map(b => (
+                            <BusinessCard key={b.id} business={b} lang={lang} t={t} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* 6. Citizen Feedback & Grievance Desk Section */}
+            <section className="section-block">
+                <div className="section-head" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                        <span className="badge badge-civic" style={{ marginBottom: '6px' }}>Citizen Engagement</span>
+                        <h2 className="section-title">Citizen Feedback &amp; Grievance Desk</h2>
+                        <p className="section-desc">Report outdated contact numbers, request new welfare listings, or submit village grievances directly to the CSP research team.</p>
+                    </div>
+                    <Link to="/feedback" className="btn btn-secondary btn-sm">
+                        <span>Dedicated Feedback Page</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                </div>
+
+                <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+                    <FeedbackForm villageId={village?.id} t={t} />
+                </div>
+            </section>
+
+            {/* 7. Mobile QR Code Access */}
             <section className="section-block">
                 <div className="civic-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2rem', padding: '2rem' }}>
                     <div style={{ maxWidth: '580px' }}>
