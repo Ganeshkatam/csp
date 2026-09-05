@@ -1326,10 +1326,12 @@ textarea.form-control {
 }
 
 .hero-illustration-frame {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl, 16px);
     overflow: hidden;
-    border: 1px solid var(--color-border);
-    background: var(--color-slate-50);
+    border: 1px solid var(--color-slate-200);
+    background: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hero-illustration-img {
@@ -1337,19 +1339,84 @@ textarea.form-control {
     height: auto;
     display: block;
     object-fit: cover;
-    max-height: clamp(320px, 24vw, 420px);
+    max-height: clamp(300px, 22vw, 380px);
 }
 
 .hero-illustration-caption {
     padding: 0.75rem 1rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-slate-600);
-    background: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    border-top: 1px solid var(--color-border);
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-top: 1px solid var(--color-slate-200);
+}
+
+.hero-caption-left {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+}
+
+.hero-caption-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #059669;
+    flex-shrink: 0;
+}
+
+.hero-caption-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.hero-caption-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-slate-900);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hero-caption-sub {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-slate-500);
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.hero-caption-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #065f46;
+    flex-shrink: 0;
+}
+
+.hero-caption-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
 /* Search Bar */

@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
     Search, FileText, Phone, Activity, GraduationCap,
     Building2, MessageSquare, ArrowRight, ShieldCheck,
-    HeartPulse, Store, Siren, Calendar, CheckCircle2,
-    Landmark, MapPin, Droplets, Zap
+    HeartPulse, Store, Calendar, CheckCircle2,
+    Landmark
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { villageService } from '../../features/village/api/village';
@@ -14,7 +14,6 @@ import { contactService } from '../../features/contacts/api/contacts';
 import { healthcareService } from '../../features/healthcare/api/healthcare';
 import { educationService } from '../../features/education/api/education';
 import { businessService } from '../../features/businesses/api/businesses';
-import { AnnouncementCard } from '../../features/announcements/components/AnnouncementCard';
 import { SchemeCard } from '../../features/schemes/components/SchemeCard';
 import { ContactCard } from '../../features/contacts/components/ContactCard';
 import { HealthcareCard } from '../../features/healthcare/components/HealthcareCard';
@@ -25,6 +24,7 @@ import { createTelLink } from '../../utils/phone';
 
 export function HomePage() {
     const { lang, t } = useAppContext();
+    const isTe = lang === 'te';
     const [pageData, setPageData] = useState({
         village: null,
         announcements: [],
@@ -78,13 +78,6 @@ export function HomePage() {
             navigate(`/schemes?q=${encodeURIComponent(searchQuery.trim())}`);
         }
     };
-
-    const emergencyPills = [
-        { code: '108', label: '108 Ambulance (24x7)', class: 'pill-ambulance' },
-        { code: '100', label: '100 Police Control', class: 'pill-police' },
-        { code: '104', label: '104 Health Helpline', class: 'pill-health' },
-        { code: '1912', label: '1912 Power Breakdown', class: 'pill-electricity' }
-    ];
 
     const hubs = [
         {
@@ -147,30 +140,7 @@ export function HomePage() {
 
     return (
         <div className="container">
-            {/* 1. Quick Emergency Helpline Access Strip */}
-            <div className="emergency-strip-banner">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Siren size={18} style={{ color: 'var(--color-red-600)' }} />
-                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-slate-900)' }}>
-                        24x7 Statutory Helplines (Toll-Free):
-                    </span>
-                </div>
-                <div className="emergency-strip-pills">
-                    {emergencyPills.map(item => (
-                        <a
-                            key={item.code}
-                            href={createTelLink(item.code)}
-                            className={`emergency-pill-btn ${item.class}`}
-                            title={`Call ${item.label}`}
-                        >
-                            <Phone size={13} />
-                            <span>{item.label}</span>
-                        </a>
-                    ))}
-                </div>
-            </div>
-
-            {/* 2. Civic Hero */}
+            {/* Civic Hero */}
             <section className="civic-hero modern-split-hero">
                 <div className="hero-grid-layout">
                     <div className="hero-content-col">
@@ -236,8 +206,23 @@ export function HomePage() {
                                 className="hero-illustration-img"
                             />
                             <div className="hero-illustration-caption">
-                                <ShieldCheck size={16} style={{ color: 'var(--color-emerald-600)' }} />
-                                <span>Authoritative Rural Information Gateway</span>
+                                <div className="hero-caption-left">
+                                    <div className="hero-caption-icon">
+                                        <ShieldCheck size={17} />
+                                    </div>
+                                    <div className="hero-caption-text">
+                                        <span className="hero-caption-title">
+                                            {isTe ? "అధికారిక గ్రామీణ సమాచార వేదిక" : "Authoritative Rural Information Gateway"}
+                                        </span>
+                                        <span className="hero-caption-sub">
+                                            {isTe ? "మోదవలస గ్రామ సచివాలయం • డెంకాడ" : "Modavalasa Gram Panchayat • Denkada"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="hero-caption-tag">
+                                    <span className="hero-caption-dot" aria-hidden="true"></span>
+                                    <span>{isTe ? "ధృవీకరించబడింది" : "Verified"}</span>
+                                </span>
                             </div>
                         </div>
                     </div>
