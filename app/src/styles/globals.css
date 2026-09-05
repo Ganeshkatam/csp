@@ -65,14 +65,14 @@ button {
     font-family: inherit;
 }
 
-/* Container */
+/* Container — Fluid Full Viewport */
 .container {
     width: 100%;
-    max-width: var(--container-max-width);
+    max-width: var(--container-max-width, 100%);
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    padding-left: var(--container-padding-x, clamp(1.25rem, 2.5vw, 3rem));
+    padding-right: var(--container-padding-x, clamp(1.25rem, 2.5vw, 3rem));
 }
 
 @media (max-width: 640px) {
@@ -398,7 +398,7 @@ textarea.form-control {
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 @media (max-width: 640px) {
@@ -978,12 +978,12 @@ textarea.form-control {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: clamp(1.5rem, 2.5vw, 3rem);
     margin-bottom: 2.5rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
     .footer-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -1035,14 +1035,8 @@ textarea.form-control {
 /* Bento Service Grid */
 .bento-service-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-}
-
-@media (max-width: 900px) {
-    .bento-service-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.35rem;
 }
 
 @media (max-width: 600px) {
@@ -1114,7 +1108,7 @@ textarea.form-control {
     background: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
-    padding: 2.5rem;
+    padding: clamp(1.5rem, 2.5vw, 2.75rem);
     box-shadow: var(--shadow-sm);
     margin-top: 1.5rem;
     margin-bottom: 2.25rem;
@@ -1122,18 +1116,18 @@ textarea.form-control {
 
 @media (max-width: 640px) {
     .civic-hero {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 }
 
 .hero-grid-layout {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 2.5rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
     align-items: center;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
     .hero-grid-layout {
         grid-template-columns: 1fr;
     }
@@ -1191,7 +1185,7 @@ textarea.form-control {
     height: auto;
     display: block;
     object-fit: cover;
-    max-height: 320px;
+    max-height: clamp(320px, 24vw, 420px);
 }
 
 .hero-illustration-caption {
@@ -1491,3 +1485,36 @@ textarea.form-control {
     from { transform: translateX(100%); }
     to { transform: translateX(0); }
 }
+
+/* Detail Page Two-Column Grid */
+.detail-page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2.2fr) minmax(300px, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 960px) {
+    .detail-page-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Survey Form Container Full Viewport */
+.survey-form-container {
+    width: 100%;
+    max-width: var(--container-max-width, 100%);
+    margin: 0 auto;
+    padding: 2rem var(--container-padding-x, clamp(1rem, 2.5vw, 2.5rem)) 4rem;
+}
+
+.survey-form-card {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    box-shadow: var(--shadow-sm);
+    max-width: 1280px;
+    margin: 0 auto;
+}
+

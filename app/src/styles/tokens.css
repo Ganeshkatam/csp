@@ -90,7 +90,8 @@
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 
     /* Layout Spacing Tokens */
-    --container-max-width: 1240px;
+    --container-max-width: 100%;
+    --container-padding-x: clamp(1.25rem, 2.5vw, 3rem);
     --header-height: 72px;
     --utility-bar-height: 38px;
     --bottom-nav-height: 64px;

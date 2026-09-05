@@ -124,7 +124,7 @@ export function HomePage() {
                         </p>
 
                         {/* Global Search Bar */}
-                        <form onSubmit={handleSearchSubmit} className="search-bar-box" style={{ maxWidth: '580px', marginBottom: '1.25rem' }}>
+                        <form onSubmit={handleSearchSubmit} className="search-bar-box" style={{ maxWidth: '680px', marginBottom: '1.25rem' }}>
                             <Search size={18} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
                             <input
                                 type="text"

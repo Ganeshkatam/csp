@@ -135,7 +135,7 @@ export function SchemeDetailsPage() {
 
             {/* Information-First Record Body */}
             <div className="container" style={{ padding: '2rem 0 3.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', alignItems: 'start' }}>
+                <div className="detail-page-grid">
                     {/* Main Civic Column */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                         
