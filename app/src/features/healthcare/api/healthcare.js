@@ -42,8 +42,41 @@ export const healthcareService = {
             .from('announcements')
             .select('*')
             .eq('status', 'published')
-            .eq('category', 'Healthcare')
+            .in('category', ['Health Camp', 'Health Advisory', 'Healthcare'])
             .order('event_date', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getClinicalSchedules() {
+        const { data, error } = await supabase
+            .from('clinical_schedules')
+            .select('*')
+            .eq('status', 'published')
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getImmunizationSchedules() {
+        const { data, error } = await supabase
+            .from('immunization_schedules')
+            .select('*')
+            .eq('status', 'published')
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getDiagnosticServices() {
+        const { data, error } = await supabase
+            .from('diagnostic_services')
+            .select('*')
+            .eq('status', 'published')
+            .order('display_order', { ascending: true });
 
         if (error) throw error;
         return data || [];

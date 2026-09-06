@@ -511,3 +511,128 @@ VALUES
     ('PRIO1', 'Citizen Priorities', 'Top Priority Category for Village Information Portal', 'single_choice', 
      '[{"value": "Emergency-Contacts", "label": "Emergency & Official Contacts"}, {"value": "Government-Schemes", "label": "Government Schemes & Document Checklists"}, {"value": "Healthcare-PHC", "label": "PHC Doctor Timings & Healthcare Services"}, {"value": "Education-Schools", "label": "School & Anganwadi Information"}, {"value": "Local-Business-Directory", "label": "Local Business & Artisan Directory"}, {"value": "Panchayat-Announcements", "label": "Panchayat Public Notices"}]'::jsonb, true, 21)
 ON CONFLICT (question_code) DO NOTHING;
+
+-- ==============================================================================
+-- 11. CLINICAL SCHEDULES (Doctor OPD Duty Roster & Consultation)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS clinical_schedules (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    village_id UUID NOT NULL REFERENCES villages(id) ON DELETE CASCADE,
+    facility_name TEXT NOT NULL,
+    doctor_role TEXT NOT NULL,
+    doctor_role_te TEXT,
+    doctor_name TEXT,
+    days_active TEXT NOT NULL,
+    days_active_te TEXT,
+    timings TEXT NOT NULL,
+    timings_te TEXT,
+    room_or_desk TEXT NOT NULL,
+    room_or_desk_te TEXT,
+    services_offered TEXT,
+    services_offered_te TEXT,
+    source TEXT NOT NULL DEFAULT 'Denkada PHC Duty Roster / DMHO Vizianagaram',
+    verified_on DATE NOT NULL DEFAULT CURRENT_DATE,
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'verified', 'published')),
+    display_order INT DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_clinical_schedules_village_status ON clinical_schedules(village_id, status);
+
+-- ==============================================================================
+-- 12. IMMUNIZATION SCHEDULES (Vaccination Drives, Maternal & Child Immunizations)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS immunization_schedules (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    village_id UUID NOT NULL REFERENCES villages(id) ON DELETE CASCADE,
+    session_name TEXT NOT NULL,
+    session_name_te TEXT,
+    frequency_or_date TEXT NOT NULL,
+    frequency_or_date_te TEXT,
+    timings TEXT NOT NULL,
+    timings_te TEXT,
+    venue TEXT NOT NULL,
+    venue_te TEXT,
+    target_cohort TEXT NOT NULL,
+    target_cohort_te TEXT,
+    vaccines_administered TEXT NOT NULL,
+    supervising_worker TEXT NOT NULL,
+    supervising_worker_te TEXT,
+    source TEXT NOT NULL DEFAULT 'WDCW & DMHO Vizianagaram Universal Immunization Program',
+    verified_on DATE NOT NULL DEFAULT CURRENT_DATE,
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'verified', 'published')),
+    display_order INT DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_immunization_schedules_village_status ON immunization_schedules(village_id, status);
+
+-- ==============================================================================
+-- 13. DIAGNOSTIC SERVICES (Laboratory Test Availability & NHM Diagnostics)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS diagnostic_services (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    village_id UUID NOT NULL REFERENCES villages(id) ON DELETE CASCADE,
+    test_name TEXT NOT NULL,
+    test_name_te TEXT,
+    category TEXT NOT NULL,
+    category_te TEXT,
+    sample_type TEXT NOT NULL,
+    sample_type_te TEXT,
+    turnaround_time TEXT NOT NULL,
+    turnaround_time_te TEXT,
+    availability TEXT NOT NULL DEFAULT 'Available Daily',
+    availability_te TEXT,
+    fee TEXT NOT NULL DEFAULT 'Free (Government NHM / AP Health)',
+    fee_te TEXT DEFAULT 'ఉచితం (ప్రభుత్వ ఆరోగ్య సేవ)',
+    prerequisites TEXT,
+    prerequisites_te TEXT,
+    source TEXT NOT NULL DEFAULT 'Denkada PHC Clinical Laboratory Guidelines',
+    verified_on DATE NOT NULL DEFAULT CURRENT_DATE,
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'verified', 'published')),
+    display_order INT DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_diagnostic_services_village_status ON diagnostic_services(village_id, status);
+
+-- Enable RLS
+ALTER TABLE clinical_schedules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE immunization_schedules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE diagnostic_services ENABLE ROW LEVEL SECURITY;
+
+-- Public Read Policies
+DROP POLICY IF EXISTS "Public read published clinical schedules" ON clinical_schedules;
+CREATE POLICY "Public read published clinical schedules" ON clinical_schedules
+    FOR SELECT TO anon, authenticated
+    USING (status = 'published');
+
+DROP POLICY IF EXISTS "Public read published immunization schedules" ON immunization_schedules;
+CREATE POLICY "Public read published immunization schedules" ON immunization_schedules
+    FOR SELECT TO anon, authenticated
+    USING (status = 'published');
+
+DROP POLICY IF EXISTS "Public read published diagnostic services" ON diagnostic_services;
+CREATE POLICY "Public read published diagnostic services" ON diagnostic_services
+    FOR SELECT TO anon, authenticated
+    USING (status = 'published');
+
+-- Admin Manage Policies
+DROP POLICY IF EXISTS "Admin manage clinical schedules" ON clinical_schedules;
+CREATE POLICY "Admin manage clinical schedules" ON clinical_schedules
+    FOR ALL TO authenticated
+    USING (is_admin());
+
+DROP POLICY IF EXISTS "Admin manage immunization schedules" ON immunization_schedules;
+CREATE POLICY "Admin manage immunization schedules" ON immunization_schedules
+    FOR ALL TO authenticated
+    USING (is_admin());
+
+DROP POLICY IF EXISTS "Admin manage diagnostic services" ON diagnostic_services;
+CREATE POLICY "Admin manage diagnostic services" ON diagnostic_services
+    FOR ALL TO authenticated
+    USING (is_admin());
+

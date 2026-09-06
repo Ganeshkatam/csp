@@ -4,3 +4,7 @@ export { EmergencyBanner } from './components/EmergencyBanner';
 export { FacilityDirectory } from './components/FacilityDirectory';
 export { HealthcareContacts } from './components/HealthcareContacts';
 export { HealthcareSchemes } from './components/HealthcareSchemes';
+export { ClinicalSchedule } from './components/ClinicalSchedule';
+export { ImmunizationSchedule } from './components/ImmunizationSchedule';
+export { DiagnosticServices } from './components/DiagnosticServices';
+export { EmergencyGuidance } from './components/EmergencyGuidance';
