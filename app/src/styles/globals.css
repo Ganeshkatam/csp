@@ -2740,6 +2740,56 @@ textarea.form-control {
         border-color: var(--color-indigo-300);
     }
 
+    /* Healthcare Card and Badge Unified Styles */
+    .healthcare-card {
+        background: #ffffff;
+        border: 1px solid var(--color-slate-200);
+        border-radius: var(--radius-lg, 12px);
+        padding: 1.35rem;
+        box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .healthcare-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+        border-color: var(--color-slate-300);
+    }
+
+    .healthcare-badge {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--radius-full, 9999px);
+        letter-spacing: 0.02em;
+        background: var(--color-slate-100);
+        color: var(--color-slate-700);
+        border: 1px solid var(--color-slate-200);
+    }
+
+    .healthcare-badge-blue {
+        background: var(--color-blue-50);
+        color: var(--color-blue-800);
+        border-color: var(--color-blue-200);
+    }
+
+    .healthcare-badge-green {
+        background: var(--color-emerald-50);
+        color: var(--color-emerald-800);
+        border-color: var(--color-emerald-200);
+    }
+
+    .healthcare-badge-red {
+        background: var(--color-red-50);
+        color: var(--color-red-800);
+        border-color: var(--color-red-200);
+    }
+
     /* Media queries for health layout */
     @media (max-width: 1024px) {
         .health-hero-stats {
