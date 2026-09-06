@@ -2807,6 +2807,284 @@ textarea.form-control {
         }
     }
 
+    /* ==============================================================================
+       Modavalasa Village Overview Component & Four Evidence Pillars
+       Strict Provenance Segmentation | Responsive Grid | Accessible Contrast
+       ============================================================================== */
+
+    .village-overview-block {
+        margin-top: 2rem;
+        margin-bottom: 2.25rem;
+    }
+
+    .village-glance-card {
+        background: #ffffff;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        padding: clamp(1.25rem, 2.2vw, 2rem);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.25rem;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .village-glance-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .village-glance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .village-glance-title-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .village-glance-title {
+        font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+        font-weight: 800;
+        color: var(--color-slate-950);
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .village-glance-sub {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-slate-600);
+    }
+
+    .village-glance-desc {
+        font-size: 0.95rem;
+        line-height: 1.65;
+        color: var(--color-slate-700);
+        margin-bottom: 1.25rem;
+    }
+
+    .village-glance-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .village-glance-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--color-slate-50);
+        border: 1px solid var(--color-slate-200);
+        padding: 0.4rem 0.75rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8125rem;
+        color: var(--color-slate-800);
+    }
+
+    .village-glance-pill-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--color-slate-500);
+        letter-spacing: 0.03em;
+    }
+
+    .village-glance-pill-val {
+        font-weight: 700;
+        color: var(--color-slate-900);
+    }
+
+    /* 4 Pillars Grid */
+    .village-pillars-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .village-pillar-card {
+        background: #ffffff;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 1.35rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .village-pillar-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--color-slate-300);
+    }
+
+    .village-pillar-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.45rem;
+        margin-bottom: 0.85rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--color-slate-100);
+    }
+
+    .village-pillar-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .village-pillar-icon-box {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .village-pillar-icon-blue {
+        background: var(--color-blue-50);
+        color: var(--color-blue-600);
+        border: 1px solid var(--color-blue-100);
+    }
+
+    .village-pillar-icon-amber {
+        background: var(--color-amber-50);
+        color: var(--color-amber-700);
+        border: 1px solid var(--color-amber-100);
+    }
+
+    .village-pillar-icon-emerald {
+        background: var(--color-emerald-50);
+        color: var(--color-emerald-600);
+        border: 1px solid var(--color-emerald-100);
+    }
+
+    .village-pillar-icon-indigo {
+        background: var(--color-indigo-50);
+        color: var(--color-indigo-600);
+        border: 1px solid var(--color-indigo-100);
+    }
+
+    .village-pillar-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--color-slate-900);
+        margin: 0;
+    }
+
+    .village-pillar-evidence-tag {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .evidence-tag-census {
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+
+    .evidence-tag-admin {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+    }
+
+    .evidence-tag-survey {
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    .evidence-tag-institution {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .evidence-tag-observation {
+        background: #eef2ff;
+        color: #3730a3;
+        border: 1px solid #c7d2fe;
+    }
+
+    .village-pillar-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        font-size: 0.85rem;
+        color: var(--color-slate-700);
+        line-height: 1.55;
+    }
+
+    .village-pillar-bullet {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .village-pillar-bullet-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--color-slate-400);
+        margin-top: 0.45rem;
+        flex-shrink: 0;
+    }
+
+    /* Provenance Bar & CTAs */
+    .village-provenance-bar {
+        background: var(--color-slate-50);
+        border: 1px solid var(--color-slate-200);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        font-size: 0.775rem;
+        color: var(--color-slate-600);
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+    }
+
+    .village-overview-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    @media (max-width: 640px) {
+        .village-pillars-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .village-glance-header {
+            flex-direction: column;
+        }
+
+        .village-overview-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .village-overview-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
     /* Print Styles */
     @media print {
 

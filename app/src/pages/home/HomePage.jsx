@@ -7,7 +7,13 @@ import {
     Landmark, X
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
-import { villageService } from '../../features/village/api/village';
+import {
+    villageService,
+    CENSUS_2011_BASELINE,
+    ADMINISTRATIVE_JURISDICTION,
+    LIVELIHOOD_PROFILE,
+    PROVENANCE_DISCLAIMER
+} from '../../features/village';
 import { announcementService } from '../../features/announcements/api/announcements';
 import { schemeService } from '../../features/schemes/api/schemes';
 import { contactService } from '../../features/contacts/api/contacts';
@@ -239,6 +245,222 @@ export function HomePage() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* 2. Modavalasa Village Overview (Provenance-Gated Habitation Profile) */}
+            <section className="village-overview-block" aria-label="Modavalasa Habitation Overview">
+                {/* Lead Card: Modavalasa at a Glance */}
+                <div className="village-glance-card">
+                    <div className="village-glance-header">
+                        <div className="village-glance-title-wrap">
+                            <span className="badge badge-civic" style={{ alignSelf: 'flex-start', marginBottom: '4px' }}>
+                                <Landmark size={13} style={{ marginRight: '4px' }} />
+                                {t?.villageOverviewBadge || 'Habitation Profile & Civic Overview'}
+                            </span>
+                            <h2 className="village-glance-title">
+                                {t?.villageOverviewTitle || 'About Modavalasa Habitation'}
+                            </h2>
+                            <div className="village-glance-sub">
+                                {t?.villageOverviewSub || 'Denkada Mandal • Vizianagaram District • Andhra Pradesh'}
+                            </div>
+                        </div>
+                        <span className="village-pillar-evidence-tag evidence-tag-census">
+                            {isTe ? "సెన్సస్ 2011 గ్రామ కోడ్: 583218" : "Census 2011 Village Code: 583218"}
+                        </span>
+                    </div>
+
+                    <p className="village-glance-desc">
+                        {t?.villageLeadNarrative || (isTe ? LIVELIHOOD_PROFILE.summaryTe : LIVELIHOOD_PROFILE.summaryEn)}
+                    </p>
+
+                    {/* Quick Baseline Metadata Pills */}
+                    <div className="village-glance-pills">
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "గ్రామ పంచాయతీ" : "Panchayat"}:</span>
+                            <span className="village-glance-pill-val">{isTe ? ADMINISTRATIVE_JURISDICTION.gramPanchayatTe : ADMINISTRATIVE_JURISDICTION.gramPanchayat}</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "మండలం" : "Mandal"}:</span>
+                            <span className="village-glance-pill-val">{isTe ? ADMINISTRATIVE_JURISDICTION.mandalTe : ADMINISTRATIVE_JURISDICTION.mandal}</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "జిల్లా" : "District"}:</span>
+                            <span className="village-glance-pill-val">{isTe ? ADMINISTRATIVE_JURISDICTION.districtTe : ADMINISTRATIVE_JURISDICTION.district}</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "జనాభా" : "Population"}:</span>
+                            <span className="village-glance-pill-val">{CENSUS_2011_BASELINE.population.toLocaleString()}</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "గృహాలు" : "Households"}:</span>
+                            <span className="village-glance-pill-val">{CENSUS_2011_BASELINE.households}</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "వైశాల్యం" : "Area"}:</span>
+                            <span className="village-glance-pill-val">{CENSUS_2011_BASELINE.areaHectares} Ha</span>
+                        </div>
+                        <div className="village-glance-pill">
+                            <span className="village-glance-pill-label">{isTe ? "పిన్ కోడ్" : "PIN"}:</span>
+                            <span className="village-glance-pill-val" style={{ fontFamily: 'var(--font-mono)' }}>{CENSUS_2011_BASELINE.pin}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4 Concise Evidence-Labeled Pillars Grid */}
+                <div className="village-pillars-grid">
+                    {/* Pillar 1: Administrative Jurisdiction */}
+                    <div className="village-pillar-card">
+                        <div>
+                            <div className="village-pillar-header">
+                                <div className="village-pillar-title-wrap">
+                                    <div className="village-pillar-icon-box village-pillar-icon-blue">
+                                        <Landmark size={18} />
+                                    </div>
+                                    <h3 className="village-pillar-title">
+                                        {t?.pillarAdminTitle || 'Administrative Jurisdiction'}
+                                    </h3>
+                                </div>
+                                <span className="village-pillar-evidence-tag evidence-tag-admin">
+                                    {t?.evidenceAdmin || 'Official Admin Record'}
+                                </span>
+                            </div>
+                            <div className="village-pillar-content">
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "గ్రామ పంచాయతీ: మోదవలస, డెంకాడ మండలం, విజయనగరం జిల్లా" : "Modavalasa Gram Panchayat under Denkada Mandal, Vizianagaram District"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "స్థానిక పాలన: మోదవలస గ్రామ సచివాలయ పౌర సేవా కేంద్రం" : "Local Governance: Modavalasa Grama Sachivalayam citizen services"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "శాసనసభ నియోజకవర్గం: నెల్లిమర్ల (136) | లోక్‌సభ: విజయనగరం" : "Assembly: Nellimarla (136) | Parliamentary: Vizianagaram"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pillar 2: Livelihood & Economy */}
+                    <div className="village-pillar-card">
+                        <div>
+                            <div className="village-pillar-header">
+                                <div className="village-pillar-title-wrap">
+                                    <div className="village-pillar-icon-box village-pillar-icon-amber">
+                                        <Store size={18} />
+                                    </div>
+                                    <h3 className="village-pillar-title">
+                                        {t?.pillarLivelihoodTitle || 'Livelihood & Economy'}
+                                    </h3>
+                                </div>
+                                <span className="village-pillar-evidence-tag evidence-tag-survey">
+                                    {t?.evidenceSurvey || 'Community Survey Finding'}
+                                </span>
+                            </div>
+                            <div className="village-pillar-content">
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "వ్యవసాయ రంగం: వరి, పప్పుధాన్యాలు మరియు వాణిజ్య పంటల సాగు" : "Agrarian base: Primary cultivation of paddy, pulses, and commercial crops"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "చేనేత క్లస్టర్లు: బీసీ కాలనీలోని సాంప్రదాయ చేనేత మగ్గాలు మరియు మహిళా సంఘాలు" : "Handloom clusters: Traditional weaver looms and women's self-help groups (BC Colony)"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "గ్రామీణ వ్యాపారాలు: పాడి కేంద్రాలు, మోటార్ రీవైండింగ్, పంప్ రిపేర్లు మరియు స్థానిక దుకాణాలు" : "Rural services: Dairy units, electrical pump repairs, and local provision stores"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pillar 3: Public Healthcare & Education */}
+                    <div className="village-pillar-card">
+                        <div>
+                            <div className="village-pillar-header">
+                                <div className="village-pillar-title-wrap">
+                                    <div className="village-pillar-icon-box village-pillar-icon-emerald">
+                                        <HeartPulse size={18} />
+                                    </div>
+                                    <h3 className="village-pillar-title">
+                                        {t?.pillarInstitutionsTitle || 'Healthcare & Education'}
+                                    </h3>
+                                </div>
+                                <span className="village-pillar-evidence-tag evidence-tag-institution">
+                                    {t?.evidenceInstitution || 'Verified Local Institution'}
+                                </span>
+                            </div>
+                            <div className="village-pillar-content">
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "ఆరోగ్య కేంద్రం: డెంకాడ ప్రాథమిక ఆరోగ్య కేంద్రం (PHC) ద్వారా ఓపీడీ మరియు వైద్య సేవలు" : "Primary healthcare anchored by Denkada Primary Health Centre (PHC)"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "గ్రామ ఆరోగ్య సేవలు: ఏఎన్ఎం, ఆశా కార్యకర్తల ద్వారా క్రమబద్ధమైన టీకాలు మరియు స్క్రీనింగ్" : "Village outreach: Scheduled immunization and NCD health screenings by ANM & ASHA"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "పాఠశాల విద్య: మధ్యాహ్న భోజనంతో ఎంపీపీఎస్ మోదవలస ప్రాథమిక పాఠశాల & అంగన్‌వాడీ" : "Education: MPPS Modavalasa Primary School with mid-day meals and Anganwadi"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pillar 4: Utilities & Infrastructure */}
+                    <div className="village-pillar-card">
+                        <div>
+                            <div className="village-pillar-header">
+                                <div className="village-pillar-title-wrap">
+                                    <div className="village-pillar-icon-box village-pillar-icon-indigo">
+                                        <Building2 size={18} />
+                                    </div>
+                                    <h3 className="village-pillar-title">
+                                        {t?.pillarUtilitiesTitle || 'Utilities & Infrastructure'}
+                                    </h3>
+                                </div>
+                                <span className="village-pillar-evidence-tag evidence-tag-observation">
+                                    {t?.evidenceObservation || 'CSP Survey Observation'}
+                                </span>
+                            </div>
+                            <div className="village-pillar-content">
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "తాగునీరు: ఆర్వో శుద్ధి ప్లాంట్ మరియు ఓవర్‌హెడ్ రిజర్వాయర్ సౌకర్యం (సర్వేలో పరిశీలించబడింది)" : "Drinking water: Functional RO purification plant and overhead reservoir observed"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "విద్యుత్ సరఫరా: గృహ విద్యుత్ సరఫరా మరియు వ్యవసాయ బోరుబావులకు షెడ్యూల్డ్ రోస్టర్" : "Grid electricity: Domestic supply grid with scheduled roster for agricultural borewells"}</span>
+                                </div>
+                                <div className="village-pillar-bullet">
+                                    <span className="village-pillar-bullet-dot"></span>
+                                    <span>{isTe ? "రవాణా మార్గాలు: నివాస వీధులలో అంతర్గత సిమెంట్ రోడ్లు; డెంకాడ, విజయనగరంకు పక్కా రోడ్డు" : "Connectivity: Internal CC paved residential lanes; all-weather road to Denkada & Vizianagaram"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Provenance Line */}
+                <div className="village-provenance-bar">
+                    <span>{isTe ? PROVENANCE_DISCLAIMER.te : PROVENANCE_DISCLAIMER.en}</span>
+                </div>
+
+                {/* CTA Navigation Buttons */}
+                <div className="village-overview-actions">
+                    <Link to="/village" className="btn btn-secondary btn-sm" style={{ fontWeight: 700 }}>
+                        <span>{t?.viewVillageProfile || 'Explore Village Profile'}</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                    <Link to="/contacts" className="btn btn-secondary btn-sm" style={{ fontWeight: 600 }}>
+                        <span>{t?.viewCivicContacts || 'View Civic Contacts'}</span>
+                        <ArrowRight size={14} />
+                    </Link>
+                    <Link to="/healthcare" className="btn btn-secondary btn-sm" style={{ fontWeight: 600 }}>
+                        <span>{t?.viewHealthcareServices || 'View Healthcare Services'}</span>
+                        <ArrowRight size={14} />
+                    </Link>
                 </div>
             </section>
 
@@ -516,7 +738,7 @@ export function HomePage() {
                             </h3>
                         </div>
                         <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-slate-500)', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                            Data Source: Census 2011 (Village Code: 582885, Modavalasa)
+                            Data Source: Census 2011 (Village Code: {CENSUS_2011_BASELINE.censusVillageCode}, Modavalasa)
                         </div>
                         <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', lineHeight: '1.6', marginBottom: '1rem' }}>
                             Official administrative baseline figures under Denkada Mandal, Vizianagaram District.
@@ -525,12 +747,12 @@ export function HomePage() {
                         <div className="demographics-factsheet-grid">
                             <div className="factsheet-stat-card">
                                 <span className="factsheet-stat-label">Total Population</span>
-                                <span className="factsheet-stat-value">1,842</span>
+                                <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.population.toLocaleString()}</span>
                                 <span className="factsheet-stat-sub">Census 2011 official</span>
                             </div>
                             <div className="factsheet-stat-card">
                                 <span className="factsheet-stat-label">Households</span>
-                                <span className="factsheet-stat-value">468</span>
+                                <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.households}</span>
                                 <span className="factsheet-stat-sub">Census 2011 official</span>
                             </div>
                             <div className="factsheet-stat-card">
@@ -540,7 +762,7 @@ export function HomePage() {
                             </div>
                             <div className="factsheet-stat-card">
                                 <span className="factsheet-stat-label">Geographic Area</span>
-                                <span className="factsheet-stat-value">342 Ha</span>
+                                <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.areaHectares} Ha</span>
                                 <span className="factsheet-stat-sub">Total village territory</span>
                             </div>
                         </div>
@@ -605,7 +827,7 @@ export function HomePage() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                        <a 
+                        <a
                             href={createTelLink('08922-246155')}
                             className="btn btn-secondary"
                             style={{ background: 'rgba(255,255,255,0.1)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)', fontWeight: 600, textDecoration: 'none' }}

@@ -5,7 +5,7 @@ import {
     CheckCircle2, Navigation, FileText, Phone
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
-import { villageService } from '../../features/village/api/village';
+import { villageService, CENSUS_2011_BASELINE } from '../../features/village';
 import { getLocalized } from '../../i18n';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -149,7 +149,7 @@ export function VillagePage() {
                                         {isTe ? "లోక్‌సభ నియోజకవర్గం" : "Parliamentary Constituency"}
                                     </div>
                                     <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-slate-900)' }}>
-                                        Vizianagaram (03)
+                                        Vizianagaram
                                     </div>
                                 </div>
                                 <div>
@@ -157,7 +157,7 @@ export function VillagePage() {
                                         {isTe ? "సెన్సస్ విలేజ్ కోడ్" : "Census 2011 Village Code"}
                                     </div>
                                     <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-slate-900)', fontFamily: 'var(--font-mono)' }}>
-                                        582885
+                                        {CENSUS_2011_BASELINE.censusVillageCode}
                                     </div>
                                 </div>
                                 <div>
@@ -184,52 +184,52 @@ export function VillagePage() {
                             </div>
                             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-slate-500)', textTransform: 'uppercase', marginBottom: '1rem' }}>
                                 {isTe 
-                                    ? "సమాచార మూలం: భారత ప్రభుత్వం సెన్సస్ 2011 (గ్రామ కోడ్: 582885, మోదవలస, డెంకాడ మండలం)"
-                                    : "Data Source: Census of India 2011 (Village Code: 582885, Modavalasa, Denkada Mandal)"
+                                    ? `సమాచార మూలం: భారత ప్రభుత్వం సెన్సస్ 2011 (గ్రామ కోడ్: ${CENSUS_2011_BASELINE.censusVillageCode}, మోదవలస, డెంకాడ మండలం)`
+                                    : `Data Source: Census of India 2011 (Village Code: ${CENSUS_2011_BASELINE.censusVillageCode}, Modavalasa, Denkada Mandal)`
                                 }
                             </div>
 
                             <div className="demographics-factsheet-grid">
                                 <div className="factsheet-stat-card">
                                     <span className="factsheet-stat-label">{isTe ? "మొత్తం జనాభా" : "Total Population"}</span>
-                                    <span className="factsheet-stat-value">1,842</span>
+                                    <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.population.toLocaleString()}</span>
                                     <span className="factsheet-stat-sub">
-                                        {isTe ? "పురుషులు: 924 | స్త్రీలు: 918" : "Male: 924 | Female: 918"}
+                                        {isTe ? `పురుషులు: ${CENSUS_2011_BASELINE.malePopulation.toLocaleString()} | స్త్రీలు: ${CENSUS_2011_BASELINE.femalePopulation.toLocaleString()}` : `Male: ${CENSUS_2011_BASELINE.malePopulation.toLocaleString()} | Female: ${CENSUS_2011_BASELINE.femalePopulation.toLocaleString()}`}
                                     </span>
                                 </div>
                                 <div className="factsheet-stat-card">
                                     <span className="factsheet-stat-label">{isTe ? "మొత్తం గృహాలు" : "Households"}</span>
-                                    <span className="factsheet-stat-value">468</span>
+                                    <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.households}</span>
                                     <span className="factsheet-stat-sub">
-                                        {isTe ? "సగటు కుటుంబ సభ్యులు: 3.9" : "Avg Family Size: 3.9"}
-                                    </span>
-                                </div>
-                                <div className="factsheet-stat-card">
-                                    <span className="factsheet-stat-label">{isTe ? "అక్షరాస్యత రేటు" : "Literacy Rate"}</span>
-                                    <span className="factsheet-stat-value">68.4%</span>
-                                    <span className="factsheet-stat-sub">
-                                        {isTe ? "పురుషులు: 76.2% | స్త్రీలు: 60.5%" : "Male: 76.2% | Female: 60.5%"}
+                                        {isTe ? "సగటు కుటుంబ సభ్యులు: 4.1" : "Avg Family Size: 4.1"}
                                     </span>
                                 </div>
                                 <div className="factsheet-stat-card">
                                     <span className="factsheet-stat-label">{isTe ? "భౌగోళిక వైశాల్యం" : "Total Land Area"}</span>
-                                    <span className="factsheet-stat-value">342 Ha</span>
+                                    <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.areaHectares} Ha</span>
                                     <span className="factsheet-stat-sub">
-                                        {isTe ? "846 ఎకరాల గ్రామీణ భూభాగం" : "846 Acres rural territory"}
+                                        {isTe ? `${CENSUS_2011_BASELINE.areaAcres.toLocaleString()} ఎకరాల గ్రామీణ భూభాగం` : `${CENSUS_2011_BASELINE.areaAcres.toLocaleString()} Acres rural territory`}
                                     </span>
                                 </div>
                                 <div className="factsheet-stat-card">
                                     <span className="factsheet-stat-label">{isTe ? "లింగ నిష్పత్తి" : "Sex Ratio"}</span>
-                                    <span className="factsheet-stat-value">993</span>
+                                    <span className="factsheet-stat-value">{CENSUS_2011_BASELINE.sexRatio}</span>
                                     <span className="factsheet-stat-sub">
                                         {isTe ? "1000 మంది పురుషులకు స్త్రీలు" : "Females per 1000 males"}
                                     </span>
                                 </div>
                                 <div className="factsheet-stat-card">
-                                    <span className="factsheet-stat-label">{isTe ? "పనిచేసే శ్రామికులు" : "Working Workforce"}</span>
-                                    <span className="factsheet-stat-value">864</span>
+                                    <span className="factsheet-stat-label">{isTe ? "పోస్టల్ పిన్ కోడ్" : "Postal PIN Code"}</span>
+                                    <span className="factsheet-stat-value" style={{ fontFamily: 'var(--font-mono)' }}>{CENSUS_2011_BASELINE.pin}</span>
                                     <span className="factsheet-stat-sub">
-                                        {isTe ? "వ్యవసాయం & చేనేత ప్రధాన వృత్తులు" : "Agriculture & Weaving main"}
+                                        {isTe ? "డెంకాడ సబ్-పోస్ట్ ఆఫీస్" : "Denkada SO Delivery"}
+                                    </span>
+                                </div>
+                                <div className="factsheet-stat-card">
+                                    <span className="factsheet-stat-label">{isTe ? "ప్రధాన జీవనాధారం" : "Primary Livelihoods"}</span>
+                                    <span className="factsheet-stat-value" style={{ fontSize: '1.05rem' }}>{isTe ? "చేనేత & వ్యవసాయం" : "Weaving & Farming"}</span>
+                                    <span className="factsheet-stat-sub">
+                                        {isTe ? "కమ్యూనిటీ సర్వే పరిశీలన" : "Community Survey Finding"}
                                     </span>
                                 </div>
                             </div>

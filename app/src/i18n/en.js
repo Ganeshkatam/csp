@@ -101,6 +101,25 @@ export default {
     qrHeading: "Scan to Open on Mobile Phone",
     qrDesc: "Point any smartphone camera at this QR code to access this live portal over cellular internet. Ideal for examiner evaluations and citizen field use.",
 
+    // Village Habitation Overview
+    villageOverviewBadge: "Habitation Profile & Civic Overview",
+    villageOverviewTitle: "About Modavalasa Habitation",
+    villageOverviewSub: "Denkada Mandal • Vizianagaram District • Andhra Pradesh",
+    modavalasaAtAGlance: "Modavalasa at a Glance",
+    villageLeadNarrative: "Modavalasa is a rural agrarian and artisanal habitation situated in Denkada Mandal of Vizianagaram District, Andhra Pradesh. The village spans 633 hectares of territory with an official Census population of 2,584 residing across 624 households. The community is sustained by traditional handloom weaving clusters, paddy agriculture, and dairy cooperatives, connected by all-weather roads to Denkada Mandal headquarters and Vizianagaram.",
+    evidenceCensus: "Census of India 2011",
+    evidenceAdmin: "Official Administrative Record",
+    evidenceSurvey: "Community Survey Finding",
+    evidenceInstitution: "Verified Local Institution",
+    evidenceObservation: "CSP Field Survey Observation",
+    pillarAdminTitle: "Administrative Jurisdiction",
+    pillarLivelihoodTitle: "Livelihood & Economy",
+    pillarInstitutionsTitle: "Healthcare & Education",
+    pillarUtilitiesTitle: "Utilities & Infrastructure",
+    viewVillageProfile: "Explore Village Profile",
+    viewCivicContacts: "View Civic Contacts",
+    viewHealthcareServices: "View Healthcare Services",
+
     // Footer
     footerDisclaimer: "Content Verified Under Academic CSP Protocol. Strictly No Resident PII Collected.",
     footerDb: "Database: Supabase PostgreSQL (RLS Protected)",
