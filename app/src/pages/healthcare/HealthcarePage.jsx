@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
     Activity, ShieldCheck, HeartPulse, Calendar, 
-    Phone, Award, Stethoscope, Syringe, FlaskConical, AlertTriangle 
+    Phone, Award, Stethoscope, Syringe, FlaskConical, Building2, Users
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { 
@@ -14,7 +14,7 @@ import {
     ClinicalSchedule,
     ImmunizationSchedule,
     DiagnosticServices,
-    EmergencyGuidance
+    HealthAnnouncements
 } from '../../features/healthcare';
 
 export function HealthcarePage() {
@@ -29,7 +29,7 @@ export function HealthcarePage() {
     const [healthAnnouncements, setHealthAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeSection, setActiveSection] = useState('ALL');
+    const [activeTab, setActiveTab] = useState('ALL');
 
     const isTe = lang === 'te';
 
@@ -80,16 +80,23 @@ export function HealthcarePage() {
         loadHealthcare();
     }, [institutionId]);
 
-    const navSections = [
+    const navTabs = [
         { id: 'ALL', label_en: 'All Public Health Sections', label_te: 'అన్ని విభాగాలు' },
-        { id: 'CLINICAL', label_en: 'Doctor OPD Roster', label_te: 'డాక్టర్ ఓపీడీ రోస్టర్' },
-        { id: 'IMMUNIZATION', label_en: 'Immunization Schedule', label_te: 'టీకా షెడ్యూల్' },
-        { id: 'DIAGNOSTIC', label_en: 'Diagnostic Lab Tests', label_te: 'ల్యాబ్ పరీక్షలు' },
-        { id: 'EMERGENCY', label_en: 'Emergency & Advisories', label_te: 'అత్యవసరం & సలహాలు' },
-        { id: 'FACILITIES', label_en: 'Primary Health Centre (PHC)', label_te: 'ఆరోగ్య కేంద్రం (PHC)' },
-        { id: 'SCHEMES', label_en: 'Health Welfare Schemes', label_te: 'ఆరోగ్య పథకాలు' },
-        { id: 'CONTACTS', label_en: 'Local Healthcare Desks', label_te: 'వైద్య సహాయ డెస్క్‌లు' }
+        { id: 'PHC', label_en: 'Primary Health Centre (PHC Hub)', label_te: 'పీహెచ్‌సీ కేంద్రం & వైద్యులు' },
+        { id: 'VILLAGE', label_en: 'Village Immunization & Outreach', label_te: 'గ్రామ టీకాలు & ఆశా డెస్క్' },
+        { id: 'SCHEMES', label_en: 'Aarogyasri Health Schemes', label_te: 'ఆరోగ్యశ్రీ పథకాలు' },
+        { id: 'CAMPS', label_en: 'Health Camps & Notices', label_te: 'ఆరోగ్య శిబిరాలు & నోటీసులు' }
     ];
+
+    const scrollToSection = (sectionId) => {
+        setActiveTab('ALL');
+        setTimeout(() => {
+            const el = document.getElementById(sectionId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 50);
+    };
 
     return (
         <div>
@@ -115,7 +122,7 @@ export function HealthcarePage() {
                     <p className="page-subtitle">
                         {isTe
                             ? "మోదవలస పరిధిలోని డెంకాడ ప్రాథమిక ఆరోగ్య కేంద్రం (PHC) అధికారిక డాక్టర్ రోస్టర్, వ్యాక్సినేషన్ షెడ్యూల్, ఉచిత ల్యాబ్ పరీక్షలు, 24x7 అత్యవసర హెల్ప్‌లైన్లు మరియు ఆరోగ్యశ్రీ సంక్షేమ పథకాలు."
-                            : "Comprehensive civic health portal covering Denkada Primary Health Center (PHC) live doctor rosters, immunization sessions, diagnostic test availability, 24x7 emergency response lines, and Aarogyasri welfare schemes."
+                            : "Structured rural health directory linking Denkada Primary Health Centre (PHC) doctor rosters and diagnostic laboratory to Modavalasa village immunization sessions and state welfare schemes."
                         }
                     </p>
                 </div>
@@ -123,52 +130,94 @@ export function HealthcarePage() {
 
             <div className="container" style={{ paddingBottom: '3.5rem' }}>
                 
-                {/* Clinical Overview KPI Deck (100% Real Database & Official Channels) */}
-                <div className="health-hero-stats">
-                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-blue-600)' }}>
+                {/* 1. TOP TIER: 24x7 Statutory Emergency Response Lines */}
+                <EmergencyBanner lang={lang} />
+
+                {/* 2. Interactive KPI Deck (Anchors to key pillars) */}
+                <div className="health-hero-stats" style={{ marginTop: '1.5rem', marginBottom: '1.75rem' }}>
+                    <div 
+                        className="health-stat-card" 
+                        style={{ '--stat-accent': 'var(--color-blue-600)', cursor: 'pointer' }}
+                        onClick={() => scrollToSection('phc-hub')}
+                        title="Click to view PHC details"
+                    >
                         <div className="health-stat-header">
                             <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-blue-50)', '--stat-icon-color': 'var(--color-blue-600)' }}>
-                                <Stethoscope size={20} />
+                                <Building2 size={20} />
                             </div>
                             <span className="health-stat-badge">
-                                {isTe ? "డాక్టర్ రోస్టర్" : "Doctor Roster"}
+                                {isTe ? "మండల కేంద్రం" : "PHC Hub"}
                             </span>
                         </div>
                         <div>
                             <div className="health-stat-value">
-                                {clinicalSchedules.length > 0 ? `${clinicalSchedules.length} ${isTe ? 'రోస్టర్లు' : 'Active Shifts'}` : (isTe ? "డెంకాడ పిహెచ్‌సి" : "Denkada PHC")}
+                                {isTe ? "డెంకాడ పీహెచ్‌సీ" : "Denkada PHC"}
                             </div>
                             <div className="health-stat-label">
-                                {isTe ? "ఓపీడీ, ఆయుష్ & 24x7 అత్యవసర వైద్యులు" : "OPD, AYUSH & 24x7 Nursing Duty"}
+                                {isTe ? "మోదవలస నుండి 3.2 కి.మీ. (సోమ-శని 9 AM - 4 PM)" : "3.2 km serving Modavalasa (Mon-Sat 9 AM - 4 PM)"}
                             </div>
                         </div>
                     </div>
 
-                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-emerald-600)' }}>
+                    <div 
+                        className="health-stat-card" 
+                        style={{ '--stat-accent': 'var(--color-indigo-600)', cursor: 'pointer' }}
+                        onClick={() => scrollToSection('clinical-rosters')}
+                        title="Click to view Doctor Roster"
+                    >
+                        <div className="health-stat-header">
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'rgba(99, 102, 241, 0.1)', '--stat-icon-color': 'var(--color-indigo-600)' }}>
+                                <Stethoscope size={20} />
+                            </div>
+                            <span className="health-stat-badge">
+                                {isTe ? "వైద్యుల డ్యూటీ" : "Doctor Roster"}
+                            </span>
+                        </div>
+                        <div>
+                            <div className="health-stat-value">
+                                {clinicalSchedules.length > 0 ? `${clinicalSchedules.length} ${isTe ? 'రోస్టర్లు' : 'Active Shifts'}` : (isTe ? "ఓపీడీ వైద్యులు" : "OPD Clinicians")}
+                            </div>
+                            <div className="health-stat-label">
+                                {isTe ? "సాధారణ ఓపీడీ, ఆయుష్, నర్సింగ్ & ల్యాబ్ డ్యూటీ" : "General Medicine, AYUSH, Nursing & Lab"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div 
+                        className="health-stat-card" 
+                        style={{ '--stat-accent': 'var(--color-emerald-600)', cursor: 'pointer' }}
+                        onClick={() => scrollToSection('village-outreach')}
+                        title="Click to view Immunization Drives"
+                    >
                         <div className="health-stat-header">
                             <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-emerald-50)', '--stat-icon-color': 'var(--color-emerald-600)' }}>
                                 <Syringe size={20} />
                             </div>
                             <span className="health-stat-badge" style={{ background: 'var(--color-emerald-50)', color: 'var(--color-emerald-800)' }}>
-                                {isTe ? "యూఐపీ టీకాలు" : "UIP Drives"}
+                                {isTe ? "గ్రామ టీకాలు" : "Village UIP"}
                             </span>
                         </div>
                         <div>
                             <div className="health-stat-value">
-                                {immunizationSchedules.length > 0 ? `${immunizationSchedules.length} ${isTe ? 'సెషన్లు' : 'Sessions'}` : (isTe ? "వ్యాక్సినేషన్" : "Vaccination")}
+                                {immunizationSchedules.length > 0 ? `${immunizationSchedules.length} ${isTe ? 'సెషన్లు' : 'Sessions'}` : (isTe ? "వ్యాక్సినేషన్" : "Vaccinations")}
                             </div>
                             <div className="health-stat-label">
-                                {isTe ? "ప్రతి బుధవారం మోదవలస అంగన్‌వాడీలో" : "Every Wednesday at Anganwadi Centre"}
+                                {isTe ? "ప్రతి బుధవారం మోదవలస అంగన్‌వాడీలో" : "Every Wednesday at Modavalasa Anganwadi"}
                             </div>
                         </div>
                     </div>
 
-                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-indigo-600)' }}>
+                    <div 
+                        className="health-stat-card" 
+                        style={{ '--stat-accent': 'var(--color-teal-600)', cursor: 'pointer' }}
+                        onClick={() => scrollToSection('diagnostic-lab')}
+                        title="Click to view Diagnostic Tests"
+                    >
                         <div className="health-stat-header">
-                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'rgba(99, 102, 241, 0.1)', '--stat-icon-color': 'var(--color-indigo-600)' }}>
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-teal-50)', '--stat-icon-color': 'var(--color-teal-700)' }}>
                                 <FlaskConical size={20} />
                             </div>
-                            <span className="health-stat-badge">
+                            <span className="health-stat-badge" style={{ background: 'var(--color-teal-50)', color: 'var(--color-teal-800)' }}>
                                 {isTe ? "ఉచిత ల్యాబ్" : "NHM Lab"}
                             </span>
                         </div>
@@ -181,107 +230,160 @@ export function HealthcarePage() {
                             </div>
                         </div>
                     </div>
-
-                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-red-600)' }}>
-                        <div className="health-stat-header">
-                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-red-50)', '--stat-icon-color': 'var(--color-red-600)' }}>
-                                <Phone size={20} />
-                            </div>
-                            <span className="health-stat-badge" style={{ background: 'var(--color-red-50)', color: 'var(--color-red-800)' }}>
-                                {isTe ? "24x7 రెస్పాన్స్" : "24x7 Response"}
-                            </span>
-                        </div>
-                        <div>
-                            <div className="health-stat-value" style={{ color: 'var(--color-red-700)' }}>
-                                108 / 104
-                            </div>
-                            <div className="health-stat-label">
-                                {isTe ? "అత్యవసర అంబులెన్స్ & ఉచిత వైద్య సలహా" : "Toll-Free Ambulance & Health Advisory"}
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Section Quick Navigation Filter */}
-                <div className="filter-pills-bar" role="tablist" style={{ marginBottom: '1.75rem' }}>
-                    {navSections.map(sec => (
+                {/* 3. Domain Hub Navigation Tabs */}
+                <div className="filter-pills-bar" role="tablist" style={{ marginBottom: '2rem' }}>
+                    {navTabs.map(tab => (
                         <button
-                            key={sec.id}
+                            key={tab.id}
                             type="button"
                             role="tab"
-                            aria-selected={activeSection === sec.id}
-                            className={`filter-pill ${activeSection === sec.id ? 'active' : ''}`}
-                            onClick={() => setActiveSection(sec.id)}
+                            aria-selected={activeTab === tab.id}
+                            className={`filter-pill ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
                         >
-                            {isTe ? sec.label_te : sec.label_en}
+                            {isTe ? tab.label_te : tab.label_en}
                         </button>
                     ))}
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                    {/* Section 1: Doctor Consultation & Clinical OPD Rosters (Live Database clinical_schedules) */}
-                    {(activeSection === 'ALL' || activeSection === 'CLINICAL') && (
-                        <ClinicalSchedule
-                            schedules={clinicalSchedules}
-                            loading={loading}
-                            lang={lang}
-                        />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                    
+                    {/* =========================================================================
+                        PILLAR 1: THE SERVING HOSPITAL HUB — DENKADA PRIMARY HEALTH CENTRE (PHC)
+                        Contains: Facility Profile + Doctor OPD Roster + Free Diagnostic Lab
+                        ========================================================================= */}
+                    {(activeTab === 'ALL' || activeTab === 'PHC') && (
+                        <section id="phc-hub" style={{ background: '#ffffff', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-xl, 16px)', padding: '1.75rem', boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)' }}>
+                            <div style={{ borderBottom: '1px solid var(--color-slate-200)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
+                                    <span className="badge badge-verified" style={{ background: 'var(--color-blue-50)', color: 'var(--color-blue-800)', border: '1px solid var(--color-blue-200)' }}>
+                                        <Building2 size={12} style={{ marginRight: '3px' }} />
+                                        {isTe ? "ప్రధాన మండల ఆసుపత్రి" : "Mandal Health Facility"}
+                                    </span>
+                                    <span className="badge-level-a">
+                                        Level A: Local Verified Record
+                                    </span>
+                                </div>
+                                <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--color-slate-950)', margin: '0 0 0.35rem' }}>
+                                    {isTe ? "డెంకాడ ప్రాథమిక ఆరోగ్య కేంద్రం (PHC) & క్లినికల్ సేవలు" : "Denkada Primary Health Centre (PHC) & Clinical Services"}
+                                </h2>
+                                <p style={{ fontSize: '0.88rem', color: 'var(--color-slate-600)', margin: 0 }}>
+                                    {isTe 
+                                        ? "మోదవలస ప్రజలకు సేవలు అందించే ప్రధాన ప్రభుత్వ ఆరోగ్య కేంద్రం, వైద్యుల ఓపీడీ డ్యూటీ మరియు ఉచిత డయాగ్నస్టిక్ ల్యాబ్ వివరాలు."
+                                        : "The serving government health facility for Modavalasa village, housing daily medical consultations, delivery ward, and diagnostic laboratory."
+                                    }
+                                </p>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                                {/* 1.1 Facility Profile */}
+                                <FacilityDirectory
+                                    facilities={facilities}
+                                    loading={loading}
+                                    error={error}
+                                    onRetry={loadHealthcare}
+                                    lang={lang}
+                                    t={t}
+                                />
+
+                                {/* 1.2 Doctor Consultation & Clinical OPD Rosters (Nested directly under PHC) */}
+                                <div id="clinical-rosters">
+                                    <ClinicalSchedule
+                                        schedules={clinicalSchedules}
+                                        loading={loading}
+                                        lang={lang}
+                                    />
+                                </div>
+
+                                {/* 1.3 Diagnostic Laboratory Tests (Nested directly under PHC) */}
+                                <div id="diagnostic-lab">
+                                    <DiagnosticServices
+                                        diagnostics={diagnosticServices}
+                                        loading={loading}
+                                        lang={lang}
+                                    />
+                                </div>
+                            </div>
+                        </section>
                     )}
 
-                    {/* Section 2: Immunization & Maternal Care Drives (Live Database immunization_schedules) */}
-                    {(activeSection === 'ALL' || activeSection === 'IMMUNIZATION') && (
-                        <ImmunizationSchedule
-                            immunizations={immunizationSchedules}
-                            loading={loading}
-                            lang={lang}
-                        />
+                    {/* =========================================================================
+                        PILLAR 2: VILLAGE GRASSROOTS HEALTHCARE — MODAVALASA OUTREACH
+                        Contains: Universal Immunization Sessions + Local ANM/ASHA Helpdesks
+                        ========================================================================= */}
+                    {(activeTab === 'ALL' || activeTab === 'VILLAGE') && (
+                        <section id="village-outreach" style={{ background: '#ffffff', border: '1px solid var(--color-slate-200)', borderRadius: 'var(--radius-xl, 16px)', padding: '1.75rem', boxShadow: '0 4px 16px -2px rgba(15, 23, 42, 0.05)' }}>
+                            <div style={{ borderBottom: '1px solid var(--color-slate-200)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
+                                    <span className="badge badge-verified" style={{ background: 'var(--color-emerald-50)', color: 'var(--color-emerald-800)', border: '1px solid var(--color-emerald-200)' }}>
+                                        <Users size={12} style={{ marginRight: '3px' }} />
+                                        {isTe ? "గ్రామీణ ఆరోగ్య సేవలు" : "Village Grassroots Outreach"}
+                                    </span>
+                                    <span className="badge-level-a">
+                                        Modavalasa Habitation
+                                    </span>
+                                </div>
+                                <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--color-slate-950)', margin: '0 0 0.35rem' }}>
+                                    {isTe ? "గ్రామ మాతా శిశు సంరక్షణ & ఆశా ఫీల్డ్ డెస్క్‌లు" : "Village Maternal & Child Health Outreach (Modavalasa)"}
+                                </h2>
+                                <p style={{ fontSize: '0.88rem', color: 'var(--color-slate-600)', margin: 0 }}>
+                                    {isTe 
+                                        ? "మోదవలస అంగన్‌వాడీ కేంద్రంలో జరిగే సార్వత్రిక క్రమబద్ధ వ్యాక్సినేషన్ మరియు స్థానిక ఆశా/ఏఎన్ఎం సహాయ కేంద్రాలు."
+                                        : "Field healthcare services conducted directly inside Modavalasa village at the Government Anganwadi Centre."
+                                    }
+                                </p>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                                {/* 2.1 Immunization Sessions */}
+                                <div id="village-immunization">
+                                    <ImmunizationSchedule
+                                        immunizations={immunizationSchedules}
+                                        loading={loading}
+                                        lang={lang}
+                                    />
+                                </div>
+
+                                {/* 2.2 Local Field Helpdesks */}
+                                <div id="village-desks">
+                                    <HealthcareContacts
+                                        contacts={contacts}
+                                        lang={lang}
+                                    />
+                                </div>
+                            </div>
+                        </section>
                     )}
 
-                    {/* Section 3: Diagnostic Laboratory Tests (Live Database diagnostic_services) */}
-                    {(activeSection === 'ALL' || activeSection === 'DIAGNOSTIC') && (
-                        <DiagnosticServices
-                            diagnostics={diagnosticServices}
-                            loading={loading}
-                            lang={lang}
-                        />
+                    {/* =========================================================================
+                        PILLAR 3: GOVERNMENT HEALTHCARE WELFARE SCHEMES
+                        Contains: Dr. NTR Vaidya Seva (Aarogyasri) Cashless Hospitalization
+                        ========================================================================= */}
+                    {(activeTab === 'ALL' || activeTab === 'SCHEMES') && (
+                        <section id="health-schemes">
+                            <HealthcareSchemes
+                                schemes={schemes}
+                                lang={lang}
+                            />
+                        </section>
                     )}
 
-                    {/* Section 4: Emergency Hotlines & Health Advisories (Live Database announcements + Statutory lines) */}
-                    {(activeSection === 'ALL' || activeSection === 'EMERGENCY') && (
-                        <EmergencyGuidance
-                            announcements={healthAnnouncements}
-                            loading={loading}
-                            lang={lang}
-                        />
+                    {/* =========================================================================
+                        PILLAR 4: ACTIVE HEALTH CAMPS & OFFICIAL PUBLIC HEALTH NOTICES
+                        Contains: NCD Screening Camps & Disease Prevention Advisories from Database
+                        ========================================================================= */}
+                    {(activeTab === 'ALL' || activeTab === 'CAMPS') && (
+                        <section id="health-announcements">
+                            <HealthAnnouncements
+                                announcements={healthAnnouncements}
+                                loading={loading}
+                                lang={lang}
+                            />
+                        </section>
                     )}
 
-                    {/* Section 5: Primary Health Centre (PHC) Facility Profile (Live Database institutions) */}
-                    {(activeSection === 'ALL' || activeSection === 'FACILITIES') && (
-                        <FacilityDirectory
-                            facilities={facilities}
-                            loading={loading}
-                            error={error}
-                            onRetry={loadHealthcare}
-                            lang={lang}
-                            t={t}
-                        />
-                    )}
-
-                    {/* Section 6: Government Healthcare Welfare Schemes (Live Database schemes) */}
-                    {(activeSection === 'ALL' || activeSection === 'SCHEMES') && (
-                        <HealthcareSchemes
-                            schemes={schemes}
-                            lang={lang}
-                        />
-                    )}
-
-                    {/* Section 7: Local Healthcare Desks & Community Outreach (Live Database contacts) */}
-                    {(activeSection === 'ALL' || activeSection === 'CONTACTS') && (
-                        <HealthcareContacts
-                            contacts={contacts}
-                            lang={lang}
-                        />
-                    )}
                 </div>
 
             </div>
