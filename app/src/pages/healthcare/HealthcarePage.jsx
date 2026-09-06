@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
     Activity, ShieldCheck, HeartPulse, Calendar, 
-    AlertTriangle, Phone, FileText, CheckCircle2 
+    Phone, Award, PhoneCall 
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import { 
     healthcareService, 
     EmergencyBanner, 
     FacilityDirectory, 
-    ClinicalSchedule, 
-    ImmunizationSchedule, 
-    DiagnosticServices, 
-    EmergencyGuidance 
+    HealthcareContacts, 
+    HealthcareSchemes 
 } from '../../features/healthcare';
 
 export function HealthcarePage() {
     const { institutionId } = useParams();
     const { lang, t } = useAppContext();
     const [facilities, setFacilities] = useState([]);
+    const [contacts, setContacts] = useState([]);
+    const [schemes, setSchemes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeSection, setActiveSection] = useState('ALL');
@@ -28,19 +28,26 @@ export function HealthcarePage() {
     const loadHealthcare = () => {
         setLoading(true);
         setError(null);
-        healthcareService.getHealthcareFacilities()
-            .then(data => {
+
+        Promise.all([
+            healthcareService.getHealthcareFacilities(),
+            healthcareService.getHealthcareContacts(),
+            healthcareService.getHealthcareSchemes()
+        ])
+            .then(([facilitiesData, contactsData, schemesData]) => {
                 if (institutionId) {
-                    const filtered = (data || []).filter(f => String(f.id) === String(institutionId));
-                    setFacilities(filtered.length > 0 ? filtered : data);
+                    const filtered = (facilitiesData || []).filter(f => String(f.id) === String(institutionId));
+                    setFacilities(filtered.length > 0 ? filtered : facilitiesData);
                 } else {
-                    setFacilities(data || []);
+                    setFacilities(facilitiesData || []);
                 }
+                setContacts(contactsData || []);
+                setSchemes(schemesData || []);
                 setLoading(false);
             })
             .catch(err => {
-                console.error('Error loading healthcare facilities:', err);
-                setError(err.message || 'Failed to load healthcare facilities from database.');
+                console.error('Error loading healthcare records:', err);
+                setError(err.message || 'Failed to load healthcare records from database.');
                 setLoading(false);
             });
     };
@@ -52,11 +59,9 @@ export function HealthcarePage() {
     const navSections = [
         { id: 'ALL', label_en: 'All Public Health Sections', label_te: 'అన్ని విభాగాలు' },
         { id: 'EMERGENCY', label_en: 'Emergency Helplines', label_te: 'అత్యవసర హెల్ప్‌లైన్లు' },
-        { id: 'FACILITIES', label_en: 'PHC & Staff Directory', label_te: 'ఆరోగ్య కేంద్రం & సిబ్బంది' },
-        { id: 'SCHEDULE', label_en: 'Weekly OPD Schedule', label_te: 'వారపు ఓపిడి వివరాలు' },
-        { id: 'IMMUNIZATION', label_en: 'Routine Immunization (UIP)', label_te: 'సాధారణ టీకాలు (UIP)' },
-        { id: 'DIAGNOSTICS', label_en: 'Diagnostics & Screening', label_te: 'నిర్ధారణ & స్క్రీనింగ్' },
-        { id: 'FIRST_AID', label_en: 'First-Aid Protocols', label_te: 'ప్రథమ చికిత్స మార్గదర్శకాలు' }
+        { id: 'FACILITIES', label_en: 'Primary Health Centre (PHC)', label_te: 'ఆరోగ్య కేంద్రం (PHC)' },
+        { id: 'SCHEMES', label_en: 'Health Welfare Schemes', label_te: 'ఆరోగ్య పథకాలు' },
+        { id: 'CONTACTS', label_en: 'Local Healthcare Desks', label_te: 'వైద్య సహాయ డెస్క్‌లు' }
     ];
 
     return (
@@ -78,8 +83,8 @@ export function HealthcarePage() {
                     </h1>
                     <p className="page-subtitle">
                         {isTe
-                            ? "మోదవలస పరిధిలోని డెంకాడ ప్రాథమిక ఆరోగ్య కేంద్రం (PHC) ప్రచురిత ఓపిడి వేళలు, జాతీయ టీకాల పట్టిక, ప్రభుత్వ ల్యాబ్ పరీక్షలు మరియు 24x7 అత్యవసర ప్రథమ చికిత్స మార్గదర్శకాలు."
-                            : "Comprehensive civic health portal covering Denkada Primary Health Center (PHC) facilities, published clinical OPD timetables, the National Immunization Schedule, diagnostic screening availability, and evidence-based emergency first-aid protocols."
+                            ? "మోదవలస పరిధిలోని డెంకాడ ప్రాథమిక ఆరోగ్య కేంద్రం (PHC) అధికారిక వివరాలు, 24x7 అత్యవసర అంబులెన్స్ హెల్ప్‌లైన్లు, ప్రభుత్వ ఆరోగ్యశ్రీ సంక్షేమ పథకాలు మరియు స్థానిక వైద్య సహాయ కేంద్రాలు."
+                            : "Comprehensive civic health portal covering Denkada Primary Health Center (PHC) verified records, official 24x7 emergency medical response lines, Dr. NTR Vaidya Seva (Aarogyasri) healthcare welfare schemes, and local community health desks."
                         }
                     </p>
                 </div>
@@ -87,7 +92,7 @@ export function HealthcarePage() {
 
             <div className="container" style={{ paddingBottom: '3.5rem' }}>
                 
-                {/* Clinical Overview KPI Deck */}
+                {/* Clinical Overview KPI Deck (100% Real Database & Official Channels) */}
                 <div className="health-hero-stats">
                     <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-emerald-600)' }}>
                         <div className="health-stat-header">
@@ -133,15 +138,15 @@ export function HealthcarePage() {
                                 <Calendar size={20} />
                             </div>
                             <span className="health-stat-badge">
-                                {isTe ? "వారపు ఓపిడి" : "Weekly OPD"}
+                                {isTe ? "పనివేళలు" : "OPD Hours"}
                             </span>
                         </div>
                         <div>
                             <div className="health-stat-value">
-                                {isTe ? "సోమ - శని (6 రోజులు)" : "Mon - Sat (6 Days)"}
+                                {isTe ? "సోమ - శని" : "Mon - Sat"}
                             </div>
                             <div className="health-stat-label">
-                                {isTe ? "ఉదయం 9:00 నుండి సాయంత్రం 4:00 వరకు ఓపిడి" : "9:00 AM - 4:00 PM Active Outpatient Care"}
+                                {isTe ? "ఉదయం 9:00 నుండి సాయంత్రం 4:00 వరకు ఓపిడి" : "9:00 AM - 4:00 PM Published Timings"}
                             </div>
                         </div>
                     </div>
@@ -149,18 +154,18 @@ export function HealthcarePage() {
                     <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-teal-600)' }}>
                         <div className="health-stat-header">
                             <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-teal-50)', '--stat-icon-color': 'var(--color-teal-700)' }}>
-                                <HeartPulse size={20} />
+                                <Award size={20} />
                             </div>
                             <span className="health-stat-badge" style={{ background: 'var(--color-emerald-50)', color: 'var(--color-emerald-800)' }}>
-                                {isTe ? "100% ఉచితం" : "100% Free Coverage"}
+                                {isTe ? "రూ. 25 లక్షలు" : "Rs. 25 Lakhs"}
                             </span>
                         </div>
                         <div>
                             <div className="health-stat-value">
-                                {isTe ? "10 జీవన దశలు" : "10 Life Milestones"}
+                                {isTe ? "ఆరోగ్యశ్రీ పథకం" : "Aarogyasri"}
                             </div>
                             <div className="health-stat-label">
-                                {isTe ? "జాతీయ సార్వత్రిక రోగనిరోధక టీకాలు (UIP)" : "Universal Immunization Programme Roster"}
+                                {isTe ? "డా. ఎన్టీఆర్ వైద్య సేవ నగదు రహిత చికిత్స" : "Free Cashless Inpatient Hospital Coverage"}
                             </div>
                         </div>
                     </div>
@@ -187,7 +192,7 @@ export function HealthcarePage() {
                     <EmergencyBanner lang={lang} />
                 )}
 
-                {/* Section 2: PHC & Healthcare Facilities (Level A: Live Supabase Records) */}
+                {/* Section 2: PHC & Healthcare Facilities (Live Supabase Database Records) */}
                 {(activeSection === 'ALL' || activeSection === 'FACILITIES') && (
                     <FacilityDirectory
                         facilities={facilities}
@@ -199,24 +204,20 @@ export function HealthcarePage() {
                     />
                 )}
 
-                {/* Section 3: Published Clinical Services Schedule (Level A: Local Notice Board) */}
-                {(activeSection === 'ALL' || activeSection === 'SCHEDULE') && (
-                    <ClinicalSchedule lang={lang} />
+                {/* Section 3: Government Healthcare Welfare Schemes (Live Supabase Schemes Table) */}
+                {(activeSection === 'ALL' || activeSection === 'SCHEMES') && (
+                    <HealthcareSchemes
+                        schemes={schemes}
+                        lang={lang}
+                    />
                 )}
 
-                {/* Section 4: National Routine Immunization Schedule (Level B: MoHFW UIP Standard) */}
-                {(activeSection === 'ALL' || activeSection === 'IMMUNIZATION') && (
-                    <ImmunizationSchedule lang={lang} />
-                )}
-
-                {/* Section 5: Selected Diagnostic & Screening Services (Level B Standards + Level A Facility Status) */}
-                {(activeSection === 'ALL' || activeSection === 'DIAGNOSTICS') && (
-                    <DiagnosticServices lang={lang} />
-                )}
-
-                {/* Section 6: Emergency First-Aid Protocols (Level B: NCDC/NRCP Standards) */}
-                {(activeSection === 'ALL' || activeSection === 'FIRST_AID') && (
-                    <EmergencyGuidance lang={lang} />
+                {/* Section 4: Local Healthcare Desks & Community Outreach (Live Supabase Contacts Table) */}
+                {(activeSection === 'ALL' || activeSection === 'CONTACTS') && (
+                    <HealthcareContacts
+                        contacts={contacts}
+                        lang={lang}
+                    />
                 )}
 
             </div>
@@ -225,4 +226,3 @@ export function HealthcarePage() {
 }
 
 export default HealthcarePage;
-

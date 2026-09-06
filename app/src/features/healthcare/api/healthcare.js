@@ -13,6 +13,42 @@ export const healthcareService = {
         return data || [];
     },
 
+    async getHealthcareContacts() {
+        const { data, error } = await supabase
+            .from('contacts')
+            .select('*')
+            .eq('status', 'published')
+            .eq('category', 'Healthcare')
+            .order('name');
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getHealthcareSchemes() {
+        const { data, error } = await supabase
+            .from('schemes')
+            .select('*')
+            .eq('status', 'published')
+            .eq('category', 'Healthcare')
+            .order('name');
+
+        if (error) throw error;
+        return data || [];
+    },
+
+    async getHealthcareAnnouncements() {
+        const { data, error } = await supabase
+            .from('announcements')
+            .select('*')
+            .eq('status', 'published')
+            .eq('category', 'Healthcare')
+            .order('event_date', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    },
+
     async getFacilityById(id) {
         const { data, error } = await supabase
             .from('institutions')
