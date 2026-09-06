@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { Activity, ShieldCheck, CheckCircle2, AlertCircle, ExternalLink, Filter } from 'lucide-react';
+import { 
+    Activity, ShieldCheck, CheckCircle2, AlertCircle, 
+    Droplets, Eye, TestTube2, HeartPulse, Sparkles 
+} from 'lucide-react';
 import { DIAGNOSTIC_SERVICES_REFERENCE } from '../data/diagnosticData';
+
+function getServiceIcon(srv) {
+    if (srv.id === 'diag_eye') return <Eye size={16} />;
+    if (srv.id === 'diag_bp') return <HeartPulse size={16} />;
+    if (['diag_hb', 'diag_blood_group', 'diag_malaria'].includes(srv.id)) return <Droplets size={16} />;
+    return <TestTube2 size={16} />;
+}
 
 export function DiagnosticServices({ lang = 'en' }) {
     const isTe = lang === 'te';
@@ -49,13 +59,13 @@ export function DiagnosticServices({ lang = 'en' }) {
             </div>
 
             {/* Filter Pills */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
                 <button
                     type="button"
                     className={`filter-pill ${categoryFilter === 'ALL' ? 'active' : ''}`}
                     onClick={() => setCategoryFilter('ALL')}
                 >
-                    {isTe ? "అన్ని సేవలు" : "All Services"} ({ref.services.length})
+                    {isTe ? "అన్ని సేవలు" : "All Diagnostic Tests"} ({ref.services.length})
                 </button>
                 <button
                     type="button"
@@ -74,59 +84,59 @@ export function DiagnosticServices({ lang = 'en' }) {
             </div>
 
             {/* Diagnostic Services Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.15rem' }}>
                 {filteredServices.map(srv => {
                     const isAvailable = srv.facilityStatus === 'AVAILABLE';
                     const isLinkage = srv.facilityStatus === 'LINKAGE';
+                    const accentColor = isAvailable ? 'var(--color-emerald-500)' : isLinkage ? 'var(--color-blue-500)' : 'var(--color-amber-500)';
 
                     return (
                         <div 
                             key={srv.id} 
-                            className="civic-card"
+                            className="diagnostic-card-elevated"
                             style={{ 
-                                padding: '1.25rem', 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                justifyContent: 'space-between',
-                                borderLeft: `4px solid ${isAvailable ? 'var(--color-emerald-500)' : isLinkage ? 'var(--color-blue-500)' : 'var(--color-amber-500)'}`
+                                borderLeft: `4px solid ${accentColor}`
                             }}
                         >
                             <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '0.5rem' }}>
-                                    <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-slate-500)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-slate-500)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                        <span style={{ color: accentColor }}>{getServiceIcon(srv)}</span>
                                         {srv.category}
                                     </span>
                                     <span 
                                         style={{ 
                                             fontSize: '0.7rem', 
-                                            fontWeight: 700, 
-                                            padding: '0.15rem 0.5rem', 
+                                            fontWeight: 800, 
+                                            padding: '0.2rem 0.55rem', 
                                             borderRadius: 'var(--radius-full)',
                                             background: isAvailable ? 'var(--color-emerald-50)' : isLinkage ? 'var(--color-blue-50)' : 'var(--color-amber-50)',
                                             color: isAvailable ? 'var(--color-emerald-800)' : isLinkage ? 'var(--color-blue-800)' : 'var(--color-amber-800)',
                                             border: `1px solid ${isAvailable ? 'var(--color-emerald-200)' : isLinkage ? 'var(--color-blue-200)' : 'var(--color-amber-200)'}`,
                                             display: 'inline-flex',
                                             alignItems: 'center',
-                                            gap: '3px'
+                                            gap: '4px'
                                         }}
                                     >
-                                        {isAvailable ? <CheckCircle2 size={11} /> : <AlertCircle size={11} />}
+                                        {isAvailable ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
                                         {isTe ? srv.facilityStatusText_te : srv.facilityStatusText_en}
                                     </span>
                                 </div>
 
-                                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-slate-950)', margin: '0 0 0.35rem' }}>
+                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-slate-950)', margin: '0 0 0.4rem', lineHeight: '1.3' }}>
                                     {isTe ? srv.name_te : srv.name_en}
                                 </h3>
 
-                                <div style={{ fontSize: '0.8rem', color: 'var(--color-slate-600)', marginBottom: '0.65rem' }}>
+                                <div style={{ fontSize: '0.8125rem', color: 'var(--color-slate-600)', marginBottom: '0.85rem', lineHeight: '1.45' }}>
                                     {isTe ? srv.purpose_te : srv.purpose_en}
                                 </div>
                             </div>
 
-                            <div style={{ paddingTop: '0.65rem', borderTop: '1px solid var(--color-slate-100)', fontSize: '0.72rem', color: 'var(--color-slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span>{isTe ? srv.method_te : srv.method_en}</span>
-                                <span style={{ fontWeight: 600 }}>{srv.sourceTag}</span>
+                            <div style={{ paddingTop: '0.75rem', borderTop: '1px solid var(--color-slate-100)', fontSize: '0.72rem', color: 'var(--color-slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ background: 'var(--color-slate-100)', padding: '0.2rem 0.45rem', borderRadius: 'var(--radius-xs)', color: 'var(--color-slate-700)', fontWeight: 600 }}>
+                                    {isTe ? srv.method_te : srv.method_en}
+                                </span>
+                                <span style={{ fontWeight: 700, color: 'var(--color-slate-600)' }}>{srv.sourceTag}</span>
                             </div>
                         </div>
                     );

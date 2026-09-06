@@ -67,24 +67,28 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                             </span>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', background: 'var(--color-slate-50)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)', marginBottom: '1.25rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.85rem' }}>
-                                <Clock size={16} style={{ color: 'var(--color-slate-500)', marginTop: '2px', flexShrink: 0 }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', padding: '0.9rem 1.15rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--color-blue-50)', color: 'var(--color-blue-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Clock size={16} />
+                                </div>
                                 <div>
-                                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-slate-500)', textTransform: 'uppercase' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                                         {isTe ? "పనివేళలు" : "Operating Hours"}
                                     </div>
-                                    <div style={{ fontWeight: 700, color: 'var(--color-slate-900)' }}>{timings}</div>
+                                    <div style={{ fontWeight: 800, color: 'var(--color-slate-900)', fontSize: '0.95rem' }}>{timings}</div>
                                 </div>
                             </div>
                             {facility.address && (
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.85rem' }}>
-                                    <MapPin size={16} style={{ color: 'var(--color-slate-500)', marginTop: '2px', flexShrink: 0 }} />
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', padding: '0.9rem 1.15rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)' }}>
+                                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--color-emerald-50)', color: 'var(--color-emerald-600)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <MapPin size={16} />
+                                    </div>
                                     <div>
-                                        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-slate-500)', textTransform: 'uppercase' }}>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                                             {isTe ? "చిరునామా / ప్రాంతం" : "Location"}
                                         </div>
-                                        <div style={{ fontWeight: 600, color: 'var(--color-slate-900)' }}>
+                                        <div style={{ fontWeight: 700, color: 'var(--color-slate-900)', fontSize: '0.88rem', lineHeight: '1.4' }}>
                                             {facility.address} {isTe ? "• డెంకాడ మండల కేంద్రం (మోదవలస నుండి 3.2 కి.మీ.)" : "• 3.2 km at Mandal HQ (Serving Modavalasa)"}
                                         </div>
                                     </div>
@@ -94,13 +98,14 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
 
                         {services.length > 0 && (
                             <div style={{ marginBottom: '1.25rem' }}>
-                                <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-slate-500)', marginBottom: '0.5rem' }}>
-                                    {isTe ? "అందుబాటులో ఉన్న సేవలు:" : "Available Medical Services:"}
+                                <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-slate-500)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Activity size={13} style={{ color: 'var(--color-emerald-600)' }} />
+                                    {isTe ? "అందుబాటులో ఉన్న వైద్య సేవలు:" : "Available Clinical Services:"}
                                 </div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
                                     {services.map((srv, idx) => (
-                                        <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'var(--color-emerald-50)', color: 'var(--color-emerald-900)', border: '1px solid var(--color-emerald-200)', padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-sm)', fontSize: '0.78rem', fontWeight: 600 }}>
-                                            <CheckCircle2 size={12} style={{ color: 'var(--color-emerald-700)' }} /> {srv}
+                                        <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#ffffff', color: 'var(--color-emerald-950)', border: '1px solid var(--color-emerald-300)', padding: '0.3rem 0.65rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                                            <CheckCircle2 size={13} style={{ color: 'var(--color-emerald-600)' }} /> {srv}
                                         </span>
                                     ))}
                                 </div>

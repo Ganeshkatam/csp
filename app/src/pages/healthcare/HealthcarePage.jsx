@@ -87,6 +87,85 @@ export function HealthcarePage() {
 
             <div className="container" style={{ paddingBottom: '3.5rem' }}>
                 
+                {/* Clinical Overview KPI Deck */}
+                <div className="health-hero-stats">
+                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-emerald-600)' }}>
+                        <div className="health-stat-header">
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-emerald-50)', '--stat-icon-color': 'var(--color-emerald-600)' }}>
+                                <Activity size={20} />
+                            </div>
+                            <span className="health-stat-badge">
+                                {isTe ? "ప్రాథమిక కేంద్రం" : "Primary Center"}
+                            </span>
+                        </div>
+                        <div>
+                            <div className="health-stat-value">
+                                {isTe ? "డెంకాడ పిహెచ్‌సి" : "Denkada PHC"}
+                            </div>
+                            <div className="health-stat-label">
+                                {isTe ? "మోదవలస నుండి 3.2 కి.మీ. దూరంలో మండల కేంద్రం" : "3.2 km at Mandal HQ serving Modavalasa"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-red-600)' }}>
+                        <div className="health-stat-header">
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-red-50)', '--stat-icon-color': 'var(--color-red-600)' }}>
+                                <Phone size={20} />
+                            </div>
+                            <span className="health-stat-badge" style={{ background: 'var(--color-red-50)', color: 'var(--color-red-800)' }}>
+                                {isTe ? "24x7 రెస్పాన్స్" : "24x7 Response"}
+                            </span>
+                        </div>
+                        <div>
+                            <div className="health-stat-value" style={{ color: 'var(--color-red-700)' }}>
+                                108 / 104
+                            </div>
+                            <div className="health-stat-label">
+                                {isTe ? "అత్యవసర అంబులెన్స్ & ఉచిత వైద్య సలహా" : "Toll-Free Ambulance & Health Advisory"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-blue-600)' }}>
+                        <div className="health-stat-header">
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-blue-50)', '--stat-icon-color': 'var(--color-blue-600)' }}>
+                                <Calendar size={20} />
+                            </div>
+                            <span className="health-stat-badge">
+                                {isTe ? "వారపు ఓపిడి" : "Weekly OPD"}
+                            </span>
+                        </div>
+                        <div>
+                            <div className="health-stat-value">
+                                {isTe ? "సోమ - శని (6 రోజులు)" : "Mon - Sat (6 Days)"}
+                            </div>
+                            <div className="health-stat-label">
+                                {isTe ? "ఉదయం 9:00 నుండి సాయంత్రం 4:00 వరకు ఓపిడి" : "9:00 AM - 4:00 PM Active Outpatient Care"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="health-stat-card" style={{ '--stat-accent': 'var(--color-teal-600)' }}>
+                        <div className="health-stat-header">
+                            <div className="health-stat-icon-wrap" style={{ '--stat-icon-bg': 'var(--color-teal-50)', '--stat-icon-color': 'var(--color-teal-700)' }}>
+                                <HeartPulse size={20} />
+                            </div>
+                            <span className="health-stat-badge" style={{ background: 'var(--color-emerald-50)', color: 'var(--color-emerald-800)' }}>
+                                {isTe ? "100% ఉచితం" : "100% Free Coverage"}
+                            </span>
+                        </div>
+                        <div>
+                            <div className="health-stat-value">
+                                {isTe ? "10 జీవన దశలు" : "10 Life Milestones"}
+                            </div>
+                            <div className="health-stat-label">
+                                {isTe ? "జాతీయ సార్వత్రిక రోగనిరోధక టీకాలు (UIP)" : "Universal Immunization Programme Roster"}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Section Quick Navigation Filter */}
                 <div className="filter-pills-bar" role="tablist" style={{ marginBottom: '1.75rem' }}>
                     {navSections.map(sec => (
