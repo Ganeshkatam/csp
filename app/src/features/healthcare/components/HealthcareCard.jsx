@@ -55,8 +55,8 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                         </h3>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '1.15rem' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, background: isOpen ? 'var(--color-emerald-50)' : 'var(--color-slate-100)', color: isOpen ? 'var(--color-emerald-800)' : 'var(--color-slate-600)', border: `1px solid ${isOpen ? 'var(--color-emerald-200)' : 'var(--color-slate-200)'}` }}>
-                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: isOpen ? 'var(--color-emerald-600)' : 'var(--color-slate-400)' }} />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, background: isOpen ? 'var(--color-emerald-50)' : 'var(--color-red-50)', color: isOpen ? 'var(--color-emerald-800)' : 'var(--color-red-700)', border: `1px solid ${isOpen ? 'var(--color-emerald-200)' : 'var(--color-red-200)'}` }}>
+                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: isOpen ? 'var(--color-emerald-600)' : 'var(--color-red-500)' }} />
                                 {isOpen 
                                     ? (isTe ? "ఇప్పుడు తెరిచి ఉంది — ప్రచురిత వేళలు" : "Open Now — based on published hours")
                                     : (isTe ? "ఇప్పుడు మూసివేయబడింది — ప్రచురిత వేళలు" : "Closed Now — based on published hours")
@@ -126,7 +126,7 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
 
                         <div style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                             <span><strong>Source:</strong> {facility.source || 'PHC Notice Board'}</span>
-                            <span><strong>Source verification date:</strong> {facility.verified_on || 'August 2024'}</span>
+                            <span><strong>Verified:</strong> {facility.verified_on || 'August 2024'}</span>
                         </div>
                     </div>
                 </div>
@@ -159,24 +159,27 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                     </span>
                 </div>
 
-                <h3 className="card-item-title">
+                <h3 className="card-item-title" style={{ minHeight: '3.1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {getLocalized(facility, 'name', lang)}
                 </h3>
 
                 <div style={{ margin: '0.5rem 0 0.85rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700, background: isOpen ? 'var(--color-emerald-50)' : 'var(--color-slate-100)', color: isOpen ? 'var(--color-emerald-800)' : 'var(--color-slate-600)', border: `1px solid ${isOpen ? 'var(--color-emerald-200)' : 'var(--color-slate-200)'}` }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOpen ? 'var(--color-emerald-600)' : 'var(--color-slate-400)' }} />
-                        {isOpen ? 'Open Now — based on published hours' : 'Closed Now — based on published hours'}
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700, background: isOpen ? 'var(--color-emerald-50)' : 'var(--color-red-50)', color: isOpen ? 'var(--color-emerald-800)' : 'var(--color-red-700)', border: `1px solid ${isOpen ? 'var(--color-emerald-200)' : 'var(--color-red-200)'}` }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOpen ? 'var(--color-emerald-600)' : 'var(--color-red-500)' }} />
+                        {isOpen 
+                            ? (isTe ? "ఇప్పుడు తెరిచి ఉంది — ప్రచురిత వేళలు" : "Open Now — based on published hours")
+                            : (isTe ? "ఇప్పుడు మూసివేయబడింది — ప్రచురిత వేళలు" : "Closed Now — based on published hours")
+                        }
                     </span>
                     <div style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', marginTop: '3px' }}>
-                        Does not confirm real-time clinician presence.
+                        {isTe ? "వైద్యుల ప్రత్యక్ష హాజరుకు హామీ ఇవ్వదు." : "Does not confirm real-time clinician presence."}
                     </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: 'var(--color-slate-700)', marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Clock size={14} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
-                        <span><strong>{t?.timings || 'Timings:'}</strong> {timings}</span>
+                        <span><strong>{t?.timings || 'Operating Hours:'}</strong> {timings}</span>
                     </div>
                     {facility.address && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -202,21 +205,23 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                 )}
             </div>
 
-            {facility.phone && (
-                <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid var(--color-slate-100)' }}>
-                    <a 
-                        href={createTelLink(facility.phone)} 
-                        className="btn btn-primary btn-block"
-                    >
-                        <Phone size={15} style={{ marginRight: '6px' }} />
-                        <span>{t?.callNow || 'Call'} {formatPhoneDisplay(facility.phone)}</span>
-                    </a>
-                </div>
-            )}
+            <div className="card-bottom-actions" style={{ marginTop: 'auto' }}>
+                {facility.phone && (
+                    <div style={{ paddingTop: '0.85rem', borderTop: '1px solid var(--color-slate-100)' }}>
+                        <a 
+                            href={createTelLink(facility.phone)} 
+                            className="btn btn-primary btn-block"
+                        >
+                            <Phone size={15} style={{ marginRight: '6px' }} />
+                            <span>{t?.callNow || 'Call'} {formatPhoneDisplay(facility.phone)}</span>
+                        </a>
+                    </div>
+                )}
 
-            <div className="card-verify-tag">
-                <span>Source: {facility.source || 'PHC Notice Board'}</span>
-                <span>Source verification date: {facility.verified_on || 'August 2024'}</span>
+                <div className="card-verify-tag" style={{ minHeight: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', fontSize: '0.72rem', color: 'var(--color-slate-500)', paddingTop: '0.65rem', borderTop: '1px solid var(--color-slate-100)', marginTop: '0.5rem' }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%' }} title={facility.source || 'PHC Notice Board'}>Source: {facility.source || 'PHC Notice Board'}</span>
+                    <span style={{ flexShrink: 0 }}>Verified: {facility.verified_on || 'August 2024'}</span>
+                </div>
             </div>
         </div>
     );
