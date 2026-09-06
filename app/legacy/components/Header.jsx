@@ -67,7 +67,7 @@ export default function Header({
         { id: '108', name: '108 Emergency Ambulance', phone: '108', category: 'Emergency', source: 'AP Health Department', verified_on: '2026-09-04' },
         { id: '100', name: '100 Police Emergency', phone: '100', category: 'Emergency', source: 'AP Police Department', verified_on: '2026-09-04' },
         { id: '104', name: '104 Health Helpline', phone: '104', category: 'Emergency', source: 'AP Health Department', verified_on: '2026-09-04' },
-        { id: '1912', name: '1912 Electricity Helpline', phone: '1912', category: 'Emergency', source: 'APCPDCL', verified_on: '2026-09-04' }
+        { id: '1912', name: '1912 Electricity Helpline', phone: '1912', category: 'Emergency', source: 'APEPDCL', verified_on: '2026-09-06' }
     ];
 
     // Accessibility: Manage body scroll lock when mobile drawer opens/closes

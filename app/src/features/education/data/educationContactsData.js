@@ -1,62 +1,62 @@
 /**
  * Verified Education & Child Welfare Administrative Contacts
  * Epistemic Level: A (Official Public Desks & Statutory Helplines)
- * Source: Mandal Educational Office (MEO) Denkada & School Education Department AP
+ * Source: Vizianagaram District Administration & Department of School Education AP
  * Review Date: September 2026
  */
 
 export const educationContactsData = {
     provenance: {
         level: "Level A: Local Directory & Official Helplines",
-        source: "Mandal Educational Office (MEO) Denkada & Department of School Education AP",
-        verifiedDate: "August 2024 / September 2026",
-        disclaimer: "Desk phone lines are operational during office hours (9:30 AM - 5:00 PM on working days). Toll-free student helpline 14417 and Childline 1098 are operational 24x7."
+        source: "Vizianagaram District Administration Directory & Department of School Education AP",
+        verifiedDate: "September 2026",
+        disclaimer: "Official administrative contacts are operational during office hours. Toll-free student helpline 14417 and Childline 1098 are operational 24x7."
     },
     contacts: [
         {
-            id: "meo-denkada",
-            title: "Mandal Educational Office (MEO) Desk",
-            titleTe: "మండల విద్యాధికారి (MEO) డెస్క్",
-            role: "Denkada Mandal Educational Administration & Public Information",
-            roleTe: "డెంకాడ మండల విద్యా పరిపాలన మరియు పౌర సమాచార విభాగం",
-            phone: "08922-246210",
-            availability: "9:30 AM - 5:00 PM (Working Days)",
-            availabilityTe: "ఉదయం 9:30 - సాయంత్రం 5:00 (పనిదినాలు)",
-            address: "Mandal Resource Centre (MRC), Denkada Mandal",
-            addressTe: "మండల వనరుల కేంద్రం (MRC), డెంకాడ మండలం",
-            source: "Mandal Educational Office Administrative Directory",
-            verified_on: "August 2024",
+            id: "panchayat-secretary-modavalasa",
+            title: "Panchayat Secretary (V. V. Anuradha)",
+            titleTe: "పంచాయతీ కార్యదర్శి (వి. వి. అనూరాధ)",
+            role: "Gram Panchayat Administrative Oversight for Local Schools & Anganwadi Centres",
+            roleTe: "స్థానిక ప్రభుత్వ పాఠశాలలు మరియు అంగన్‌వాడీ కేంద్రాల పరిపాలనా పర్యవేక్షణ",
+            phone: "9951871501",
+            availability: "10:00 AM - 5:00 PM (Office Hours)",
+            availabilityTe: "ఉదయం 10:00 - సాయంత్రం 5:00 (కార్యాలయ వేళలు)",
+            address: "Modavalasa Gram Panchayat, Denkada Mandal, Vizianagaram District",
+            addressTe: "మోదవలస గ్రామ పంచాయతీ, డెంకాడ మండలం, విజయనగరం జిల్లా",
+            source: "Vizianagaram District Administration Official Directory (vizianagaram.ap.gov.in/psdenkada/)",
+            verified_on: "September 2026",
             status: "published",
-            jurisdiction: "Denkada Mandal / Vizianagaram District"
+            jurisdiction: "Modavalasa Gram Panchayat"
         },
         {
             id: "mpps-modavalasa-office",
-            title: "MPPS Modavalasa School Office Desk",
-            titleTe: "ఎంపీపీఎస్ మోదవలస పాఠశాల కార్యాలయ డెస్క్",
-            role: "Primary School Admissions, Attendance Records & Mid-Day Meal Desk",
+            title: "MPPS Modavalasa School Office",
+            titleTe: "ఎంపీపీఎస్ మోదవలస పాఠశాల కార్యాలయం",
+            role: "Primary School Admissions, Attendance Records & PM POSHAN Mid-Day Meal Desk",
             roleTe: "ప్రాథమిక పాఠశాల ప్రవేశాలు, హాజరు రికార్డులు & మధ్యాహ్న భోజన విభాగం",
-            phone: "08922-246200",
+            phone: null,
             availability: "9:00 AM - 4:30 PM (School Working Days)",
             availabilityTe: "ఉదయం 9:00 - సాయంత్రం 4:30 (పాఠశాల పనిదినాలు)",
-            address: "MPPS Campus, School Street, Modavalasa",
-            addressTe: "ఎంపీపీఎస్ ప్రాంగణం, పాఠశాల వీధి, మోదవలస",
-            source: "School Notice Board & MEO Denkada Directory",
+            address: "Modavalasa Village, Denkada Mandal, Vizianagaram District - 531162",
+            addressTe: "మోదవలస గ్రామం, డెంకాడ మండలం, విజయనగరం జిల్లా - 531162",
+            source: "School Field Inspection & MEO Denkada Records",
             verified_on: "August 2024",
             status: "published",
             jurisdiction: "Modavalasa Village"
         },
         {
             id: "anganwadi-ward2-desk",
-            title: "Government Anganwadi Centre Desk (Ward 2)",
-            titleTe: "ప్రభుత్వ అంగన్‌వాడీ కేంద్రం డెస్క్ (వార్డు 2)",
+            title: "Government Anganwadi Centre (Ward 2)",
+            titleTe: "ప్రభుత్వ అంగన్‌వాడీ కేంద్రం (వార్డు 2)",
             role: "Early Childhood Care, Supplementary Nutrition & Maternal Helpdesk",
             roleTe: "పూర్వ ప్రాథమిక విద్య, పోషకాహార పంపిణీ & మాతా శిశు సహాయ కేంద్రం",
-            phone: "08922-246230",
+            phone: null,
             availability: "9:00 AM - 1:00 PM (Monday to Saturday)",
             availabilityTe: "ఉదయం 9:00 - మధ్యాహ్నం 1:00 (సోమవారం నుండి శనివారం)",
-            address: "Near Water Tank, BC Colony, Modavalasa",
-            addressTe: "నీటి ట్యాంక్ సమీపంలో, బీసీ కాలనీ, మోదవలస",
-            source: "WDCW ICDS Sector Records & Supabase Registered Facility Record",
+            address: "Modavalasa Habitation, Denkada Mandal, Vizianagaram District - 531162",
+            addressTe: "మోదవలస నివాస ప్రాంతం, డెంకాడ మండలం, విజయనగరం జిల్లా - 531162",
+            source: "ICDS Project Supervisor Records, Denkada Project",
             verified_on: "August 2024",
             status: "published",
             jurisdiction: "Modavalasa Ward 2 & BC Colony"

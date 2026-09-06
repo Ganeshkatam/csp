@@ -23,12 +23,20 @@ export const CENSUS_2011_BASELINE = {
     areaHectares: 633,
     areaAcres: 1564,
     sexRatio: 1003, // Females per 1000 Males (1,294 / 1,290)
-    pin: '535005',
+    pin: '531162',
+    postalNetwork: {
+        branchPostOffice: 'Modavalasa B.O.',
+        subPostOffice: 'Chittivalasa S.O.',
+        headPostOffice: 'Denkada S.O. (535006) / Vizianagaram H.O.',
+        postalDivision: 'Visakhapatnam Division',
+        pincode: '531162',
+        note: 'Postal network routing (Chittivalasa S.O. / Visakhapatnam Division) operates under PIN 531162; civil administration belongs to Denkada Mandal, Vizianagaram District.'
+    },
     provenance: {
-        source: 'Census of India 2011 (Village Code: 583218)',
-        sourceTe: 'భారత ప్రభుత్వం సెన్సస్ 2011 (గ్రామ కోడ్: 583218)',
-        evidenceClass: 'Census of India 2011',
-        evidenceClassTe: 'సెన్సస్ 2011 అధికారికం'
+        source: 'Census of India 2011 (Village Code: 583218) & India Post Directory',
+        sourceTe: 'భారత ప్రభుత్వం సెన్సస్ 2011 (గ్రామ కోడ్: 583218) మరియు ఇండియా పోస్ట్ డైరెక్టరీ',
+        evidenceClass: 'Census of India 2011 & India Post',
+        evidenceClassTe: 'సెన్సస్ 2011 & ఇండియా పోస్ట్ అధికారికం'
     }
 };
 
@@ -125,10 +133,10 @@ export const CIVIC_INFRASTRUCTURE = {
         descTe: 'ఆర్వో శుద్ధి ప్లాంట్ మరియు ఓవర్‌హెడ్ రిజర్వాయర్ సౌకర్యం (సర్వేలో పరిశీలించబడింది).'
     },
     electricity: {
-        title: 'Rural Electricity Grid',
-        titleTe: 'గ్రామీణ విద్యుత్ సరఫరా',
-        desc: 'Domestic electrification grid supply with scheduled power rosters for agricultural borewells.',
-        descTe: 'గృహ విద్యుత్ సరఫరా మరియు వ్యవసాయ బోరుబావులకు షెడ్యూల్డ్ వ్యవసాయ విద్యుత్ సరఫరా.'
+        title: 'Rural Electricity Grid (APEPDCL)',
+        titleTe: 'గ్రామీణ విద్యుత్ సరఫరా (APEPDCL)',
+        desc: 'Electrification grid operated under APEPDCL (Vizianagaram Circle) with scheduled power rosters for agriculture and 24x7 toll-free breakdown helpline 1912.',
+        descTe: 'ఏపీఈపీడీసీఎల్ (విజయనగరం సర్కిల్) పరిధిలోని విద్యుత్ సరఫరా, వ్యవసాయ షెడ్యూల్డ్ రోస్టర్ మరియు 24 గంటల టోల్ ఫ్రీ హెల్ప్‌లైన్ 1912.'
     },
     internalRoads: {
         title: 'Internal Residential Roads',

@@ -42,10 +42,10 @@ export function EmergencyGuidance({ announcements = [], loading = false, lang })
             badgeBorder: '#a7f3d0'
         },
         {
-            number: '08922-246102',
-            title: isTe ? 'డెంకాడ పీహెచ్‌సీ అత్యవసర డెస్క్' : 'Denkada PHC Medical Desk',
-            role: isTe ? 'స్థానిక పీహెచ్‌సీ డ్యూటీ మెడికల్ ఆఫీసర్ & డెలివరీ వార్డు సహాయ కేంద్రం' : 'Local Primary Health Centre duty officer desk & delivery ward hotline',
-            badge: isTe ? 'పీహెచ్‌సీ డెస్క్' : 'PHC Desk',
+            number: '112',
+            title: isTe ? '112 జాతీయ అత్యవసర సహాయ సంఖ్య' : '112 All-India Emergency Number',
+            role: isTe ? 'పోలీస్, అగ్నిమాపక మరియు వైద్య అత్యవసర సేవల కోసం ఉమ్మడి హెల్ప్‌లైన్' : 'Unified emergency response support system (ERSS) connecting police, fire, and medical teams (Toll-Free)',
+            badge: isTe ? 'ఉమ్మడి హెల్ప్‌లైన్' : 'Unified ERSS',
             color: '#d97706',
             borderColor: '#fcd34d',
             badgeBg: '#fffbeb',

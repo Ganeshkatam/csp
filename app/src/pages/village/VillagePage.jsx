@@ -165,7 +165,7 @@ export function VillagePage() {
                                         {isTe ? "పోస్టల్ పిన్ కోడ్" : "Postal PIN Code"}
                                     </div>
                                     <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-slate-900)', fontFamily: 'var(--font-mono)' }}>
-                                        535005
+                                        {CENSUS_2011_BASELINE.pin}
                                     </div>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@ export function VillagePage() {
                                     <span className="factsheet-stat-label">{isTe ? "పోస్టల్ పిన్ కోడ్" : "Postal PIN Code"}</span>
                                     <span className="factsheet-stat-value" style={{ fontFamily: 'var(--font-mono)' }}>{CENSUS_2011_BASELINE.pin}</span>
                                     <span className="factsheet-stat-sub">
-                                        {isTe ? "డెంకాడ సబ్-పోస్ట్ ఆఫీస్" : "Denkada SO Delivery"}
+                                        {isTe ? "చిట్టివలస ఎస్.ఓ. / మోదవలస బి.ఓ." : "Chittivalasa SO / Modavalasa BO"}
                                     </span>
                                 </div>
                                 <div className="factsheet-stat-card">
@@ -290,11 +290,11 @@ export function VillagePage() {
                                             <td>
                                                 {isTe 
                                                     ? "గృహ వినియోగానికి 24x7 3-ఫేజ్ విద్యుత్ సరఫరా; వ్యవసాయ మోటార్లకు 7 గంటల ఉచిత షెడ్యూల్ రోస్టర్."
-                                                    : "24x7 3-phase domestic feeder supply (APCPDCL); 7-hour dedicated free roster for agricultural borewells."
+                                                    : "24x7 3-phase domestic feeder supply (APEPDCL); 7-hour dedicated free roster for agricultural borewells."
                                                 }
                                             </td>
                                             <td style={{ fontSize: '0.75rem', color: 'var(--color-slate-500)' }}>
-                                                APCPDCL Operations Desk
+                                                APEPDCL Operations Desk
                                             </td>
                                         </tr>
                                         <tr>

@@ -76,7 +76,7 @@ export function ContactsPage() {
         { code: '108', title: 'Ambulance Emergency', dept: 'Health Dept', color: 'var(--color-red-600)' },
         { code: '100', title: 'Police Emergency', dept: 'AP Police', color: 'var(--color-blue-600)' },
         { code: '104', title: 'Medical Helpline', dept: 'Govt Health Info', color: 'var(--color-emerald-600)' },
-        { code: '1912', title: 'Electricity Helpline', dept: 'APCPDCL Lines', color: 'var(--color-amber-600)' }
+        { code: '1912', title: 'Electricity Helpline', dept: 'APEPDCL Operations', color: 'var(--color-amber-600)' }
     ];
 
     return (

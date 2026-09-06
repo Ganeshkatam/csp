@@ -57,7 +57,7 @@ export const contactService = {
             { id: '108', name: '108 Emergency Ambulance', phone: '108', category: 'Emergency', source: 'AP Health Dept', verified_on: '2026-09-01' },
             { id: '100', name: '100 Police Emergency', phone: '100', category: 'Emergency', source: 'AP Police', verified_on: '2026-09-01' },
             { id: '104', name: '104 Health Advisory', phone: '104', category: 'Healthcare', source: 'AP Health Dept', verified_on: '2026-09-01' },
-            { id: '1912', name: '1912 Electricity Helpline', phone: '1912', category: 'Utilities', source: 'APCPDCL', verified_on: '2026-09-01' }
+            { id: '1912', name: '1912 Electricity Helpline', phone: '1912', category: 'Utilities', source: 'APEPDCL', verified_on: '2026-09-06' }
         ];
     }
 };

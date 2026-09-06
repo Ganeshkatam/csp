@@ -13,9 +13,14 @@ export function formatPhoneDisplay(phone) {
     // Emergency & toll-free short codes (3-5 digits): return as-is
     if (digits.length <= 5) return phone;
 
-    // 11-digit landline with STD code
+    // 11-digit landline with 5-digit STD code (e.g. Vizianagaram 08922)
+    if (digits.length === 11 && digits.startsWith('08922')) {
+        return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    }
+
+    // 11-digit landline with standard 4-digit STD code (e.g. Tirupati 0877, Vijayawada 0866)
     if (digits.length === 11 && digits.startsWith('0')) {
-        return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+        return `${digits.slice(0, 4)}-${digits.slice(4)}`;
     }
 
     // 10-digit standard Indian mobile

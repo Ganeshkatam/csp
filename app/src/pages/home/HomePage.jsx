@@ -137,7 +137,7 @@ export function HomePage() {
 
     const infraObservations = [
         { service: 'Drinking Water', observation: 'Functional RO filtration plant & overhead reservoir', source: 'CSP Field Survey & Panchayat', date: 'Aug 2024' },
-        { service: 'Rural Electricity', observation: '24x7 domestic grid supply; agricultural feeder on scheduled roster', source: 'APCPDCL Rural Feeder Log', date: 'Aug 2024' },
+        { service: 'Rural Electricity', observation: '24x7 domestic grid supply; agricultural feeder on scheduled roster', source: 'APEPDCL Feeder Roster', date: 'Aug 2024' },
         { service: 'Concrete Roads', observation: 'Internal CC roads completed; main approach road under maintenance', source: 'Gram Panchayat Records', date: 'Aug 2024' },
         { service: 'Streetlights', observation: 'LED street fixtures installed across primary habitation lanes', source: 'Field Survey Observation', date: 'Aug 2024' },
         { service: 'Sanitation', observation: 'Surface drainage with periodic sanitation; waste collection active', source: 'Swachh Habitation Log', date: 'Aug 2024' }
@@ -700,17 +700,37 @@ export function HomePage() {
 
                     {activeExplorerTab === 'businesses' && (
                         <div>
-                            <div className="card-grid">
-                                {businesses.map(b => (
-                                    <BusinessCard key={b.id} business={b} lang={lang} t={t} />
-                                ))}
-                            </div>
-                            <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 3.5vw, 3rem)' }}>
-                                <Link to="/businesses" className="btn btn-secondary btn-sm">
-                                    <span>View All Village Artisans &amp; Shops</span>
-                                    <ArrowRight size={14} />
-                                </Link>
-                            </div>
+                            {businesses.length > 0 ? (
+                                <>
+                                    <div className="card-grid">
+                                        {businesses.map(b => (
+                                            <BusinessCard key={b.id} business={b} lang={lang} t={t} />
+                                        ))}
+                                    </div>
+                                    <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 3.5vw, 3rem)' }}>
+                                        <Link to="/businesses" className="btn btn-secondary btn-sm">
+                                            <span>View All Village Artisans &amp; Shops</span>
+                                            <ArrowRight size={14} />
+                                        </Link>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="civic-card" style={{ padding: 'clamp(2rem, 3.5vw, 3rem)', textAlign: 'center', maxWidth: '680px', margin: '0 auto' }}>
+                                    <Store size={38} style={{ color: 'var(--color-amber-600)', margin: '0 auto 1rem', display: 'block' }} />
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-slate-900)', marginBottom: '0.65rem' }}>
+                                        {isTe ? "గ్రామ వాణిజ్య & చేనేత వివరాలు ధృవీకరణలో ఉన్నాయి" : "Village Enterprise Directory Under Verification"}
+                                    </h3>
+                                    <p style={{ fontSize: '0.875rem', color: 'var(--color-slate-600)', lineHeight: '1.65', marginBottom: '1.25rem' }}>
+                                        {isTe 
+                                            ? "మోదవలస పరిధిలోని చేనేత క్లస్టర్లు, పాల సేకరణ కేంద్రాలు మరియు స్థానిక దుకాణాల వివరాలు అధికారిక పంచాయతీ రికార్డులు మరియు క్షేత్ర సర్వే ఆధారంగా ధృవీకరించబడుతున్నాయి. డేటా ప్రామాణికత నిబంధనల ప్రకారం కల్పిత లేదా ధృవీకరించని రికార్డులు ప్రచురించబడవు."
+                                            : "Local commercial, cooperative, and artisanal listings are being verified against official administrative registers and ground survey logs. In accordance with strict CSP data provenance gates, synthetic or unverified business entries are withheld from publication until individual record-level proof is established."
+                                        }
+                                    </p>
+                                    <span className="badge badge-warning" style={{ fontSize: '0.78rem', fontWeight: 700, padding: '0.35rem 0.85rem' }}>
+                                        {isTe ? "రికార్డుల స్థాయి ఆధారాల ధృవీకరణ పెండింగ్‌లో ఉంది" : "Audit Status: Pending Attributable Evidence"}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -818,13 +838,13 @@ export function HomePage() {
 
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                         <a
-                            href={createTelLink('08922-246155')}
+                            href={createTelLink('9951871501')}
                             className="btn btn-secondary"
                             style={{ background: 'rgba(255,255,255,0.1)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)', fontWeight: 600, textDecoration: 'none' }}
-                            title="Call Grama Sachivalayam Administration Desk"
+                            title="Call Panchayat Secretary (V. V. Anuradha) - Denkada Mandal Official Directory"
                         >
                             <Phone size={15} style={{ marginRight: '4px' }} />
-                            <span>{isTe ? "సచివాలయం: 08922-246155" : "Sachivalayam: 08922-246155"}</span>
+                            <span>{isTe ? "పంచాయతీ కార్యదర్శి: 99518-71501" : "Panchayat Secretary: 99518-71501"}</span>
                         </a>
                         <Link to="/feedback" className="btn btn-primary" style={{ background: 'var(--color-blue-600)', color: '#ffffff', fontWeight: 700, border: 'none' }}>
                             <span>Submit Record Update</span>

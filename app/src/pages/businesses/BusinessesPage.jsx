@@ -128,8 +128,18 @@ export function BusinessesPage() {
                 {error && <ErrorState message={error} onRetry={loadBusinesses} />}
                 {!loading && !error && businesses.length === 0 && (
                     <EmptyState
-                        title="No enterprises found"
-                        description="Try searching for another service, owner name, or selecting All categories."
+                        title={lang === 'te' 
+                            ? (search || category !== 'All' ? "వ్యాపారాలు కనుగొనబడలేదు" : "గ్రామ వాణిజ్య & చేనేత వివరాలు ధృవీకరణలో ఉన్నాయి")
+                            : (search || category !== 'All' ? "No enterprises found" : "Village Enterprise Directory Under Verification")
+                        }
+                        description={lang === 'te'
+                            ? (search || category !== 'All' 
+                                ? "మరొక సేవ, యజమాని పేరుతో వెతకండి లేదా అన్ని వర్గాలను ఎంచుకోండి."
+                                : "మోదవలస పరిధిలోని స్థానిక వాణిజ్య మరియు చేనేత రికార్డులు అధికారిక రిజిస్టర్ల ఆధారంగా ధృవీకరించబడుతున్నాయి. డేటా ప్రామాణికత ప్రకారం కల్పిత రికార్డులు ప్రచురించబడవు.")
+                            : (search || category !== 'All'
+                                ? "Try searching for another service, owner name, or selecting All categories."
+                                : "Local commercial, cooperative, and artisanal listings are being reviewed against attributable village records and ground documentation. In compliance with strict data provenance gates, synthetic or unverified entries are withheld from publication until individual record-level proof is established.")
+                        }
                     />
                 )}
                 {!loading && !error && businesses.length > 0 && (

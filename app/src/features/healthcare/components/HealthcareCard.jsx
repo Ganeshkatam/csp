@@ -89,7 +89,7 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                                             {isTe ? "చిరునామా / ప్రాంతం" : "Location"}
                                         </div>
                                         <div style={{ fontWeight: 700, color: 'var(--color-slate-900)', fontSize: '0.88rem', lineHeight: '1.4' }}>
-                                            {facility.address} {isTe ? "• డెంకాడ మండల కేంద్రం (మోదవలస నుండి 3.2 కి.మీ.)" : "• 3.2 km at Mandal HQ (Serving Modavalasa)"}
+                                            {facility.address} {isTe ? "• మోదవలస నుండి 3.2 కి.మీ. (సేవా కేంద్రం)" : "• 3.2 km from Modavalasa (Serving Facility)"}
                                         </div>
                                     </div>
                                 </div>
@@ -184,7 +184,7 @@ export function HealthcareCard({ facility, lang, t, variant = 'vertical' }) {
                     {facility.address && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <MapPin size={14} style={{ color: 'var(--color-slate-400)', flexShrink: 0 }} />
-                            <span>{facility.address} {isTe ? "• డెంకాడ మండల కేంద్రం (3.2 కి.మీ.)" : "• 3.2 km at Mandal HQ"}</span>
+                            <span>{facility.address} {isTe ? "• 3.2 కి.మీ." : "• 3.2 km"}</span>
                         </div>
                     )}
                 </div>

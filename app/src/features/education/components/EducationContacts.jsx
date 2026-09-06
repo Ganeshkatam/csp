@@ -79,14 +79,20 @@ export function EducationContacts({ lang }) {
                         </div>
 
                         <div>
-                            <a 
-                                href={createTelLink(c.phone)}
-                                className="btn btn-primary btn-block"
-                                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.88rem', fontWeight: 700 }}
-                            >
-                                <Phone size={15} />
-                                <span>{isTe ? "కాల్ చేయండి: " : "Call Desk: "} {formatPhoneDisplay(c.phone)}</span>
-                            </a>
+                            {c.phone ? (
+                                <a 
+                                    href={createTelLink(c.phone)}
+                                    className="btn btn-primary btn-block"
+                                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.88rem', fontWeight: 700 }}
+                                >
+                                    <Phone size={15} />
+                                    <span>{isTe ? "కాల్ చేయండి: " : "Call: "} {formatPhoneDisplay(c.phone)}</span>
+                                </a>
+                            ) : (
+                                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '0.6rem 0.8rem', background: 'var(--color-slate-100)', color: 'var(--color-slate-700)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', fontWeight: 600 }}>
+                                    <span>{isTe ? "పనివేళల్లో ప్రత్యక్ష విచారణ" : "In-Person Inquiries During Working Hours"}</span>
+                                </div>
+                            )}
                             <div style={{ fontSize: '0.68rem', color: 'var(--color-slate-400)', textAlign: 'center', marginTop: '0.4rem' }}>
                                 Source: {c.source} ({c.verified_on})
                             </div>
