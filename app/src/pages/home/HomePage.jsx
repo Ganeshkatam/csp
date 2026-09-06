@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     Search, FileText, Phone, Activity, GraduationCap,
-    Building2, MessageSquare, ArrowRight, ShieldCheck,
-    HeartPulse, Store, Calendar, CheckCircle2,
-    Landmark, X
+    Building2, MessageSquare, ArrowRight, HeartPulse,
+    Store, Calendar, CheckCircle2, HomeIcon, Landmark, X
 } from 'lucide-react';
 import { useAppContext } from '../../app/providers';
 import {
@@ -227,21 +226,12 @@ export function HomePage() {
                             <div className="hero-illustration-caption">
                                 <div className="hero-caption-left">
                                     <div className="hero-caption-icon">
-                                        <ShieldCheck size={17} />
+                                        <HomeIcon size={17} />
                                     </div>
-                                    <div className="hero-caption-text">
-                                        <span className="hero-caption-title">
-                                            {isTe ? "అధికారిక గ్రామీణ సమాచార వేదిక" : "Authoritative Rural Information Gateway"}
-                                        </span>
-                                        <span className="hero-caption-sub">
-                                            {isTe ? "మోదవలస గ్రామ సచివాలయం • డెంకాడ" : "Modavalasa Gram Panchayat • Denkada"}
-                                        </span>
-                                    </div>
+                                    <span className="hero-caption-text">
+                                        {isTe ? "మోదవలస గ్రామం • డెంకాడ" : "Modavalasa Village • Denkada"}
+                                    </span>
                                 </div>
-                                <span className="hero-caption-tag">
-                                    <span className="hero-caption-dot" aria-hidden="true"></span>
-                                    <span>{isTe ? "ధృవీకరించబడింది" : "Verified"}</span>
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -466,9 +456,9 @@ export function HomePage() {
 
             {/* 3. Important Information & Verified Notices */}
             {(loading || announcements.length > 0) && (
-                <section className="section-block" style={{ marginTop: '1.5rem' }}>
-                    <div style={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '1.25rem 1.5rem', boxShadow: 'var(--shadow-sm)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '0.75rem' }}>
+                <section className="section-block">
+                    <div style={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', padding: 'clamp(1.5rem, 2.5vw, 2.25rem)', boxShadow: 'var(--shadow-sm)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--color-slate-100)', paddingBottom: '1rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Calendar size={18} style={{ color: 'var(--color-blue-600)' }} />
                                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--color-slate-900)' }}>
@@ -484,7 +474,7 @@ export function HomePage() {
                             </Link>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
                             {loading ? (
                                 Array.from({ length: 3 }).map((_, i) => (
                                     <div key={i} className="civic-card skeleton-card" style={{ height: '90px' }}></div>
@@ -498,7 +488,7 @@ export function HomePage() {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             justifyContent: 'space-between',
-                                            padding: '0.85rem 1rem',
+                                            padding: '1.1rem 1.25rem',
                                             background: 'var(--color-slate-50)',
                                             border: '1px solid var(--color-slate-200)',
                                             borderRadius: 'var(--radius-md)',
@@ -635,7 +625,7 @@ export function HomePage() {
                                     <SchemeCard key={s.id} scheme={s} lang={lang} t={t} variant="vertical" />
                                 ))}
                             </div>
-                            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                            <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 3.5vw, 3rem)' }}>
                                 <Link to="/schemes" className="btn btn-secondary btn-sm">
                                     <span>Browse All Verified Schemes ({schemes.length})</span>
                                     <ArrowRight size={14} />
@@ -647,7 +637,7 @@ export function HomePage() {
                     {activeExplorerTab === 'contacts' && (
                         <div>
                             {/* 24x7 Statutory Helplines Quick Call Bar */}
-                            <div className="quick-dial-bar" style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem', alignItems: 'center', background: 'var(--color-slate-50)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)' }}>
+                            <div className="quick-dial-bar" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.75rem', alignItems: 'center', background: 'var(--color-slate-50)', padding: '0.85rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-slate-200)' }}>
                                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-slate-700)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                     <Phone size={14} style={{ color: 'var(--color-red-600)' }} />
                                     {isTe ? "అత్యవసర హెల్ప్‌లైన్‌లు:" : "24x7 Emergency Helplines:"}
@@ -676,7 +666,7 @@ export function HomePage() {
                                     <ContactCard key={c.id} contact={c} lang={lang} t={t} />
                                 ))}
                             </div>
-                            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                            <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 3.5vw, 3rem)' }}>
                                 <Link to="/contacts" className="btn btn-secondary btn-sm">
                                     <span>View Complete Contact Directory</span>
                                     <ArrowRight size={14} />
@@ -695,7 +685,7 @@ export function HomePage() {
                                     <EducationCard key={inst.id} institution={inst} lang={lang} t={t} />
                                 ))}
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: 'clamp(2rem, 3.5vw, 3rem)', flexWrap: 'wrap' }}>
                                 <Link to="/healthcare" className="btn btn-secondary btn-sm">
                                     <span>PHC Operating Schedule</span>
                                     <ArrowRight size={14} />
@@ -715,7 +705,7 @@ export function HomePage() {
                                     <BusinessCard key={b.id} business={b} lang={lang} t={t} />
                                 ))}
                             </div>
-                            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                            <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 3.5vw, 3rem)' }}>
                                 <Link to="/businesses" className="btn btn-secondary btn-sm">
                                     <span>View All Village Artisans &amp; Shops</span>
                                     <ArrowRight size={14} />
@@ -728,9 +718,9 @@ export function HomePage() {
 
             {/* 6. Habitation Demographics & Infrastructure Status */}
             <section className="section-block">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 'clamp(1.75rem, 3vw, 2.5rem)', alignItems: 'start' }}>
                     {/* Left: Census 2011 Demographics */}
-                    <div className="civic-card" style={{ padding: '1.75rem' }}>
+                    <div className="civic-card" style={{ padding: 'clamp(1.75rem, 2.8vw, 2.5rem)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
                             <Landmark size={18} style={{ color: 'var(--color-blue-600)' }} />
                             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-slate-900)', margin: 0 }}>
@@ -767,14 +757,14 @@ export function HomePage() {
                             </div>
                         </div>
 
-                        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-slate-200)', fontSize: '0.72rem', color: 'var(--color-slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid var(--color-slate-200)', fontSize: '0.75rem', color: 'var(--color-slate-500)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span>Unsurveyed metrics: <em>Not yet verified</em></span>
                             <Link to="/village" style={{ fontWeight: 600, color: 'var(--color-blue-600)' }}>Full Profile &rarr;</Link>
                         </div>
                     </div>
 
                     {/* Right: Infrastructure Observation Status Matrix */}
-                    <div className="civic-card" style={{ padding: '1.75rem' }}>
+                    <div className="civic-card" style={{ padding: 'clamp(1.75rem, 2.8vw, 2.5rem)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
                             <CheckCircle2 size={18} style={{ color: 'var(--color-emerald-600)' }} />
                             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-slate-900)', margin: 0 }}>
@@ -811,8 +801,8 @@ export function HomePage() {
             </section>
 
             {/* 7. Citizen Feedback & Verification Desk Callout */}
-            <section className="section-block" style={{ marginBottom: '2rem' }}>
-                <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', borderRadius: 'var(--radius-xl)', padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', boxShadow: 'var(--shadow-md)' }}>
+            <section className="section-block">
+                <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: '#ffffff', borderRadius: 'var(--radius-xl)', padding: 'clamp(2rem, 3.5vw, 3.25rem)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem', boxShadow: 'var(--shadow-md)' }}>
                     <div style={{ maxWidth: '640px' }}>
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.1)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.78rem', fontWeight: 700, color: '#93c5fd', marginBottom: '0.75rem' }}>
                             <MessageSquare size={14} />
